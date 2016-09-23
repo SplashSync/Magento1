@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <default>
+    </default>
+    <web_index_index>
+        <reference name="content">
+            <block type="web/web" name="web" template="web/web.phtml" />
+        </reference>
+    </web_index_index>
+</layout> 

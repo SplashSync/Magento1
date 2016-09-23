@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <SplashSync_Splash>
+            <version>0.1.0</version>
+        </SplashSync_Splash>
+    </modules>
+    <global>
+        <blocks>
+            <splashsync_splash>
+                <class>SplashSync_Splash_Block</class>
+            </splashsync_splash>
+<!--            <splashsync_splash_adminhtml>
+                <class>SplashSync_Splash_Block_Adminhtml</class>
+            </splashsync_splash_adminhtml>-->
+        </blocks>
+        
+        <models>
+            <splashsync_splash>
+                <class>SplashSync_Splash_Model</class>
+            </splashsync_splash>
+        </models>
+        <helpers>
+            <splashsync_splash>
+                <class>SplashSync_Splash_Helper</class>
+            </splashsync_splash>
+        </helpers>
+        
+        <resources>
+            <splashsync_splash_setup>
+                <setup>
+                    <module>SplashSync_Splash</module>
+                </setup>
+            </splashsync_splash_setup>
+        </resources>
+        
+        
+        <events>
+            <model_save_before>
+                <observers>
+                    <splashsync_splash>
+                        <class>splashsync_splash/observer</class>
+                        <method>onSaveBefore</method>
+                    </splashsync_splash>
+                </observers>
+            </model_save_before>
+            <model_save_commit_after>
+                <observers>
+                    <splashsync_splash>
+                        <class>splashsync_splash/observer</class>
+                        <method>onSaveCommitAfter</method>
+                    </splashsync_splash>
+                </observers>
+            </model_save_commit_after>
+            <model_delete_commit_after>
+                <observers>
+                    <splashsync_splash>
+                        <class>splashsync_splash/observer</class>
+                        <method>onDeleteCommitAfter</method>
+                    </splashsync_splash>
+                </observers>
+            </model_delete_commit_after>
+        </events>
+        
+    </global>
+    <admin>
+        <routers>
+            <SplashSync_Splash_Admin>
+                <use>admin</use>
+                <args>
+                    <module>SplashSync_Splash</module>
+                    <frontName>splash</frontName>
+                </args>                
+                
+                <modules>
+                    <SplashSync_Splash after="Mage_Adminhtml">SplashSync_Splash</SplashSync_Splash>
+                </modules>                
+                
+            </SplashSync_Splash_Admin>
+        </routers>
+    </admin>
+    
+    <!--
+    <crontab>
+        <jobs>
+            <splashsync_splash_cron>
+                <schedule>
+                    <cron_expr>0,45 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>splashsync_splash/observer::methodName</model>
+                </run>
+            </splashsync_splash_cron>
+        </jobs> 
+    </crontab>
+    -->
+    
+<!--    <adminhtml>
+        <layout>
+            <updates>
+                <splash>
+                    <file>splash.xml</file>
+                </splash>
+            </updates>
+        </layout>
+    </adminhtml>-->
+    
+    <adminhtml>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <splashsync_splash_options>
+                                            <title>Splashsync Module Section</title>
+                                        </splashsync_splash_options>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    </adminhtml>
+    
+    <default>
+        <splashsync_splash_options>
+            <core>
+                <lang>en_US</lang>
+            </core>
+            <langs>
+                <default_lang>en_US</default_lang>
+            </langs>
+        </splashsync_splash_options>
+    </default>        
+                
+</config>

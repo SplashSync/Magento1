@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+     <modules>
+        <SplashSync_Splash>
+            <active>true</active>
+            <codePool>local</codePool>
+        </SplashSync_Splash>
+     </modules>
+</config>

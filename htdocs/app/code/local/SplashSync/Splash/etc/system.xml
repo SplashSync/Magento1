@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <sections>
+        <splashsync_splash_options translate="label" module="splashsync_splash">
+            <label>Splash Sync Connector</label>
+            <tab>service</tab>
+            <sort_order>1000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+ 
+            <groups>
+                <core>
+                    <label>Server Connection</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>100</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+ 
+                    <fields>
+                        <id>
+                            <label>Server Identifier: </label>
+                            <comment>The unique identifier given by Splash Server.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </id>
+                        <key>
+                            <label>Encryption Key: </label>
+                            <comment>The unique encryption key given by Splash Server.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>21</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </key>
+                        <lang translate="label">
+                            <label>Locale</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_locale</source_model>
+                            <comment>Default Language used for Splash Server.</comment>
+                            <sort_order>22</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </lang>                             
+                    </fields>
+                </core> 
+                <user>
+                    <label>Admin Parameters</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>101</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+ 
+                    <fields>
+                        <login>
+                            <label>Username: </label>
+                            <comment>Name of user to use for all webservice transactions.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </login>
+                        <pwd>
+                            <label>Password: </label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>21</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </pwd>
+                    </fields>
+                </user>
+                <products>
+                    <label>Products Synchonization</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>101</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+ 
+                    <fields>
+                        <attribute_set>
+                            <label>Default Attribute Set: </label>
+                            <comment>Used to setup Product Attributes when Created by Splash Server.</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>splashsync_splash/system_config_source_product_attributeset</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </attribute_set>
+                        <default_stock>
+                            <label>Default Warehouse: </label>
+                            <comment>Used to setup Product Stock when Created by Splash Server.</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>splashsync_splash/system_config_source_product_stock</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </default_stock>
+                    </fields>
+                </products> 
+                <langs>
+                    <label>Fields Translations</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>101</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <multilang translate="label">
+                            <label>Multilanguage: </label>
+                            <comment>In this mode, stores codes are used as language indexes for fiels translations. This implies your stores codes must have ISO language format (ie: en_US, fr_FR).</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </multilang>                        
+                        <default_lang>
+                            <label>Default Lang: </label>
+                            <comment>Default Language Code to Use for Multilang Fields.</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_locale</source_model>
+                            <sort_order>20</sort_order>
+                            <depends><multilang>0</multilang></depends>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </default_lang>
+                    </fields>
+                </langs> 
+                <advanced>
+                    <label>Advanced Options</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>200</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+ 
+                    <fields>
+                        <debug translate="label">
+                            <label>Developper Mode: </label>
+                            <comment>In this mode, you can access more detailed module informations.</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </debug>                        
+                        <server_url>
+                            <label>Custom Server Url: </label>
+                            <comment>Use a custom Url to contact Splash Server. Only uses this option if you uses SandBox Servers</comment>
+                            <frontend_type>text</frontend_type>
+                            <depends><splash_debug>1</splash_debug></depends>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </server_url>
+                    </fields>
+                </advanced> 
+            </groups>
+        </splashsync_splash_options>
+    </sections>
+</config>

@@ -1,0 +1,34 @@
+{
+    "name": "SplashSync/Magento1",
+    "description": "Splash Module for Magento 1",
+
+    "license": "GPL",
+
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    
+    "config": {
+        "vendor-dir": "htdocs/app/code/local/SplashSync/Splash/Resources"
+    },
+    
+    "repositories": [
+        {
+            "type":"package",
+            "package": 
+            {
+                "name": "Splash",
+                "version": "master",
+                "source": 
+                {
+                    "url": "https://github.com/SplashSync/Php-Core.git",
+                    "type": "git",
+                    "reference":"master"
+                }
+            }
+        }
+    ],
+    "require": {
+        "Splash": "master"
+    } 
+    
+}
