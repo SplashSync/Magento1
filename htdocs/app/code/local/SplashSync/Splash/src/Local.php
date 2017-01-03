@@ -18,7 +18,12 @@
  * @author      B. Paquier <contact@splashsync.com>
  */
 
-class SplashLocal 
+namespace Splash\Local;
+
+use Splash\Core\SplashCore      as Splash;
+use Mage;
+
+class Local 
 {
     //====================================================================//
     // Class Constructor
@@ -124,7 +129,7 @@ class SplashLocal
         $this->multilang    =   Mage::getStoreConfig('splashsync_splash_options/langs/multilang');
         $this->default_lang =   Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');       
         
-        Mage::app()->setCurrentStore(Mage_Core_Model_App::ADMIN_STORE_ID);
+        Mage::app()->setCurrentStore(\Mage_Core_Model_App::ADMIN_STORE_ID);
         return True;
     }      
 

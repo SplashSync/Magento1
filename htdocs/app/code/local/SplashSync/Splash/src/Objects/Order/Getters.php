@@ -17,6 +17,12 @@
  * @abstract    Splash PHP Module For Magento 1 - Order Object Intégration SubClass
  * @author      B. Paquier <contact@splashsync.com>
  */
+
+namespace   Splash\Local\Objects\Order;
+
+use Splash\Models\ObjectBase;
+use Splash\Core\SplashCore                          as Splash;
+
 use Mage_Sales_Model_Order                          as MageOrder;
 use Mage_Sales_Model_Order_Invoice                  as MageInvoice;
 use Mage_Sales_Model_Order_Payment_Transaction      as Transaction;
@@ -25,7 +31,7 @@ use Mage_Sales_Model_Order_Payment_Transaction      as Transaction;
  *	\class      Order
  *	\brief      Customers Orders Management Class
  */
-class SplashOrderGetter extends SplashObject
+class Getters extends ObjectBase
 {
     //====================================================================//
     // Class Constructor

@@ -18,6 +18,8 @@
  * @generator   http://www.mgt-commerce.com/kickstarter/ Mgt Kickstarter
  */
 
+use Splash\Client\Splash;
+
 class SplashSync_Splash_IndexController extends Mage_Adminhtml_Controller_Action
 {
     
@@ -30,7 +32,7 @@ class SplashSync_Splash_IndexController extends Mage_Adminhtml_Controller_Action
         //====================================================================//
         // Load Splash Module
         //====================================================================//
-        require_once( dirname(dirname(__FILE__)) . '/Resources/Splash/splash.php'); 
+        require_once( dirname(dirname(__FILE__)) . '/vendor/autoload.php'); 
     }
     
     public function indexAction()

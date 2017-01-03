@@ -13,17 +13,21 @@
  * file that was distributed with this source code.
  */
 
+namespace   Splash\Local\Objects;
+
+use Splash\Models\ObjectBase;
+use Splash\Core\SplashCore                          as Splash;
+use Splash\Local\Objects\Order\Fields;
+use Splash\Local\Objects\Order\Getters;
+use Splash\Local\Objects\Order\Setters;
+use Mage_Sales_Model_Order                          as MageOrder;
+use Mage;
+
 /**
  * @abstract    Splash PHP Module For Magento 1 - Order Object Intégration
  * @author      B. Paquier <contact@splashsync.com>
  */
-use Mage_Sales_Model_Order                          as MageOrder;
-
-/**
- *	\class      Order
- *	\brief      Customers Orders Management Class
- */
-class SplashOrder extends SplashObject
+class Order extends ObjectBase
 {
     
     //====================================================================//
@@ -107,8 +111,8 @@ class SplashOrder extends SplashObject
     {
         //====================================================================//
         //  Load Local SubClass
-        require_once "Order/OrderFields.php"; 
-        $SubClass  =   new SplashOrderFields();
+//        require_once "Order/OrderFields.php"; 
+        $SubClass  =   new Fields();
         //====================================================================//
         //  Forward SubClass Action
         return $SubClass->Fields();  
@@ -198,8 +202,7 @@ class SplashOrder extends SplashObject
     {
         //====================================================================//
         //  Load Local SubClass
-        require_once "Order/OrderGetter.php"; 
-        $SubClass  =   new SplashOrderGetter();
+        $SubClass  =   new Getters();
         //====================================================================//
         //  Forward SubClass Action
         return $SubClass->Get($id,$list);   
@@ -215,8 +218,7 @@ class SplashOrder extends SplashObject
     {
         //====================================================================//
         //  Load Local SubClass
-        require_once "Order/OrderSetter.php"; 
-        $SubClass  =   new SplashOrderSetter();
+        $SubClass  =   new Setters();
         //====================================================================//
         //  Forward SubClass Action
         return $SubClass->Set($id,$list);      

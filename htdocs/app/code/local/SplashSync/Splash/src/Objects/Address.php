@@ -13,11 +13,17 @@
  * file that was distributed with this source code.
  */
 
+namespace   Splash\Local\Objects;
+
+use Splash\Models\ObjectBase;
+use Splash\Core\SplashCore      as Splash;
+use Mage;
+
 /**
  * @abstract    Splash PHP Module For Magento 1 - ThirdParty Address Object Intégration
  * @author      B. Paquier <contact@splashsync.com>
  */
-class SplashAddress extends SplashObject
+class Address extends ObjectBase
 {
     
     //====================================================================//

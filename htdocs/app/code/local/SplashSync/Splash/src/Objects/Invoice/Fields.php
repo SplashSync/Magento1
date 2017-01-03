@@ -13,11 +13,17 @@
  * file that was distributed with this source code.
  */
 
+namespace   Splash\Local\Objects\Invoice;
+
+use Splash\Models\ObjectBase;
+use Splash\Core\SplashCore                          as Splash;
+use Mage;
+
 /**
- * @abstract    Splash PHP Module For Magento 1 - Order Object Intégration SubClass
+ * @abstract    Splash PHP Module For Magento 1 - Invoice Object Intégration SubClass
  * @author      B. Paquier <contact@splashsync.com>
  */
-class SplashOrderFields extends SplashObject
+class Fields extends ObjectBase
 {
     //====================================================================//
     // Class Constructor
@@ -52,7 +58,7 @@ class SplashOrderFields extends SplashObject
         Splash::Log()->Trace(__CLASS__,__FUNCTION__);             
         //====================================================================//
         //  Load Local Translation File
-        Splash::Translator()->Load("objects@local");          
+        Splash::Translator()->Load("objects@local");       
         //====================================================================//
         // CORE INFORMATIONS
         //====================================================================//
@@ -62,17 +68,13 @@ class SplashOrderFields extends SplashObject
         //====================================================================//
         $this->buildMainFields();
         //====================================================================//
-        // ORDER ADDRESS INFORMATIONS
-        //====================================================================//
-        $this->buildAddressFields();
-        //====================================================================//
-        // MAIN ORDER LINE INFORMATIONS
+        // MAIN INVOICE LINE INFORMATIONS
         //====================================================================//
         $this->buildProductsLineFields();
         //====================================================================//
-        // META INFORMATIONS
+        //INVOICE PAYMENTS LIST INFORMATIONS
         //====================================================================//
-        $this->buildMetaFields();
+        $this->buildPaymentLineFields();
         //====================================================================//
         // Publish Fields
         return $this->FieldsFactory()->Publish();
@@ -92,17 +94,42 @@ class SplashOrderFields extends SplashObject
         $this->FieldsFactory()->Create(self::ObjectId_Encode( "ThirdParty" , SPL_T_ID))
                 ->Identifier("customer_id")
                 ->Name('Customer')
-                ->MicroData("http://schema.org/Organization","ID")
+                ->MicroData("http://schema.org/Invoice","customer")
+                ->ReadOnly();
+
+        //====================================================================//
+        // Customer Name
+        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+                ->Identifier("customer_name")
+                ->Name('Customer Name')
+                ->MicroData("http://schema.org/Invoice","customer")
+                ->isListed()
+                ->ReadOnly();
+
+        
+        //====================================================================//
+        // Order Object
+        $this->FieldsFactory()->Create(self::ObjectId_Encode( "Order" , SPL_T_ID))
+                ->Identifier("order_id")
+                ->Name('Order')
+                ->MicroData("http://schema.org/Invoice","referencesOrder")
                 ->isRequired();  
         
         //====================================================================//
-        // Reference
+        // Invoice Reference
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("increment_id")
+                ->Name('Number')
+                ->MicroData("http://schema.org/Invoice","confirmationNumber")       
+                ->IsListed();
+
+        //====================================================================//
+        // Order Reference
+        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+                ->Identifier("reference")
                 ->Name('Reference')
                 ->MicroData("http://schema.org/Order","orderNumber")       
-                ->isRequired()
-                ->IsListed();
+                ->ReadOnly();
 
         //====================================================================//
         // Order Date 
@@ -132,7 +159,7 @@ class SplashOrderFields extends SplashObject
         //====================================================================//
         
         //====================================================================//
-        // Order Total Price HT
+        // Invoice Total Price HT
         $this->FieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("grand_total_excl_tax")
                 ->Name("Total (tax excl.)" . " (" . Mage::app()->getStore()->getCurrentCurrencyCode() . ")")
@@ -141,40 +168,44 @@ class SplashOrderFields extends SplashObject
                 ->ReadOnly();
         
         //====================================================================//
-        // Order Total Price TTC
+        // Invoice Total Price TTC
         $this->FieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("grand_total")
                 ->Name("Total (tax incl.)" . " (" . Mage::app()->getStore()->getCurrentCurrencyCode() . ")")
                 ->MicroData("http://schema.org/Invoice","totalPaymentDueTaxIncluded")
                 ->isListed()
                 ->ReadOnly();        
-        
-        //====================================================================//
-        // ORDER STATUS
-        //====================================================================//        
 
+        //====================================================================//
+        // INVOICE STATUS FLAGS
+        //====================================================================//        
+        
         //====================================================================//
         // Order Current Status
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("state")
                 ->Name("Status")
-                ->MicroData("http://schema.org/Order","orderStatus")
-                ->isListed()
+                ->MicroData("http://schema.org/Invoice","paymentStatus")
+//                ->ReadOnly()
                 ->AddChoices(
-                    array(  "OrderPaymentDue"       => "Payment Due",
-                            "OrderProcessing"       => "In Process",
-                            "OrderInTransit"        => "in Transit",
-                            "OrderPickupAvailable"  => "Pick Up Available",
-                            "OrderDelivered"        => "Delivered",
-                            "OrderReturned"         => "Returned",
-                            "OrderCancelled"        => "Canceled",
-                            "OrderProblem"          => "On Hold"
+                    array(  "PaymentDraft"          => "Draft",
+                            "PaymentDue"            => "Payment Due",
+                            "PaymentDeclined"       => "Payment Declined",
+                            "PaymentPastDue"        => "Payment Past Due",
+                            "PaymentComplete"       => "Payment Complete",
+                            "PaymentCanceled"       => "Canceled",
                         )
-                    )
-                ->NotTested();      
-
+                    )                
+                ->NotTested();
+        
+        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+                ->Identifier("state_name")
+                ->Name("Status Name")
+                ->MicroData("http://schema.org/Invoice","paymentStatusName")
+                ->ReadOnly();        
+        
         //====================================================================//
-        // ORDER STATUS FLAGS
+        // INVOICE STATUS FLAGS
         //====================================================================//        
         
         //====================================================================//
@@ -183,55 +214,28 @@ class SplashOrderFields extends SplashObject
         //      Any Non Validated Order is considered as Canceled
         $this->FieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("isCanceled")
-                ->Name("Order" . " : " . "Canceled")
-                ->MicroData("http://schema.org/OrderStatus","OrderCancelled")
-                ->Association( "isdraft","iscanceled","isvalidated","isclosed")
+                ->Name(Mage::helper('sales')->__('Invoice') . " : " . Mage::helper('sales')->__('Canceled'))
+                ->MicroData("http://schema.org/PaymentStatusType","PaymentDeclined")
+                ->Association("isCanceled","isValidated","isPaid")
                 ->ReadOnly();     
         
         //====================================================================//
         // Is Validated
         $this->FieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("isValidated")
-                ->Name("Order" . " : " . "Valid")
-                ->MicroData("http://schema.org/OrderStatus","OrderProcessing")
-                ->Association( "isdraft","iscanceled","isvalidated","isclosed")
-                ->ReadOnly();
-        
-        //====================================================================//
-        // Is Closed
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
-                ->Identifier("isClosed")
-                ->Name("Order" . " : " . "Closed")
-                ->MicroData("http://schema.org/OrderStatus","OrderDelivered")
-                ->Association( "isdraft","iscanceled","isvalidated","isclosed")
+                ->Name(Mage::helper('sales')->__('Invoice') . " : " . "Valid")
+                ->MicroData("http://schema.org/PaymentStatusType","PaymentDue")
+                ->Association("isCanceled","isValidated","isPaid")
                 ->ReadOnly();
 
         //====================================================================//
         // Is Paid
         $this->FieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("isPaid")
-                ->Name("Order" . " : " . "Paid")
-                ->MicroData("http://schema.org/OrderStatus","OrderPaid")
-                ->ReadOnly();
-        
-        
-        //====================================================================//
-        // ORDER Currency Data
-        //====================================================================//        
-        
-        //====================================================================//
-        // Order Currency 
-        $this->FieldsFactory()->Create(SPL_T_CURRENCY)
-                ->Identifier("order_currency_code")
-                ->Name("Currency")
-                ->MicroData("https://schema.org/PriceSpecification","priceCurrency");
-
-        //====================================================================//
-        // Order Currency 
-        $this->FieldsFactory()->Create(SPL_T_DOUBLE)
-                ->Identifier("base_to_order_rate")
-                ->Name("Currency Rate")
-                ->MicroData("https://schema.org/PriceSpecification","priceCurrencyRate");
+                ->Name(Mage::helper('sales')->__('Invoice') . " : " . Mage::helper('sales')->__('Paid'))
+                ->MicroData("http://schema.org/PaymentStatusType","PaymentComplete")
+                ->ReadOnly()
+                ->NotTested();
         
         return;
     }
@@ -241,184 +245,129 @@ class SplashOrderFields extends SplashObject
     */
     private function buildProductsLineFields() {
         
-//        $ListName = "Products => ";
-        $ListName = "";
+        $ListId =   "items";
+        
+//        $ListName = Mage::helper('sales')->__('Items') . " => " ;
+        $ListName = "" ;
         
         //====================================================================//
         // Order Line Label
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("sku")
-                ->InList("lines")
-                ->Name( $ListName . "Label")
+//                ->isRequired()
+                ->InList("items")
+//                ->ReadOnly()
+                ->Name( $ListName . Mage::helper('sales')->__('Sku'))
                 ->MicroData("http://schema.org/partOfInvoice","name")
-                ->Association("name@lines","qty_ordered@lines","unit_price@lines");        
+                ->Association("name@items","qty@items","unit_price@items");        
         
         //====================================================================//
         // Order Line Description
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("name")
-                ->InList("lines")
-                ->Name( $ListName . "Description")
+                ->InList("items")
+//                ->ReadOnly()
+                ->Name( $ListName . Mage::helper('sales')->__('Description Message'))
                 ->MicroData("http://schema.org/partOfInvoice","description")        
-                ->Association("name@lines","qty_ordered@lines","unit_price@lines");        
+                ->Association("name@items","qty@items","unit_price@items");       
 
         //====================================================================//
         // Order Line Product Identifier
         $this->FieldsFactory()->Create(self::ObjectId_Encode( "Product" , SPL_T_ID))        
                 ->Identifier("product_id")
-                ->InList("lines")
-                ->Name( $ListName . "Product ID")
+                ->InList("items")
+//                ->ReadOnly()
+                ->Name( $ListName . Mage::helper('sales')->__('Product'))
                 ->MicroData("http://schema.org/Product","productID")
-                ->Association("name@lines","qty_ordered@lines","unit_price@lines");        
+                ->Association("name@items","qty@items","unit_price@items");     
 //                ->NotTested();        
 
         //====================================================================//
         // Order Line Quantity
         $this->FieldsFactory()->Create(SPL_T_INT)        
-                ->Identifier("qty_ordered")
-                ->InList("lines")
-                ->Name( $ListName . "Quantity")
+                ->Identifier("qty")
+//                ->isRequired()
+                ->InList("items")
+                ->Name( $ListName . Mage::helper('sales')->__('Qty Invoiced'))                
                 ->MicroData("http://schema.org/QuantitativeValue","value")        
-                ->Association("name@lines","qty_ordered@lines","unit_price@lines");        
+                ->Association("name@items","qty@items","unit_price@items"); 
 
         //====================================================================//
         // Order Line Discount
         $this->FieldsFactory()->Create(SPL_T_DOUBLE)        
                 ->Identifier("discount_percent")
-                ->InList("lines")
-                ->Name( $ListName . "Discount (%)")
+                ->InList("items")
+//                ->ReadOnly()
+//                ->WriteOnly()
+                ->Name( $ListName . Mage::helper('sales')->__('Discount (%s)'))                
                 ->MicroData("http://schema.org/Order","discount")
-                ->Association("name@lines","qty_ordered@lines","unit_price@lines");        
+                ->Association("name@items","qty@items","unit_price@items"); 
 
         //====================================================================//
         // Order Line Unit Price
         $this->FieldsFactory()->Create(SPL_T_PRICE)        
                 ->Identifier("unit_price")
-                ->InList("lines")
-                ->Name( $ListName . "Price" )
+//                ->isRequired()
+//                ->ReadOnly()
+                ->InList("items")
+                ->Name( $ListName . Mage::helper('sales')->__('Price'))     
                 ->MicroData("http://schema.org/PriceSpecification","price")        
-                ->Association("name@lines","qty_ordered@lines","unit_price@lines");        
+                ->Association("name@items","qty@items","unit_price@items");     
 
     }
 
     /**
     *   @abstract     Build Address Fields using FieldFactory
     */
-    private function buildAddressFields()   {
+    private function buildPaymentLineFields() {
+        
+        $ListName = Mage::helper('sales')->__('Payment Information') . " => " ;
+        $ListName = "" ;
         
         //====================================================================//
-        // Billing Address
-        $this->FieldsFactory()->Create(self::ObjectId_Encode( "Address" , SPL_T_ID))
-                ->Identifier("billing_address_id")
-                ->Name('Billing Address ID')
-                ->MicroData("http://schema.org/Order","billingAddress")
-                ->isRequired();  
-        
-        //====================================================================//
-        // Shipping Address
-        $this->FieldsFactory()->Create(self::ObjectId_Encode( "Address" , SPL_T_ID))
-                ->Identifier("shipping_address_id")
-                ->Name('Shipping Address ID')
-                ->MicroData("http://schema.org/Order","orderDelivery");  
-        
-    }    
-    
-    /**
-    *   @abstract     Build Meta Fields using FieldFactory
-    */
-    private function buildMetaFields() {
-
-        
-        //====================================================================//
-        // STRUCTURAL INFORMATIONS
-        //====================================================================//
-
-//        //====================================================================//
-//        // Order Generic Status
-//        $this->FieldsFactory()->Create(SPL_T_BOOL)
-//                ->Identifier("status")
-//                ->Name($langs->trans("Active"))
-//                ->MicroData("http://schema.org/Organization","active")
-//                ->IsListed();        
-//        
-//        if ( Splash::Local()->DolVersionCmp("3.6.0") >= 0 ) {
-//            //====================================================================//
-//            // isProspect
-//            $this->FieldsFactory()->Create(SPL_T_BOOL)
-//                    ->Identifier("prospect")
-//                    ->Name($langs->trans("Prospect"))
-//                    ->MicroData("http://schema.org/Organization","prospect");        
-//        }
+        // Payment Line Payment Method 
+        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+                ->Identifier("mode")
+                ->InList("payments")
+                ->Name( $ListName .  Mage::helper('sales')->__('Payment Method'))
+                ->MicroData("http://schema.org/Invoice","PaymentMethod")
+                ->ReadOnly()
+                ->NotTested();        
 
         //====================================================================//
-        // TRACEABILITY INFORMATIONS
-        //====================================================================//        
-        
-        //====================================================================//
-        // TMS - Last Change Date 
-        $this->FieldsFactory()->Create(SPL_T_DATE)
-                ->Identifier("updated_at")
-                ->Name("Last update")
-                ->MicroData("http://schema.org/DataFeedItem","dateModified")
-                ->ReadOnly();
-        
-    }   
-
-    /**
-    *   @abstract     Build Core Fields using FieldFactory
-    */
-    private function buildPaymentFields()   {
-        
-        $ListName = "";
-        
-//        //====================================================================//
-//        // Payment Line Payment Method 
-//        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
-//                ->Identifier("mode")
-//                ->InList("payments")
-//                ->Name( $ListName .  "PaymentMode")
-//                ->MicroData("http://schema.org/Invoice","PaymentMethod")
+        // Payment Line Date
+        $this->FieldsFactory()->Create(SPL_T_DATE)        
+                ->Identifier("date")
+                ->InList("payments")
+                ->Name( $ListName .  Mage::helper('sales')->__('Date'))
+                ->MicroData("http://schema.org/PaymentChargeSpecification","validFrom")
+                ->Association("date@payments","mode@payments","amount@payments");        
+//                ->ReadOnly()
 //                ->NotTested();        
-//
-//        //====================================================================//
-//        // Payment Line Date
-//        $this->FieldsFactory()->Create(SPL_T_DATE)        
-//                ->Identifier("date")
-//                ->InList("payments")
-//                ->Name( $ListName .  "Date")
-//                ->MicroData("http://schema.org/PaymentChargeSpecification","validFrom")
-////                ->Association("date@payments","mode@payments","amount@payments");        
-//                ->NotTested();        
-//
-//        //====================================================================//
-//        // Payment Line Payment Identifier
-//        $this->FieldsFactory()->Create(SPL_T_VARCHAR)        
-//                ->Identifier("number")
-//                ->InList("payments")
-//                ->Name( $ListName .  'Number')
-//                ->MicroData("http://schema.org/Invoice","paymentMethodId")        
-////                ->Association("date@payments","mode@payments","amount@payments");        
-//                ->NotTested();        
-//
-//        //====================================================================//
-//        // Payment Line Amount
-//        $this->FieldsFactory()->Create(SPL_T_DOUBLE)        
-//                ->Identifier("amount")
-//                ->InList("payments")
-//                ->Name( $ListName .  "Amount")
-//                ->MicroData("http://schema.org/PaymentChargeSpecification","price")
-//                ->NotTested();         
-        
+
         //====================================================================//
-        // Invoices Objects Collection
-//        $this->FieldsFactory()->Create(self::ObjectId_Encode( "Invoices" , SPL_T_ID))
-//                ->InList("Invoices")
-//                ->Identifier("invoice_id")
-//                ->Name('Customer Invoice')
-//                ->MicroData("http://schema.org/Order","referencesInvoice");  
-        
-    }  
-    
+        // Payment Line Payment Identifier
+        $this->FieldsFactory()->Create(SPL_T_VARCHAR)        
+                ->Identifier("number")
+                ->InList("payments")
+                ->Name( $ListName .  Mage::helper('sales')->__('Transaction ID'))
+                ->MicroData("http://schema.org/Invoice","paymentMethodId")        
+                ->Association("date@payments","mode@payments","amount@payments");        
+//                ->ReadOnly()
+//                ->NotTested();        
+
+        //====================================================================//
+        // Payment Line Amount
+        $this->FieldsFactory()->Create(SPL_T_DOUBLE)        
+                ->Identifier("amount")
+                ->InList("payments")
+                ->Name( $ListName .  Mage::helper('sales')->__("Amount"))
+                ->MicroData("http://schema.org/PaymentChargeSpecification","price");
+//                ->ReadOnly()
+//                ->NotTested();                    
+    }
 }
+
+
 
 ?>

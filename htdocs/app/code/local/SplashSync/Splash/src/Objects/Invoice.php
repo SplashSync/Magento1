@@ -13,11 +13,18 @@
  * file that was distributed with this source code.
  */
 
+namespace   Splash\Local\Objects;
+
+use Splash\Models\ObjectBase;
+use Splash\Core\SplashCore      as Splash;
+use Splash\Local\Objects\Invoice\Fields;
+use Mage;
+
 /**
  * @abstract    Splash PHP Module For Magento 1 - Invoice Object Intégration
  * @author      B. Paquier <contact@splashsync.com>
  */
-class SplashInvoice extends SplashObject
+class Invoice extends ObjectBase
 {
     
     //====================================================================//
@@ -129,8 +136,7 @@ class SplashInvoice extends SplashObject
     {
         //====================================================================//
         //  Load Local SubClass
-        require_once "Invoice/InvoiceFields.php"; 
-        $InvoiceFields  =   new SplashInvoiceFields();
+        $InvoiceFields  =   new Fields();
         //====================================================================//
         //  Forward SubClass Action
         return $InvoiceFields->Fields();        
