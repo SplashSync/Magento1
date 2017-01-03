@@ -19,6 +19,7 @@ namespace   Splash\Local\Objects;
 use Splash\Models\ObjectBase;
 use Splash\Core\SplashCore      as Splash;
 use Mage;
+use Mage_Newsletter_Model_Subscriber;
 
 /**
  * @abstract    Splash PHP Module For Magento 1 - ThirdParty Object Intégration
@@ -545,7 +546,7 @@ class ThirdParty extends ObjectBase
 
         //====================================================================//
         // Creation Date 
-        $this->FieldsFactory()->Create(SPL_T_DATE)
+        $this->FieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("created_at")
                 ->Name("Registration")
                 ->MicroData("http://schema.org/DataFeedItem","dateCreated")
@@ -553,7 +554,7 @@ class ThirdParty extends ObjectBase
         
         //====================================================================//
         // Last Change Date 
-        $this->FieldsFactory()->Create(SPL_T_DATE)
+        $this->FieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("updated_at")
                 ->Name("Last update")
                 ->MicroData("http://schema.org/DataFeedItem","dateModified")

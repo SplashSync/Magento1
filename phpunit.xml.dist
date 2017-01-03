@@ -6,21 +6,22 @@
     backupStaticAttributes      = "false"
     colors                      = "true"
     convertErrorsToExceptions   = "true"
-    convertNoticesToExceptions  = "false"
-    convertWarningsToExceptions = "false"
+    convertNoticesToExceptions  = "true"
+    convertWarningsToExceptions = "true"
     processIsolation            = "true"
     stopOnFailure               = "true"
     syntaxCheck                 = "false"
     bootstrap                   = "htdocs/app/code/local/SplashSync/Splash/vendor/autoload.php" 
-    verbose                     = "false"
-    debug                       = "false"    
+    verbose                     = "true"
+    debug                       = "false"
     timeoutForLargeTests        = "120"  
 >
-
+ 
     <testsuites>
         <testsuite name="All">
             <directory>htdocs/app/code/local/SplashSync/Splash/Tests/*</directory>
             <directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore/Tests/*</directory>
+            <exclude>htdocs/</exclude>
         </testsuite>
         <testsuite name="Core">
             <directory>htdocs/app/code/local/SplashSync/Splash/Tests/Core</directory>

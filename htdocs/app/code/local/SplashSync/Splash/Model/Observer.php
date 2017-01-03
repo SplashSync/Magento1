@@ -13,11 +13,12 @@
  * file that was distributed with this source code.
  */
 
+use Splash\Client\Splash;
+
 /**
  * @abstract    Splash PHP Module For Magento 1 - Data Observer
  * @author      B. Paquier <contact@splashsync.com>
  */
-
 class SplashSync_Splash_Model_Observer 
 {
     
@@ -58,7 +59,8 @@ class SplashSync_Splash_Model_Observer
         //====================================================================//
         // Load Splash Module
         //====================================================================//
-        require_once( dirname(dirname(__FILE__)) . '/Resources/Splash/splash.php'); 
+        require_once( dirname(dirname(__FILE__)) . '/vendor/autoload.php');   
+        Splash::Core();
     }
     
     /*
@@ -133,11 +135,10 @@ class SplashSync_Splash_Model_Observer
         // Verify if Object is New & Store Entity Id
         if ( $Object->isObjectNew() ) {
             Splash::Local()->_Action    = SPL_A_CREATE;
-            Splash::Local()->_EntityId  = Null;
         } else {
             Splash::Local()->_Action    = SPL_A_UPDATE;
-            Splash::Local()->_EntityId  = $Object->getEntityId();
         }        
+
         return True;
     }
 
@@ -161,7 +162,7 @@ class SplashSync_Splash_Model_Observer
         $_Comment   =   $this->ResourceNames[$Object->getResourceName()];
         //====================================================================//
         // Do Generic Change Commit
-        $this->_CommitChanges($_Type, Splash::Local()->_Action, Splash::Local()->_EntityId,$_Comment);
+        $this->_CommitChanges($_Type, Splash::Local()->_Action, $Object->getEntityId(),$_Comment);
         return True;
     }
     

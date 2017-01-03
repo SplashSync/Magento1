@@ -19,6 +19,9 @@ use Splash\Models\ObjectBase;
 use Splash\Core\SplashCore      as Splash;
 
 use Mage;
+use Mage_Catalog_Model_Product_Status;
+use Mage_Catalog_Model_Product_Type;
+use DateTime;
 
 /**
  * @abstract    Splash PHP Module For Magento 1 - Product Object Intégration
@@ -613,7 +616,7 @@ class Product extends ObjectBase
         
         //====================================================================//
         // TMS - Last Change Date 
-        $this->FieldsFactory()->Create(SPL_T_DATE)
+        $this->FieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("updated_at")
                 ->Name("Last Modification Date")
                 ->MicroData("http://schema.org/DataFeedItem","dateModified")
@@ -621,7 +624,7 @@ class Product extends ObjectBase
         
         //====================================================================//
         // datec - Creation Date 
-        $this->FieldsFactory()->Create(SPL_T_DATE)
+        $this->FieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("created_at")
                 ->Name("Creation Date")
                 ->MicroData("http://schema.org/DataFeedItem","dateCreated")
@@ -1333,7 +1336,7 @@ class Product extends ObjectBase
             foreach ($ObjectImagesList["images"] as $key => $Image) {
                 //====================================================================//
                 // Compute Md5 CheckSum for this Image 
-                $CheckSum = md5_file( $this->Object->getMediaConfig()->getMediaPath($Image['file']) );
+                $CheckSum = md5_file( $this->Object->getMediaConfig()->getMediaPath($Image['filename']) );
                 //====================================================================//
                 // If CheckSum are Different => Coninue
                 if ( $InImage["md5"] !== $CheckSum ) {
@@ -1375,8 +1378,8 @@ class Product extends ObjectBase
             foreach ($ObjectImagesList as $Image) {
                 //====================================================================//
                 // Delete Image Object
-                if ($ImageGallery->getBackend()->getImage($this->Object, $Image['file'])) {
-                    $ImageGallery->getBackend()->removeImage($this->Object, $Image['file']);
+                if ($ImageGallery->getBackend()->getImage($this->Object, $Image['filename'])) {
+                    $ImageGallery->getBackend()->removeImage($this->Object, $Image['filename']);
                     $this->update = True;
                 }
             }
@@ -1392,7 +1395,7 @@ class Product extends ObjectBase
     {
         //====================================================================//
         // Read Image Raw Data From Splash Server
-        $NewImageFile    =   Splash::ReadFile($ImgArray["file"],$ImgArray["md5"]);
+        $NewImageFile    =   Splash::File()->GetFile($ImgArray["filename"],$ImgArray["md5"]);
         //====================================================================//
         // File Imported => Write it Here
         if ( $NewImageFile == False ) {

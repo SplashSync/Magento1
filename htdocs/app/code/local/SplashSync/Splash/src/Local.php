@@ -98,18 +98,12 @@ class Local
      */
     public function Includes()
     {
-        
         //====================================================================//
         // When Library is called in server mode ONLY
         //====================================================================//
         if ( SPLASH_SERVER_MODE )
         {
-            /**
-             * Initialize Magento ...
-             */
-            require_once( dirname(dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))))).'/app/Mage.php' );
-            // Initialize Magento ...
-            Mage::app("default");
+            // NOTHING TO DO 
         }
 
         //====================================================================//
@@ -124,6 +118,14 @@ class Local
         // When Library is called in both clinet & server mode
         //====================================================================//
 
+        //====================================================================//
+        // Initialize Magento ...
+        if ( !defined("BP") )
+        {
+            require_once( dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))).'/app/Mage.php' );
+            // Initialize Magento ...
+            Mage::app("default");
+        }
         //====================================================================//
         // Load Recurent Use Parameters
         $this->multilang    =   Mage::getStoreConfig('splashsync_splash_options/langs/multilang');
@@ -208,7 +210,7 @@ class Local
             return Splash::Log()->Err("Wrong Product Warehouse Selected");
         }        
 //        Splash::Log()->War("WarSelfTestSkipped");
-        return Splash::Log()->Msg("MsgSelfTestOk");
+        return Splash::Log()->Msg("Self Test Passed");
     }       
     
     /**
@@ -256,6 +258,50 @@ class Local
         
         return $Response;
     }    
+    
+//====================================================================//
+// *******************************************************************//
+//  OPTIONNAl CORE MODULE LOCAL FUNCTIONS
+// *******************************************************************//
+//====================================================================//
+    
+    /**
+     *      @abstract       Return Local Server Test Parameters as Aarray
+     *                      
+     *      THIS FUNCTION IS OPTIONNAL - USE IT ONLY IF REQUIRED
+     * 
+     *      This function called on each initialisation of module's tests sequences.
+     *      It's aim is to overide general Tests settings to be adjusted to local system.
+     * 
+     *      Result must be an array including parameters as strings or array.
+     * 
+     *      @see Splash\Tests\Tools\ObjectsCase::settings for objects tests settings
+     * 
+     *      @return         array       $parameters
+     */
+    public static function TestParameters()
+    {
+        //====================================================================//
+        // Load Recurent Use Parameters
+        $multilang    =   Mage::getStoreConfig('splashsync_splash_options/langs/multilang');
+        $default_lang =   Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');
+        
+        //====================================================================//
+        // Init Parameters Array
+        $Parameters       =     array();
+
+        //====================================================================//
+        // Server Actives Languages List
+        $Parameters["Langs"] = array();
+        
+        //====================================================================//
+        // Single Language Mode
+        if ( empty($multilang) && !empty($default_lang) ) {
+            $Parameters["Langs"][] = Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');
+        } 
+        
+        return $Parameters;
+    }   
     
 //====================================================================//
 // *******************************************************************//
