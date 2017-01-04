@@ -13,19 +13,20 @@
  * file that was distributed with this source code.
  */
 
-/**
- * @abstract    Splash PHP Module For Magento 1 - Invoice Object Intégration SubClass
- * @author      B. Paquier <contact@splashsync.com>
- */
+namespace   Splash\Local\Objects\Invoice;
+
+use Splash\Models\ObjectBase;
+use Splash\Core\SplashCore                          as Splash;
+
 use Mage_Sales_Model_Order                          as MageOrder;
 use Mage_Sales_Model_Order_Invoice                  as MageInvoice;
 use Mage_Sales_Model_Order_Payment_Transaction      as Transaction;
 
 /**
- *	\class      Invoice
- *	\brief      Customers Invoices Management Class
+ * @abstract    Splash PHP Module For Magento 1 - Invoice Object Intégration SubClass
+ * @author      B. Paquier <contact@splashsync.com>
  */
-class SplashInvoiceSetter extends SplashObject
+class Setters extends ObjectBase
 {
    
     //====================================================================//

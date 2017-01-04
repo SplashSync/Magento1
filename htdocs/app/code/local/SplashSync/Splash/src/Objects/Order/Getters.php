@@ -13,23 +13,20 @@
  * file that was distributed with this source code.
  */
 
-/**
- * @abstract    Splash PHP Module For Magento 1 - Order Object Intégration SubClass
- * @author      B. Paquier <contact@splashsync.com>
- */
-
 namespace   Splash\Local\Objects\Order;
 
 use Splash\Models\ObjectBase;
 use Splash\Core\SplashCore                          as Splash;
+use Splash\Local\Objects\Order;
 
+use Mage;
 use Mage_Sales_Model_Order                          as MageOrder;
 use Mage_Sales_Model_Order_Invoice                  as MageInvoice;
 use Mage_Sales_Model_Order_Payment_Transaction      as Transaction;
 
 /**
- *	\class      Order
- *	\brief      Customers Orders Management Class
+ * @abstract    Splash PHP Module For Magento 1 - Order Object Intégration SubClass
+ * @author      B. Paquier <contact@splashsync.com>
  */
 class Getters extends ObjectBase
 {
@@ -180,7 +177,7 @@ class Getters extends ObjectBase
             // ORDER STATUS
             //====================================================================//   
             case 'state':
-                $this->Out[$FieldName]  = SplashOrder::getStandardOrderState($this->Object->getState());
+                $this->Out[$FieldName]  = Order::getStandardOrderState($this->Object->getState());
             break;    
 
             case 'isCanceled':
@@ -304,7 +301,7 @@ class Getters extends ObjectBase
             //====================================================================//
             // Order Line Direct Reading Data          
             case 'sku':
-                $Value = SplashOrder::SHIPPING_LABEL;
+                $Value = Order::SHIPPING_LABEL;
                 break;                
             //====================================================================//
             // Order Line Direct Reading Data          

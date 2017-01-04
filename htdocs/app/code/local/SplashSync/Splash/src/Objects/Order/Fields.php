@@ -275,7 +275,7 @@ class Fields extends ObjectBase
                 ->InList("lines")
                 ->Name( $ListName . "Product ID")
                 ->MicroData("http://schema.org/Product","productID")
-                ->Association("name@lines","qty_ordered@lines","unit_price@lines");        
+                ->Association("qty_ordered@lines","unit_price@lines");        
 //                ->NotTested();        
 
         //====================================================================//
@@ -362,7 +362,7 @@ class Fields extends ObjectBase
         
         //====================================================================//
         // TMS - Last Change Date 
-        $this->FieldsFactory()->Create(SPL_T_DATE)
+        $this->FieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("updated_at")
                 ->Name("Last update")
                 ->MicroData("http://schema.org/DataFeedItem","dateModified")

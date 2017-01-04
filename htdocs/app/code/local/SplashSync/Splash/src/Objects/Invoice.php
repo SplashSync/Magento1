@@ -17,7 +17,11 @@ namespace   Splash\Local\Objects;
 
 use Splash\Models\ObjectBase;
 use Splash\Core\SplashCore      as Splash;
+
 use Splash\Local\Objects\Invoice\Fields;
+use Splash\Local\Objects\Invoice\Getters;
+use Splash\Local\Objects\Invoice\Setters;
+
 use Mage;
 
 /**
@@ -34,7 +38,7 @@ class Invoice extends ObjectBase
     /**
      *  Object Disable Flag. Uncomment this line to Override this flag and disable Object.
      */
-    protected static    $DISABLED        =  True;
+//    protected static    $DISABLED        =  True;
     
     /**
      *  Object Name (Translated by Module)
@@ -56,16 +60,16 @@ class Invoice extends ObjectBase
      *  
      *  This Flags are Used by Splash Server to Prevent Unexpected Operations on Remote Server
      */
-    protected static    $ALLOW_PUSH_CREATED         =  TRUE;       // Allow Creation Of New Local Objects
-    protected static    $ALLOW_PUSH_UPDATED         =  TRUE;       // Allow Update Of Existing Local Objects
+    protected static    $ALLOW_PUSH_CREATED         =  FALSE;       // Allow Creation Of New Local Objects
+    protected static    $ALLOW_PUSH_UPDATED         =  FALSE;       // Allow Update Of Existing Local Objects
     protected static    $ALLOW_PUSH_DELETED         =  FALSE;       // Allow Delete Of Existing Local Objects
     
     /**
      *  Object Synchronistion Recommended Configuration 
      */
-    protected static    $ENABLE_PUSH_CREATED       =  FALSE;         // Enable Creation Of New Local Objects when Not Existing
-    protected static    $ENABLE_PUSH_UPDATED       =  FALSE;         // Enable Update Of Existing Local Objects when Modified Remotly
-    protected static    $ENABLE_PUSH_DELETED       =  FALSE;         // Enable Delete Of Existing Local Objects when Deleted Remotly
+    protected static    $ENABLE_PUSH_CREATED       =  FALSE;        // Enable Creation Of New Local Objects when Not Existing
+    protected static    $ENABLE_PUSH_UPDATED       =  FALSE;        // Enable Update Of Existing Local Objects when Modified Remotly
+    protected static    $ENABLE_PUSH_DELETED       =  FALSE;        // Enable Delete Of Existing Local Objects when Deleted Remotly
 
     protected static    $ENABLE_PULL_CREATED       =  TRUE;         // Enable Import Of New Local Objects 
     protected static    $ENABLE_PULL_UPDATED       =  TRUE;         // Enable Import of Updates of Local Objects when Modified Localy
@@ -226,12 +230,8 @@ class Invoice extends ObjectBase
     public function Get($id=NULL,$list=0)
     {
         //====================================================================//
-        //  Load Local SubClass
-        require_once "Invoice/InvoiceGetter.php"; 
-        $SubClass  =   new SplashInvoiceGetter();
-        //====================================================================//
         //  Forward SubClass Action
-        return $SubClass->Get($id,$list);         
+        return (new Getters())->Get($id,$list);         
     }
         
     /**
@@ -243,12 +243,8 @@ class Invoice extends ObjectBase
     public function Set($id=NULL,$list=NULL)
     {
         //====================================================================//
-        //  Load Local SubClass
-        require_once "Invoice/InvoiceSetter.php"; 
-        $SubClass  =   new SplashInvoiceSetter();
-        //====================================================================//
         //  Forward SubClass Action
-        return $SubClass->Set($id,$list);  
+        return (new Setters())->Set($id,$list);           
     }       
 
     /**

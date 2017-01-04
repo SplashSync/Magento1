@@ -1309,15 +1309,22 @@ class Product extends ObjectBase
         //====================================================================//
         // Load Current Object Images List
         //====================================================================//
-        //====================================================================//
-        // If New PRODUCT => Reload Product to get Stcok Item 
-        if ( empty($this->Object->getMediaGallery()) )
-        {
-            $this->Object->setMediaGallery (array('images'=>array (), 'values'=>array ())); //media gallery initialization
-        }
+
         //====================================================================//
         // Load Object Images List
         $ObjectImagesList   =   $this->Object->getMediaGallery();
+        
+        //====================================================================//
+        // If New PRODUCT => Reload Product to get Stcok Item 
+        if ( empty($ObjectImagesList) )
+        {
+            //====================================================================//
+            // Media gallery initialization
+            $this->Object->setMediaGallery (array('images'=>array (), 'values'=>array ())); 
+            //====================================================================//
+            // Load Object Images List
+            $ObjectImagesList   =   $this->Object->getMediaGallery();
+        }
         //====================================================================//
         // UPDATE IMAGES LIST
         //====================================================================//
@@ -1336,24 +1343,25 @@ class Product extends ObjectBase
             foreach ($ObjectImagesList["images"] as $key => $Image) {
                 //====================================================================//
                 // Compute Md5 CheckSum for this Image 
-                $CheckSum = md5_file( $this->Object->getMediaConfig()->getMediaPath($Image['filename']) );
+                $CheckSum = md5_file( $this->Object->getMediaConfig()->getMediaPath($Image['file']) );
                 //====================================================================//
-                // If CheckSum are Different => Coninue
+                // If CheckSum are Different => Continue
                 if ( $InImage["md5"] !== $CheckSum ) {
                     continue;
                 }
                 //====================================================================//
+                // If Positions are Different => Continue
+                if ( $this->ImgPosition !== $Image['position'] ) {
+                    continue;
+                }
+                
+                $ImageFound = $Image;
+                //====================================================================//
                 // If Object Found, Unset from Current List
-                unset ($ObjectImagesList[$key]);
-                $ImageFound = True;
-//                //====================================================================//
-//                // Update Image Position in List
-//Splash::Log()->www("Image", $Image);
-//                if ( $this->ImgPosition == $Image['position'] ){
-//                    $Image['position'] = $this->ImgPosition;
-//                } 
+                unset ($ObjectImagesList["images"][$key]);
                 break;
             }
+
             //====================================================================//
             // If found => Next
             if ( $ImageFound ) {
@@ -1363,27 +1371,14 @@ class Product extends ObjectBase
             // If Not found, Add this object to list
             $this->addImage($InImage);
         }
+        
         //====================================================================//
-        // If Current Image List Is Empty => Clear Remaining Local Images
+        // If Remaining Image List Is Not Empty => Clear Remaining Local Images
+        //====================================================================//
         if ( isset($ObjectImagesList["images"]) && !empty($ObjectImagesList["images"]) ) {
-            //====================================================================//
-            // Load Images Gallery Object
-            $ProductAttributes = $this->Object->getTypeInstance()->getSetAttributes();
-            if (!isset($ProductAttributes['media_gallery'])) {
-                return True;
-            }
-            $ImageGallery = $ProductAttributes['media_gallery'];
-            //====================================================================//
-            // Iterate All Remaining Images 
-            foreach ($ObjectImagesList as $Image) {
-                //====================================================================//
-                // Delete Image Object
-                if ($ImageGallery->getBackend()->getImage($this->Object, $Image['filename'])) {
-                    $ImageGallery->getBackend()->removeImage($this->Object, $Image['filename']);
-                    $this->update = True;
-                }
-            }
+            $this->cleanUpImages($ObjectImagesList["images"]);
         }
+        
         return True;
     }
             
@@ -1416,7 +1411,32 @@ class Product extends ObjectBase
             }
         }
         return True;
-    }    
+    }
     
+    /**
+    *   @abstract   Remaining Image List Is Not Empty => Clear Remaining Local Images
+    *   @param      array   $MageImgArray             Magento Product Image Gallery Array   
+    */
+    public function cleanUpImages($MageImgArray) 
+    {
+        //====================================================================//
+        // Load Images Gallery Object
+        $ProductAttributes = $this->Object->getTypeInstance()->getSetAttributes();
+        if (!isset($ProductAttributes['media_gallery'])) {
+            return True;
+        }
+        $ImageGallery = $ProductAttributes['media_gallery'];
+        //====================================================================//
+        // Iterate All Remaining Images 
+        foreach ($MageImgArray as $Image) {
+            //====================================================================//
+            // Delete Image Object
+            if ($ImageGallery->getBackend()->getImage($this->Object, $Image['file'])) {
+                $ImageGallery->getBackend()->removeImage($this->Object, $Image['file']);
+                $this->update = True;
+            }
+        }
+        return True;
+    }      
     
 }

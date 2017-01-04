@@ -414,7 +414,8 @@ class Address extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_STATE)
                 ->Identifier("region_id")
                 ->Name("StateCode")
-                ->MicroData("http://schema.org/PostalAddress","addressRegion");
+                ->MicroData("http://schema.org/PostalAddress","addressRegion")
+                ->NotTested();
         
         //====================================================================//
         // Country Name
@@ -470,7 +471,7 @@ class Address extends ObjectBase
 
         //====================================================================//
         // Creation Date 
-        $this->FieldsFactory()->Create(SPL_T_DATE)
+        $this->FieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("created_at")
                 ->Name("Registration")
                 ->MicroData("http://schema.org/DataFeedItem","dateCreated")
@@ -478,7 +479,7 @@ class Address extends ObjectBase
         
         //====================================================================//
         // Last Change Date 
-        $this->FieldsFactory()->Create(SPL_T_DATE)
+        $this->FieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("updated_at")
                 ->Name("Last update")
                 ->MicroData("http://schema.org/DataFeedItem","dateModified")

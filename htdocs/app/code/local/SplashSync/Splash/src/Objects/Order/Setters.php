@@ -17,7 +17,9 @@ namespace   Splash\Local\Objects\Order;
 
 use Splash\Models\ObjectBase;
 use Splash\Core\SplashCore                          as Splash;
+use Splash\Local\Objects\Order;
 
+use Mage;
 use Mage_Sales_Model_Order                          as MageOrder;
 
 /**
@@ -172,7 +174,7 @@ class Setters extends ObjectBase
             $this->Object = Mage::getModel('sales/order');
             //====================================================================//
             // Setup Order External Id to Know this is a Splash Created Order
-            $this->Object->setExtOrderId(SplashOrder::SPLASH_LABEL);
+            $this->Object->setExtOrderId(Order::SPLASH_LABEL);
             // Set Is Virtual Order => No Billing or Shipping Address
             $this->Object->setIsVirtual(True);
             // Set Default Payment Method
@@ -373,9 +375,9 @@ class Setters extends ObjectBase
         // Verify Lines List & Update if Needed 
         foreach ($Data as $LineData) {
             //====================================================================//
-            // Detect Shipping Informations => Product Label === SplashOrder::SHIPPING_LABEL
+            // Detect Shipping Informations => Product Label === Order::SHIPPING_LABEL
             if ( array_key_exists("sku", $LineData)
-                &&  ($LineData["sku"] === SplashOrder::SHIPPING_LABEL) ) {
+                &&  ($LineData["sku"] === Order::SHIPPING_LABEL) ) {
                 $this->setShipping($LineData); 
                 continue;
             }
@@ -739,7 +741,7 @@ class Setters extends ObjectBase
      *   @return     bool 
      */
     private function isSplash() {
-        return ( $this->Object->getExtOrderId() === SplashOrder::SPLASH_LABEL )? True:False;
+        return ( $this->Object->getExtOrderId() === Order::SPLASH_LABEL )? True:False;
     }     
 
     /**

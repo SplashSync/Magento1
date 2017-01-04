@@ -13,19 +13,22 @@
  * file that was distributed with this source code.
  */
 
+namespace   Splash\Local\Objects\Invoice;
+
+use Splash\Models\ObjectBase;
+use Splash\Core\SplashCore                          as Splash;
+use Splash\Local\Objects\Invoice;
+
+use Mage;
+use Mage_Sales_Model_Order_Invoice                  as MageInvoice;
+use Mage_Sales_Model_Order_Payment_Transaction      as Transaction;
+use Varien_Data_Collection;
+
 /**
  * @abstract    Splash PHP Module For Magento 1 - Invoice Object Intégration SubClass
  * @author      B. Paquier <contact@splashsync.com>
  */
-use Mage_Sales_Model_Order                          as MageOrder;
-use Mage_Sales_Model_Order_Invoice                  as MageInvoice;
-use Mage_Sales_Model_Order_Payment_Transaction      as Transaction;
-
-/**
- *	\class      Invoice
- *	\brief      Customers Invoices Management Class
- */
-class SplashInvoiceGetter extends SplashObject
+class Getters extends ObjectBase
 {
     
     
@@ -257,7 +260,7 @@ class SplashInvoiceGetter extends SplashObject
             //====================================================================//
             // Order Line Direct Reading Data          
             case 'sku':
-                $Value = SplashInvoice::SHIPPING_LABEL;
+                $Value = Invoice::SHIPPING_LABEL;
                 break;                
             //====================================================================//
             // Order Line Direct Reading Data          
@@ -392,7 +395,7 @@ class SplashInvoiceGetter extends SplashObject
         //====================================================================//
         // Detect Payment Metyhod Type from Default Payment "known" methods
         $Method = $OrderPayment->getMethod();
-        foreach ( SplashInvoice::$PAYMENT_METHODS as $PaymentMethod => $Ids )
+        foreach ( Invoice::$PAYMENT_METHODS as $PaymentMethod => $Ids )
         {
             if ( in_array($Method, $Ids) ) {
                 return $PaymentMethod;
