@@ -248,8 +248,8 @@ class Local
         //====================================================================//
         // Server Logo & Images
         $Response->icoraw           = Splash::File()->ReadFileContents(Mage::getBaseDir()  . "/favicon.ico");
-        $Response->logourl          = Mage::getStoreConfig('web/secure/base_url') . "skin/frontend/default/default/images/logo.gif";
-        $Response->logoraw          = Splash::File()->ReadFileContents(Mage::getBaseDir("skin") . "/frontend/default/default/images/logo.gif");
+        $Response->logourl          = Mage::getStoreConfig('web/secure/base_url') . "skin/frontend/default/default/images/logo_print.gif";
+        $Response->logoraw          = Splash::File()->ReadFileContents(Mage::getBaseDir("skin") . "/frontend/default/default/images/logo_print.gif");
         
         //====================================================================//
         // Server Informations
