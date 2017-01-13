@@ -69,6 +69,16 @@ class SplashSync_Splash_IndexController extends Mage_Adminhtml_Controller_Action
                 ));
         $this->_addContent($block_selftest);
         
+        //====================================================================//
+        // Create Languages Setup Block
+        $block_languages = $this->getLayout()
+            ->createBlock('adminhtml/template')
+            ->setTemplate('splashsync/soap/languages.phtml')
+            ->setData(array( 
+                'results'   => $this->Results,
+                'messages'  => $this->Messages->GetRawLog()
+                ));
+        $this->_addContent($block_languages);
        
         $this->renderLayout();
     }
@@ -84,8 +94,17 @@ class SplashSync_Splash_IndexController extends Mage_Adminhtml_Controller_Action
         //====================================================================//
         
         $Text   =   "<PRE>";
-
-       
+        
+foreach (Mage::app()->getWebsites() as $website) {
+//    echo $website->getConfig('splashsync_splash_options/thirdparty/origin')."<br/>";
+    echo $website->getId() ." ".$website->getName(). " " . $website->getDefaultStore()->getId() . "<br/>";
+//    foreach ($website->getGroups() as $group) {
+//        $stores = $group->getStores();
+        foreach ($website->getStores() as $store) {
+            echo $store->getId() ." ".$store->getName()."<br/>";
+        }
+//    }
+}       
 
 ////        echo   "<PRE>";
 //        $Id = Splash::Object("Order")->Set(0,$Data);
@@ -102,7 +121,7 @@ for( $i=3; $i<600; $i++) {
 //    Splash::Object("Order")->Delete($i);
 }    
 //        $Text  .=   print_r(Mage::getModel('catalog/product')->load(1), TRUE);
-//        $Text  .=   print_r(Mage::getModel('customer/customer')->load(217), TRUE);
+        $Text  .=   print_r(Mage::getModel('customer/customer')->load(67)->getSplashId(), TRUE);
 //        $Text  .=   print_r(Mage::getModel('sales/order')->load(2)->getData(), TRUE);
 
 //$Text  .=   print_r(Mage::getModel('sales/order_invoice')->load(2)->getPaymentsCollection()->count(), TRUE) . PHP_EOL;
@@ -232,5 +251,24 @@ $Invoice = Mage::getModel('sales/order_invoice')->load(5);
             "desc"  =>  'Test to Connect to Splash Server.',
             "result"=>  Splash::Connect()?"Pass":"Fail",
         );
+    }
+
+    public function TST_StoreLanguages()
+    {
+        $this->Languages = [];
+        
+        //====================================================================//
+        // Splash Store View To Languages Mapping
+        //====================================================================//
+        foreach (Mage::app()->getWebsites() as $Website) {
+            foreach ($Website->getStores() as $Store) {
+                if ( empty($Store->getConfig('splashsync_splash_options/langs/store_lang')) ) {
+                    return Splash::Log()->Err("Multi-Language mode, You must select a Language for Store: " . $Store->getName() );
+                }
+            }
+        }       
+        
+        
     }    
+    
 }

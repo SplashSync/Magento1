@@ -428,6 +428,7 @@ class Product extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_MVARCHAR)
                 ->Identifier("name")
                 ->Name("Product Name without Options")
+                ->Group("Description")
                 ->IsListed()
                 ->MicroData("http://schema.org/Product","alternateName")
                 ->isRequired();
@@ -446,6 +447,7 @@ class Product extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_MTEXT)
                 ->Identifier("description")
                 ->Name("Description")
+                ->Group("Description")
                 ->MicroData("http://schema.org/Article","articleBody");
         
         //====================================================================//
@@ -453,6 +455,7 @@ class Product extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_MVARCHAR)
                 ->Identifier("short_description")
                 ->Name("Short Description")
+                ->Group("Description")
                 ->MicroData("http://schema.org/Product","description");
 
         //====================================================================//
@@ -460,6 +463,7 @@ class Product extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_MVARCHAR)
                 ->Identifier("meta_description")
                 ->Name("SEO" . " " . "Meta description")
+                ->Group("SEO")
                 ->MicroData("http://schema.org/Article","headline");
 
         //====================================================================//
@@ -467,6 +471,7 @@ class Product extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_MVARCHAR)
                 ->Identifier("meta_title")
                 ->Name("SEO" . " " . "Meta title")
+                ->Group("SEO")
                 ->MicroData("http://schema.org/Article","name");
         
 //        //====================================================================//
@@ -474,6 +479,7 @@ class Product extends ObjectBase
 //        $this->FieldsFactory()->Create(SPL_T_MVARCHAR)
 //                ->Identifier("meta_keywords")
 //                ->Name("SEO" . " " . "Meta keywords")
+//                ->Group("SEO")
 //                ->MicroData("http://schema.org/Article","keywords")
 //                ->ReadOnly();
 
@@ -482,6 +488,7 @@ class Product extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_MVARCHAR)
                 ->Identifier("url_key")
                 ->Name("SEO" . " " . "Friendly URL")
+                ->Group("SEO")
                 ->MicroData("http://schema.org/Product","urlRewrite");
         
     }    
@@ -538,6 +545,7 @@ class Product extends ObjectBase
                 ->Identifier("image")
                 ->InList("images")
                 ->Name("Images")
+                ->Group("Description")
                 ->MicroData("http://schema.org/Product","image");
         
         return;
@@ -557,6 +565,7 @@ class Product extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_INT)
                 ->Identifier("qty")
                 ->Name("Stock")
+                ->Group("Stocks")
                 ->MicroData("http://schema.org/Offer","inventoryLevel")
                 ->isListed();
 
@@ -565,6 +574,7 @@ class Product extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("outofstock")
                 ->Name('Out of stock')
+                ->Group("Stocks")
                 ->MicroData("http://schema.org/ItemAvailability","OutOfStock")
                 ->ReadOnly();
                 
@@ -573,6 +583,7 @@ class Product extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_INT)
                 ->Identifier("min_sale_qty")
                 ->Name('Min. Order Quantity')
+                ->Group("Stocks")
                 ->MicroData("http://schema.org/Offer","eligibleTransactionVolume");
         
         return;
@@ -582,6 +593,19 @@ class Product extends ObjectBase
     *   @abstract     Build Meta Fields using FieldFactory
     */
     private function buildMetaFields() {
+        
+        //====================================================================//
+        // SPLASH RESERVED INFORMATIONS
+        //====================================================================//
+
+        //====================================================================//
+        // Splash Unique Object Id
+        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+                ->Identifier("splash_id")
+                ->Name("Splash Id")
+                ->Group("Meta")
+                ->MicroData("http://splashync.com/schemas","ObjectId");
+
         //====================================================================//
         // STRUCTURAL INFORMATIONS
         //====================================================================//
@@ -590,6 +614,7 @@ class Product extends ObjectBase
         // Active => Product Is Enables & Visible
         $this->FieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("status")
+                ->Group("Meta")
                 ->Name("Enabled")
                 ->MicroData("http://schema.org/Product","active")        
                 ->isListed();
@@ -599,6 +624,7 @@ class Product extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("available_for_order")
                 ->Name("Available for order")
+                ->Group("Meta")
                 ->MicroData("http://schema.org/Product","offered")
                 ->ReadOnly();
         
@@ -607,6 +633,7 @@ class Product extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("on_special")
                 ->Name("On Sale")
+                ->Group("Meta")
                 ->MicroData("http://schema.org/Product","onsale")
                 ->ReadOnly();
         
@@ -619,6 +646,7 @@ class Product extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("updated_at")
                 ->Name("Last Modification Date")
+                ->Group("Meta")
                 ->MicroData("http://schema.org/DataFeedItem","dateModified")
                 ->ReadOnly();
         
@@ -627,6 +655,7 @@ class Product extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("created_at")
                 ->Name("Creation Date")
+                ->Group("Meta")
                 ->MicroData("http://schema.org/DataFeedItem","dateCreated")
                 ->ReadOnly();             
         
@@ -824,6 +853,11 @@ class Product extends ObjectBase
         // READ Fields
         switch ($FieldName)
         {
+            //====================================================================//
+            // Splash Id
+            case 'splash_id':
+                $this->Out[$FieldName] = $this->Object->getData($FieldName);                
+                break;
             //====================================================================//
             // OTHERS INFORMATIONS
             //====================================================================//
@@ -1168,6 +1202,14 @@ class Product extends ObjectBase
         // WRITE Field
         switch ($FieldName)
         {
+            //====================================================================//
+            // Splash Id
+            case 'splash_id':
+                if ( $this->Object->getData($FieldName) != $Data ) {
+                    $this->Object->setData($FieldName, $Data);
+                    $this->update = True;
+                }  
+                break;
             //====================================================================//
             // Direct Writtings
             case 'status':

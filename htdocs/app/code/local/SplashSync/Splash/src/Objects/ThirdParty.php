@@ -20,6 +20,7 @@ use Splash\Models\ObjectBase;
 use Splash\Core\SplashCore      as Splash;
 use Mage;
 use Mage_Newsletter_Model_Subscriber;
+use Mage_Customer_Exception;
 
 /**
  * @abstract    Splash PHP Module For Magento 1 - ThirdParty Object Intégration
@@ -438,6 +439,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("address1")
                 ->Name($this->spl->l("Address"))
+                ->Group("Address")
                 ->MicroData("http://schema.org/PostalAddress","streetAddress")
                 ->ReadOnly();
 
@@ -446,6 +448,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("address2")
                 ->Name($this->spl->l("Address"))
+                ->Group("Address")
                 ->MicroData("http://schema.org/PostalAddress","postOfficeBoxNumber")
                 ->ReadOnly();
         
@@ -454,6 +457,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("postcode")
                 ->Name($this->spl->l("Zip/Postal Code","AdminAddresses"))
+                ->Group("Address")
                 ->MicroData("http://schema.org/PostalAddress","postalCode")
                 ->ReadOnly();
         
@@ -462,6 +466,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("city")
                 ->Name($this->spl->l("City"))
+                ->Group("Address")
                 ->MicroData("http://schema.org/PostalAddress","addressLocality")
                 ->ReadOnly();
         
@@ -470,6 +475,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("state")
                 ->Name($this->spl->l("State"))
+                ->Group("Address")
                 ->MicroData("http://schema.org/PostalAddress","addressRegion")
                 ->ReadOnly();
         
@@ -478,6 +484,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_STATE)
                 ->Identifier("id_state")
                 ->Name($this->spl->l("StateCode"))
+                ->Group("Address")
                 ->MicroData("http://schema.org/PostalAddress","addressRegion")
                 ->ReadOnly();
         
@@ -486,6 +493,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("country")
                 ->Name($this->spl->l("Country"))
+                ->Group("Address")
                 ->MicroData("http://schema.org/PostalAddress","addressCountry")
                 ->ReadOnly();
         
@@ -494,6 +502,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_COUNTRY)
                 ->Identifier("id_country")
                 ->Name($this->spl->l("CountryCode"))
+                ->Group("Address")
                 ->MicroData("http://schema.org/PostalAddress","addressCountry")
                 ->ReadOnly();
                 
@@ -502,6 +511,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_PHONE)
                 ->Identifier("phone")
                 ->Name($this->spl->l("Home phone"))
+                ->Group("Address")
                 ->MicroData("http://schema.org/PostalAddress","telephone")
                 ->ReadOnly();
         
@@ -510,6 +520,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_PHONE)
                 ->Identifier("phone_mobile")
                 ->Name($this->spl->l("Mobile phone"))
+                ->Group("Address")
                 ->MicroData("http://schema.org/Person","telephone")
                 ->ReadOnly();
 
@@ -520,6 +531,25 @@ class ThirdParty extends ObjectBase
     */
     private function buildMetaFields()
     {
+        //====================================================================//
+        // SPLASH RESERVED INFORMATIONS
+        //====================================================================//
+
+        //====================================================================//
+        // Splash Unique Object Id
+        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+                ->Identifier("splash_id")
+                ->Name("Splash Id")
+                ->Group("Meta")
+                ->MicroData("http://splashync.com/schemas","ObjectId");
+
+        //====================================================================//
+        // Splash Object SOrigin Node Id
+        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+                ->Identifier("splash_origin")
+                ->Name("Splash Origin Node")
+                ->Group("Meta")
+                ->MicroData("http://splashync.com/schemas","SourceNodeId");
         
         //====================================================================//
         // STRUCTURAL INFORMATIONS
@@ -530,6 +560,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("is_active")
                 ->Name("Is Enabled")
+                ->Group("Meta")
                 ->MicroData("http://schema.org/Organization","active")
                 ->IsListed()->ReadOnly();
         
@@ -538,6 +569,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("newsletter")
                 ->Name("Newletter")
+                ->Group("Meta")
                 ->MicroData("http://schema.org/Organization","newsletter");
         
         //====================================================================//
@@ -549,6 +581,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("created_at")
                 ->Name("Registration")
+                ->Group("Meta")
                 ->MicroData("http://schema.org/DataFeedItem","dateCreated")
                 ->ReadOnly();
         
@@ -557,6 +590,7 @@ class ThirdParty extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("updated_at")
                 ->Name("Last update")
+                ->Group("Meta")
                 ->MicroData("http://schema.org/DataFeedItem","dateModified")
                 ->ReadOnly();
      
@@ -774,6 +808,12 @@ class ThirdParty extends ObjectBase
         // READ Fields
         switch ($FieldName)
         {
+            //====================================================================//
+            // Splash Meta Data
+            case 'splash_id':
+            case 'splash_origin':
+            //====================================================================//
+            // Active Flag
             case 'is_active':
                 $this->Out[$FieldName] = $this->Object->getData($FieldName);
                 break;
@@ -830,6 +870,23 @@ class ThirdParty extends ObjectBase
             if ( empty($this->In["email"]) ) {
                 return Splash::Log()->Err("ErrLocalFieldMissing",__CLASS__,__FUNCTION__,"email");
             }
+            
+            //====================================================================//
+            // If No Origin Given => Select Default WebSite
+            if ( empty($this->In["splash_origin"]) ) {
+                Mage::app()->setCurrentStore(Mage::getStoreConfig('splashsync_splash_options/thirdparty/store'));
+            //====================================================================//
+            // If Origin Given => Select Choosen Website
+            } else {
+                foreach (Mage::app()->getWebsites() as $website) {
+                    if ( $this->In["splash_origin"] == $website->getConfig('splashsync_splash_options/thirdparty/origin')) {
+                        Mage::app()->setCurrentStore($website->getDefaultStore()->getId());
+                    }
+                }       
+            }
+            
+            
+
             //====================================================================//
             // Create Empty Customer
             $this->Object = Mage::getModel('customer/customer');
@@ -931,6 +988,12 @@ class ThirdParty extends ObjectBase
         // WRITE Fields
         switch ($FieldName)
         {
+            //====================================================================//
+            // Splash Meta Data
+            case 'splash_id':
+            case 'splash_origin':
+            //====================================================================//
+            // Active Flag
             case 'is_active':
                 if ( $this->Object->getData($FieldName) != $Data ) {
                     $this->Object->setData($FieldName, $Data);
@@ -977,9 +1040,15 @@ class ThirdParty extends ObjectBase
         }
         
         //====================================================================//
-        // If Id Given = > Update Object
+        // Update Object
         //====================================================================//
-        $this->Object->save();
+        try {
+            $this->Object->save();
+        } catch (Mage_Customer_Exception $ex) {
+            Splash::Log()->Deb($ex->getTraceAsString());
+            return Splash::Log()->Err("ErrLocalTpl",__CLASS__,__FUNCTION__,$ex->getMessage());
+        }
+        
         if ( $this->Object->_hasDataChanges ) {  
             return Splash::Log()->Err("ErrLocalTpl",__CLASS__,__FUNCTION__,"Unable to update (" . $this->Object->getEntityId() . ").");
         }

@@ -12,11 +12,10 @@
             <groups>
                 <core>
                     <label>Server Connection</label>
+                    <comment>Connection parameters for your module on Splash Server. Once your have created your account, declare a new server and enter your creditials here.</comment>
                     <frontend_type>text</frontend_type>
                     <sort_order>100</sort_order>
                     <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
  
                     <fields>
                         <id>
@@ -25,8 +24,6 @@
                             <frontend_type>text</frontend_type>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
                         </id>
                         <key>
                             <label>Encryption Key: </label>
@@ -34,8 +31,6 @@
                             <frontend_type>text</frontend_type>
                             <sort_order>21</sort_order>
                             <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
                         </key>
                         <lang translate="label">
                             <label>Locale</label>
@@ -44,12 +39,10 @@
                             <comment>Default Language used for Splash Server.</comment>
                             <sort_order>22</sort_order>
                             <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
                         </lang>                             
                     </fields>
                 </core> 
-                <user>
+<!--                <user>
                     <label>Admin Parameters</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>101</sort_order>
@@ -64,26 +57,56 @@
                             <frontend_type>text</frontend_type>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
                         </login>
                         <pwd>
                             <label>Password: </label>
-                            <frontend_type>text</frontend_type>
+                            <frontend_type>password</frontend_type>
                             <sort_order>21</sort_order>
                             <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
                         </pwd>
                     </fields>
-                </user>
+                </user>-->
+                <langs>
+                    <label>Fields Translations</label>
+                    <comment></comment>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>200</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <multilang>
+                            <label>Multilanguage: </label>
+                            <comment>In this mode, multilangual fields are translated using stores definitions. This implies each store is dedicated to a specific language. Once activated you will have to select language for each store in store view configuration.</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                        </multilang>                        
+                        <default_lang>
+                            <label>Default Language: </label>
+                            <comment>Default Language Code to Use for Multilang Fields.</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_locale</source_model>
+                            <sort_order>20</sort_order>
+                            <depends><multilang>0</multilang></depends>
+                            <show_in_default>1</show_in_default>
+                        </default_lang>
+                        <store_lang>
+                            <label>Store View Language: </label>
+                            <comment>Language Code to Use for this Store on Multilang Fields.</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_locale</source_model>
+                            <sort_order>20</sort_order>
+                            <depends><multilang>1</multilang></depends>
+                            <show_in_store>1</show_in_store>
+                        </store_lang>
+                    </fields>
+                </langs> 
                 <products>
                     <label>Products Synchonization</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>101</sort_order>
+                    <sort_order>400</sort_order>
                     <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
  
                     <fields>
                         <attribute_set>
@@ -93,8 +116,6 @@
                             <source_model>splashsync_splash/system_config_source_product_attributeset</source_model>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
                         </attribute_set>
                         <default_stock>
                             <label>Default Warehouse: </label>
@@ -103,49 +124,14 @@
                             <source_model>splashsync_splash/system_config_source_product_stock</source_model>
                             <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
                         </default_stock>
                     </fields>
                 </products> 
-                <langs>
-                    <label>Fields Translations</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>101</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>0</show_in_website>
-                    <show_in_store>0</show_in_store>
-                    <fields>
-                        <multilang translate="label">
-                            <label>Multilanguage: </label>
-                            <comment>In this mode, stores codes are used as language indexes for fiels translations. This implies your stores codes must have ISO language format (ie: en_US, fr_FR).</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </multilang>                        
-                        <default_lang>
-                            <label>Default Lang: </label>
-                            <comment>Default Language Code to Use for Multilang Fields.</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_locale</source_model>
-                            <sort_order>20</sort_order>
-                            <depends><multilang>0</multilang></depends>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </default_lang>
-                    </fields>
-                </langs> 
                 <advanced>
                     <label>Advanced Options</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>200</sort_order>
+                    <sort_order>900</sort_order>
                     <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
  
                     <fields>
                         <debug translate="label">
@@ -155,21 +141,43 @@
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
                         </debug>                        
                         <server_url>
                             <label>Custom Server Url: </label>
                             <comment>Use a custom Url to contact Splash Server. Only uses this option if you uses SandBox Servers</comment>
                             <frontend_type>text</frontend_type>
-                            <depends><splash_debug>1</splash_debug></depends>
+                            <depends><debug>1</debug></depends>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
                         </server_url>
                     </fields>
                 </advanced> 
+                <thirdparty>
+                    <label>Customer Synchonization</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>300</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+ 
+                    <fields>
+                        <store>
+                            <label>Default WebSite </label>
+                            <comment>Default Store to use for Customers created from another Server (If no Origin Server Id definded).</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_website</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                        </store>
+                        <origin>
+                            <label>Origin:</label>
+                            <comment>Id of Connected Node</comment>
+                            <frontend_type>text</frontend_type>
+                            <!--<depends><origin_enable>1</origin_enable></depends>-->
+                            <sort_order>20</sort_order>
+                            <show_in_website>1</show_in_website>
+                        </origin>
+                    </fields>
+                </thirdparty> 
             </groups>
         </splashsync_splash_options>
     </sections>

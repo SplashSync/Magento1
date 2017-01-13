@@ -124,7 +124,8 @@ class Local
         {
             require_once( dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))).'/app/Mage.php' );
             // Initialize Magento ...
-            Mage::app("default");
+            Mage::app();
+//            Mage::app("default");
         }
         //====================================================================//
         // Load Recurent Use Parameters
@@ -183,11 +184,10 @@ class Local
 
         //====================================================================//
         //  Verify - FIELDS TRANSLATIONS CONFIG
-        if (    empty(Mage::getStoreConfig('splashsync_splash_options/langs/multilang')) 
-            &&  empty(Mage::getStoreConfig('splashsync_splash_options/langs/default_lang')) ) {
-            return Splash::Log()->Err("You must select a default Language for Multilang Fields");
-        }        
-        
+        if ( !self::validateLanguageParameters() )
+        {
+            return False;
+        }
         
         //====================================================================//
         //  Verify - PRODUCT DEFAULT ATTRIBUTE SET
@@ -429,6 +429,36 @@ class Local
         return $Changes;
     }    
         
+//====================================================================//
+//  Magento Dedicated Parameter SelfTests
+//====================================================================//
+    /**
+     *   @abstract   Verify Langage Parameters are correctly set.
+     *   @return     mixed 
+     */    
+    public static function validateLanguageParameters()
+    {
+        //====================================================================//
+        //  Verify - SINGLE LANGUAGE MODE
+        if (    empty(Mage::getStoreConfig('splashsync_splash_options/langs/multilang')) ) {
+            if (    empty(Mage::getStoreConfig('splashsync_splash_options/langs/default_lang')) ) {
+                return Splash::Log()->Err("In single Language mode, You must select a default Language for Multilang Fields");
+            }        
+            return true;
+        }
+        
+        //====================================================================//
+        //  Verify - MULTILANG MODE - ALL STORES HAVE AN ISO LANGUAGE
+        foreach (Mage::app()->getWebsites() as $Website) {
+            foreach ($Website->getStores() as $Store) {
+                if ( empty($Store->getConfig('splashsync_splash_options/langs/store_lang')) ) {
+                    return Splash::Log()->Err("Multi-Language mode, You must select a Language for Store: " . $Store->getName() );
+                }
+            }
+        }       
+        return true;
+    }   
+    
 //====================================================================//
 //  Magento Getters & Setters
 //====================================================================//

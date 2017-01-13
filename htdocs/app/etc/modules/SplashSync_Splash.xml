@@ -4,6 +4,7 @@
         <SplashSync_Splash>
             <active>true</active>
             <codePool>local</codePool>
+            <version>0.1.0</version>
         </SplashSync_Splash>
      </modules>
 </config>
