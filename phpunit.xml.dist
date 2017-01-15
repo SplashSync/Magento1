@@ -13,42 +13,42 @@
     syntaxCheck                 = "false"
     bootstrap                   = "htdocs/app/code/local/SplashSync/Splash/vendor/autoload.php" 
     verbose                     = "true"
-    debug                       = "false"
+    debug                       = "true"
     timeoutForLargeTests        = "120"  
 >
- 
-    <testsuites>
-        <testsuite name="All">
-            <directory>htdocs/app/code/local/SplashSync/Splash/Tests/*</directory>
-            <directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore/Tests/*</directory>
-            <exclude>htdocs/</exclude>
-        </testsuite>
-        <testsuite name="Core">
-            <directory>htdocs/app/code/local/SplashSync/Splash/Tests/Core</directory>
-            <directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore/Tests/Core</directory>
-        </testsuite>
-        <testsuite name="Admin">
-            <directory>htdocs/app/code/local/SplashSync/Splash/Tests/Admin</directory>
-            <directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore/Tests/Admin</directory>
-        </testsuite>
-        <testsuite name="Objects">
-            <directory>htdocs/app/code/local/SplashSync/Splash/Tests/Objects</directory>
-            <directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore/Tests/Objects</directory>
-        </testsuite>
-        <testsuite name="Widgets">
-            <directory>htdocs/app/code/local/SplashSync/Splash/Tests/Widgets</directory>
-            <directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore/Tests/Widgets</directory>
-        </testsuite>
-    </testsuites>
-
     <filter>
         <whitelist>
             <directory>htdocs/app/code/local/SplashSync/Splash/Tests</directory>
             <directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore</directory>
             <exclude>
                 <directory>htdocs/app/code/local/SplashSync/Splash/vendor</directory>
+                <directory>htdocs/lib/Zend/Http/Client/Adapter/*</directory>
             </exclude>
         </whitelist>
     </filter>
+ 
+    <testsuites>
+        <testsuite name="All">
+            <directory>htdocs/app/code/local/SplashSync/Splash/Tests/*</directory>
+            <directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore/Tests/*</directory>
+        </testsuite>
+        <testsuite name="Core">
+            <!--<directory>htdocs/app/code/local/SplashSync/Splash/Tests/Core</directory>-->
+            <!--<directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore/Tests/Core</directory>-->
+        </testsuite>
+        <testsuite name="Admin">
+            <!--<directory>htdocs/app/code/local/SplashSync/Splash/Tests/Admin</directory>-->
+            <!--<directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore/Tests/Admin</directory>-->
+        </testsuite>
+        <testsuite name="Objects">
+            <!--<directory>htdocs/app/code/local/SplashSync/Splash/Tests/Objects</directory>-->
+            <!--<directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore/Tests/Objects</directory>-->
+        </testsuite>
+        <testsuite name="Widgets">
+            <!--<directory>htdocs/app/code/local/SplashSync/Splash/Tests/Widgets</directory>-->
+            <!--<directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore/Tests/Widgets</directory>-->
+        </testsuite>
+    </testsuites>
+
 
 </phpunit>

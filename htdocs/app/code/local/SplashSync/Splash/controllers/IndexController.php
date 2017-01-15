@@ -79,6 +79,18 @@ class SplashSync_Splash_IndexController extends Mage_Adminhtml_Controller_Action
                 'messages'  => $this->Messages->GetRawLog()
                 ));
         $this->_addContent($block_languages);
+        
+        
+        //====================================================================//
+        // Create Languages Setup Block
+        $block_origins = $this->getLayout()
+            ->createBlock('adminhtml/template')
+            ->setTemplate('splashsync/soap/origins.phtml')
+            ->setData(array( 
+                'results'   => $this->Results,
+                'messages'  => $this->Messages->GetRawLog()
+                ));
+        $this->_addContent($block_origins);
        
         $this->renderLayout();
     }
