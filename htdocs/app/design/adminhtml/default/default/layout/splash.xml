@@ -1,8 +1,0 @@
-
-<layout version="0.1.0">    
-    <adminhtml_splash_index>
-        <reference name="content">
-            <block type="adminhtml/splash"  name="splash.test" template="splash.phtml" />
-        </reference>        
-    </adminhtml_splash_index>      
-</layout>
