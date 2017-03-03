@@ -8,7 +8,9 @@
     "prefer-stable": true,
     
     "config": {
-        "vendor-dir": "app/code/local/SplashSync/Splash/vendor"
+        "vendor-dir": 					"htdocs/app/code/local/SplashSync/Splash/vendor",
+        "preferred-install":        "dist"
+        
     },
         
     "autoload": {
