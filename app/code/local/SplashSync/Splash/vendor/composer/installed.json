@@ -6,23 +6,23 @@
         "source": {
             "type": "git",
             "url": "https://github.com/SplashSync/Php-Core.git",
-            "reference": "d76198a396a6585d5e9633315c25a2c65d78cfad"
+            "reference": "3ac8d6e377a75f3398594a326c8638ca872ef238"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/SplashSync/Php-Core/zipball/d76198a396a6585d5e9633315c25a2c65d78cfad",
-            "reference": "d76198a396a6585d5e9633315c25a2c65d78cfad",
+            "url": "https://api.github.com/repos/SplashSync/Php-Core/zipball/3ac8d6e377a75f3398594a326c8638ca872ef238",
+            "reference": "3ac8d6e377a75f3398594a326c8638ca872ef238",
             "shasum": ""
         },
         "require": {
-            "php": "^5.6"
+            "php": "^5.6|^7.0"
         },
         "require-dev": {
             "phpunit/phpunit": "*"
         },
-        "time": "2017-02-01T12:38:32+00:00",
+        "time": "2017-05-04T00:27:08+00:00",
         "type": "library",
-        "installation-source": "source",
+        "installation-source": "dist",
         "autoload": {
             "psr-4": {
                 "Splash\\": "",
