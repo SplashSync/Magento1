@@ -11,26 +11,26 @@
     processIsolation            = "true"
     stopOnFailure               = "true"
     syntaxCheck                 = "false"
-    bootstrap                   = "htdocs/app/code/local/SplashSync/Splash/vendor/autoload.php" 
+    bootstrap                   = "app/code/local/SplashSync/Splash/vendor/autoload.php" 
     verbose                     = "true"
     debug                       = "true"
     timeoutForLargeTests        = "120"  
 >
     <filter>
         <whitelist>
-            <directory>htdocs/app/code/local/SplashSync/Splash/Tests</directory>
-            <directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore</directory>
+            <directory>app/code/local/SplashSync/Splash/Tests</directory>
+            <directory>app/code/local/SplashSync/Splash/vendor/splash/phpcore</directory>
             <exclude>
-                <directory>htdocs/app/code/local/SplashSync/Splash/vendor</directory>
-                <directory>htdocs/lib/Zend/Http/Client/Adapter/*</directory>
+                <directory>app/code/local/SplashSync/Splash/vendor</directory>
+                <directory>lib/Zend/Http/Client/Adapter/*</directory>
             </exclude>
         </whitelist>
     </filter>
  
     <testsuites>
         <testsuite name="All">
-            <directory>htdocs/app/code/local/SplashSync/Splash/Tests/*</directory>
-            <directory>htdocs/app/code/local/SplashSync/Splash/vendor/splash/phpcore/Tests/*</directory>
+            <directory>app/code/local/SplashSync/Splash/Tests/*</directory>
+            <directory>app/code/local/SplashSync/Splash/vendor/splash/phpcore/Tests/*</directory>
         </testsuite>
         <testsuite name="Core">
             <!--<directory>htdocs/app/code/local/SplashSync/Splash/Tests/Core</directory>-->
@@ -50,5 +50,8 @@
         </testsuite>
     </testsuites>
 
-
+    <php>
+        <const  name="SPLASH_DEBUG" value="true" />
+        <server name="SERVER_NAME" value="http://127.0.0.1/Magento/Mage-1.9"/>
+    </php>
 </phpunit>

@@ -223,7 +223,8 @@ class Address extends ObjectBase
         //====================================================================//
         // Run Through All Requested Fields
         //====================================================================//
-        foreach ($this->In as $Key => $FieldName) {
+        $Fields = is_a($this->In, "ArrayObject") ? $this->In->getArrayCopy() : $this->In;        
+        foreach ($Fields as $Key => $FieldName) {
             //====================================================================//
             // Read Requested Fields
             $this->getCoreFields($Key,$FieldName);
@@ -269,7 +270,8 @@ class Address extends ObjectBase
         //====================================================================//
         // Run Throw All Requested Fields
         //====================================================================//
-        foreach ($this->In as $FieldName => $Data) {
+        $Fields = is_a($this->In, "ArrayObject") ? $this->In->getArrayCopy() : $this->In;        
+        foreach ($Fields as $FieldName => $Data) {
             //====================================================================//
             // Write Requested Fields
             $this->setCoreFields($FieldName,$Data);
@@ -377,12 +379,15 @@ class Address extends ObjectBase
     private function buildMainFields()
     {
         
+        $AddressGroup = "Address";
+        
         //====================================================================//
         // Addess
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("street")
                 ->Name("Address")
                 ->MicroData("http://schema.org/PostalAddress","streetAddress")
+                ->Group($AddressGroup)
                 ->isRequired();
         
         //====================================================================//
@@ -391,6 +396,7 @@ class Address extends ObjectBase
                 ->Identifier("postcode")
                 ->Name("Zip/Postal Code")
                 ->MicroData("http://schema.org/PostalAddress","postalCode")
+                ->Group($AddressGroup)
                 ->isRequired();
         
         //====================================================================//
@@ -400,6 +406,7 @@ class Address extends ObjectBase
                 ->Name("City")
                 ->MicroData("http://schema.org/PostalAddress","addressLocality")
                 ->isRequired()
+                ->Group($AddressGroup)
                 ->isListed();
         
         //====================================================================//
@@ -407,6 +414,7 @@ class Address extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("region")
                 ->Name("State")
+                ->Group($AddressGroup)
                 ->ReadOnly();
         
         //====================================================================//
@@ -415,6 +423,7 @@ class Address extends ObjectBase
                 ->Identifier("region_id")
                 ->Name("StateCode")
                 ->MicroData("http://schema.org/PostalAddress","addressRegion")
+                ->Group($AddressGroup)
                 ->NotTested();
         
         //====================================================================//
@@ -422,6 +431,7 @@ class Address extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("country")
                 ->Name("Country")
+                ->Group($AddressGroup)
                 ->ReadOnly();
 //                ->isListed();
         
@@ -431,6 +441,7 @@ class Address extends ObjectBase
                 ->Identifier("country_id")
                 ->Name("CountryCode")
                 ->MicroData("http://schema.org/PostalAddress","addressCountry")
+                ->Group($AddressGroup)
                 ->isRequired();
     }
             
@@ -439,12 +450,15 @@ class Address extends ObjectBase
     */
     private function buildOptionalFields()
     {
+        $ContactGroup   =    "Contacts";
+        $MetaGroup      =    "Meta";
         
         //====================================================================//
         // Phone
         $this->FieldsFactory()->Create(SPL_T_PHONE)
                 ->Identifier("telephone")
                 ->Name("Phone")
+                ->Group($ContactGroup)
                 ->MicroData("http://schema.org/PostalAddress","telephone");
         
         //====================================================================//
@@ -452,6 +466,7 @@ class Address extends ObjectBase
         $this->FieldsFactory()->Create(SPL_T_PHONE)
                 ->Identifier("fax")
                 ->Name("Fax")
+                ->Group($ContactGroup)
                 ->MicroData("http://schema.org/PostalAddress","faxNumber");
 
         //====================================================================//
@@ -475,6 +490,7 @@ class Address extends ObjectBase
                 ->Identifier("created_at")
                 ->Name("Registration")
                 ->MicroData("http://schema.org/DataFeedItem","dateCreated")
+                ->Group($MetaGroup)
                 ->ReadOnly();
         
         //====================================================================//
@@ -483,6 +499,7 @@ class Address extends ObjectBase
                 ->Identifier("updated_at")
                 ->Name("Last update")
                 ->MicroData("http://schema.org/DataFeedItem","dateModified")
+                ->Group($MetaGroup)
                 ->ReadOnly();
         
     }    

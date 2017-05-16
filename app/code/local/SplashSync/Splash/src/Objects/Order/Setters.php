@@ -78,7 +78,8 @@ class Setters extends ObjectBase
         //====================================================================//
         // Iterate All Requested Fields
         //====================================================================//
-        foreach ($this->In as $FieldName => $Data) {
+        $Fields = is_a($this->In, "ArrayObject") ? $this->In->getArrayCopy() : $this->In;        
+        foreach ($Fields as $FieldName => $Data) {
             //====================================================================//
             // Write Requested Fields
             $this->setCoreFields($FieldName,$Data);
