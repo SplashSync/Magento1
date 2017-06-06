@@ -21,6 +21,7 @@
             <directory>app/code/local/SplashSync/Splash/Tests</directory>
             <directory>app/code/local/SplashSync/Splash/vendor/splash/phpcore</directory>
             <exclude>
+                <directory>app/code/local/SplashSync/Splash/Tests/Tools</directory>
                 <directory>app/code/local/SplashSync/Splash/vendor</directory>
                 <directory>lib/Zend/Http/Client/Adapter/*</directory>
             </exclude>
