@@ -104,6 +104,6 @@ skin/install/
 var/
 
 
-/htdocs/app/code/local/SplashSync/Splash/vendor
+/app/code/local/SplashSync/Splash/vendor
 /dispatch.php
 /composer.lock
