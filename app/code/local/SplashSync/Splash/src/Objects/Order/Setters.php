@@ -93,7 +93,7 @@ class Setters extends ObjectBase
         //====================================================================//
         // Iterate All Requested Fields
         //====================================================================//
-        foreach ($this->In as $FieldName => $Data) {
+        foreach ($Fields as $FieldName => $Data) {
             //====================================================================//
             // Write Requested Fields
             $this->setAddressFields($FieldName,$Data);
