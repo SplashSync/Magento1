@@ -105,5 +105,6 @@ var/
 
 
 /app/code/local/SplashSync/Splash/vendor
+/app/code/local/SplashSync/Splash/vendor/composer
 /dispatch.php
 /composer.lock
