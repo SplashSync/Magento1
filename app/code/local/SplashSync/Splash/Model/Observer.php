@@ -109,6 +109,11 @@ class SplashSync_Splash_Model_Observer
         // Init Splash Module
         $this->_SplashInit();        
         //====================================================================//
+        // Prevent Repeated Commit if Needed
+        if ( ($_Action == SPL_A_UPDATE) && Splash::Object($_Type)->isLocked() ) {
+            return True;
+        }        
+        //====================================================================//
         // Commit Action on remotes nodes (Master & Slaves)
         $result = Splash::Commit($_Type,$_Id,$_Action,$_User,$_Comment);        
         //====================================================================//

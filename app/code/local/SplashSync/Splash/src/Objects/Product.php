@@ -36,7 +36,7 @@ class Product extends ObjectBase
     /**
      *  Object Disable Flag. Uncomment thius line to Override this flag and disable Object.
      */
-//    protected static    $DISABLED        =  True;
+    protected static    $DISABLED        =  True;
     
     /**
      *  Object Name (Translated by Module)
