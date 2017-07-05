@@ -26,8 +26,6 @@ use Splash\Models\Objects\IntelParserTrait;
 // Magento Namespaces
 use Mage;
 
-use Mage_Customer_Exception;
-
 /**
  * @abstract    Splash PHP Module For Magento 1 - ThirdParty Object Intégration
  * @author      B. Paquier <contact@splashsync.com>

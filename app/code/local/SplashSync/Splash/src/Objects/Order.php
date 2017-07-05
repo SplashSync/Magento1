@@ -15,20 +15,40 @@
 
 namespace   Splash\Local\Objects;
 
-use Splash\Models\ObjectBase;
-use Splash\Core\SplashCore                          as Splash;
-use Splash\Local\Objects\Order\Fields;
-use Splash\Local\Objects\Order\Getters;
-use Splash\Local\Objects\Order\Setters;
-use Mage_Sales_Model_Order                          as MageOrder;
+// Splash Namespaces
+use Splash\Core\SplashCore      as Splash;
+
+use Splash\Models\AbstractObject;
+use Splash\Models\Objects\IntelParserTrait;
+use Splash\Models\Objects\ObjectsTrait;
+use Splash\Models\Objects\PricesTrait;
+use Splash\Models\Objects\ListsTrait;
+
+// Magento Namespaces
 use Mage;
 
 /**
  * @abstract    Splash PHP Module For Magento 1 - Order Object Intégration
  * @author      B. Paquier <contact@splashsync.com>
  */
-class Order extends ObjectBase
+class Order extends AbstractObject
 {
+    // Splash Php Core Traits
+    use IntelParserTrait;    
+    use ObjectsTrait;
+    use PricesTrait;
+    use ListsTrait;
+
+     // Core / Common Traits
+    use \Splash\Local\Objects\Core\DataAccessTrait;
+    
+    // Order Traits
+    use \Splash\Local\Objects\Order\CRUDTrait;
+    use \Splash\Local\Objects\Order\CoreTrait;
+    use \Splash\Local\Objects\Order\MainTrait;
+    use \Splash\Local\Objects\Order\AddressTrait;
+    use \Splash\Local\Objects\Order\ItemsTrait;
+    use \Splash\Local\Objects\Order\MetaTrait;
     
     //====================================================================//
     // Object Definition Parameters	
@@ -37,7 +57,7 @@ class Order extends ObjectBase
     /**
      *  Object Disable Flag. Uncomment this line to Override this flag and disable Object.
      */
-    protected static    $DISABLED        =  True;
+//    protected static    $DISABLED        =  True;
     
     /**
      *  Object Name (Translated by Module)
@@ -82,41 +102,8 @@ class Order extends ObjectBase
     const               SPLASH_LABEL               =   "__Splash__";        
     
     //====================================================================//
-    // Class Constructor
-    //====================================================================//
-        
-    /**
-     *      @abstract       Class Constructor (Used only if localy necessary)
-     *      @return         int                     0 if KO, >0 if OK
-     */
-    function __construct()
-    {
-        //====================================================================//
-        // Place Here Any SPECIFIC Initialisation Code
-        //====================================================================//
-        return True;
-    }    
-    
-    //====================================================================//
     // Class Main Functions
     //====================================================================//
-    
-    /**
-    *   @abstract     Return List Of available data for Customer
-    *   @return       array   $data             List of all customers available data
-    *                                           All data must match with OSWS Data Types
-    *                                           Use OsWs_Data::Define to create data instances
-    */
-    public function Fields()
-    {
-        //====================================================================//
-        //  Load Local SubClass
-//        require_once "Order/OrderFields.php"; 
-        $SubClass  =   new Fields();
-        //====================================================================//
-        //  Forward SubClass Action
-        return $SubClass->Fields();  
-    }
     
     /**
     *   @abstract     Return List Of Customer with required filters
@@ -174,14 +161,15 @@ class Order extends ObjectBase
         //====================================================================//
         // Init Result Array
         $Data       = array();
-        //====================================================================//
+       //====================================================================//
         // For each result, read information and add to $Data
         foreach ($Collection->getItems() as $key => $Order)
         {
+            $CurrencuSymbol =   " " . Mage::app()->getLocale()->currency($Order->getOrderCurrencyCode())->getSymbol();
             $Data[$key]["id"]           = $Order->getEntityId();
             $Data[$key]["increment_id"] = $Order->getIncrementId();
             $Data[$key]["created_at"]   = $Order->getCreatedAt();
-            $Data[$key]["grand_total"]  = $Order->getGrandTotal() . Mage::app()->getStore()->getCurrentCurrencyCode();
+            $Data[$key]["grand_total"]  = round ( $Order->getGrandTotal() , 2 ) . $CurrencuSymbol;
             $Data[$key]["state"]        = $this->getStandardOrderState($Order->getState());
             
         }
@@ -192,86 +180,8 @@ class Order extends ObjectBase
         Splash::Log()->Deb("MsgLocalTpl",__CLASS__,__FUNCTION__,(count($Data)-1)." Orders Found.");
         return $Data;
     }
-    
-    /**
-    *   @abstract     Return requested Customer Data
-    *   @param        array   $id               Customers Id.  
-    *   @param        array   $list             List of requested fields    
-    */
-    public function Get($id=NULL,$list=0)
-    {
-        //====================================================================//
-        //  Load Local SubClass
-        $SubClass  =   new Getters();
-        //====================================================================//
-        //  Forward SubClass Action
-        return $SubClass->Get($id,$list);   
-    }
-        
-    /**
-    *   @abstract     Write or Create requested Customer Data
-    *   @param        array   $id               Customers Id.  If NULL, Customer needs t be created.
-    *   @param        array   $list             List of requested fields    
-    *   @return       string  $id               Customers Id.  If NULL, Customer wasn't created.    
-    */
-    public function Set($id=NULL,$list=NULL)
-    {
-        //====================================================================//
-        //  Load Local SubClass
-        $SubClass  =   new Setters();
-        //====================================================================//
-        //  Forward SubClass Action
-        return $SubClass->Set($id,$list);      
-    }       
 
-    /**
-    *   @abstract   Delete requested Object
-    *   @param      int         $id             Object Id.  If NULL, Object needs to be created.
-    *   @return     int                         0 if KO, >0 if OK 
-    */    
-    public function Delete($Id=NULL)
-    {
-        //====================================================================//
-        // Stack Trace
-        Splash::Log()->Trace(__CLASS__,__FUNCTION__);  
-        //====================================================================//
-        // Execute Generic Magento Delete Function ...
-        return Splash::Local()->ObjectDelete('sales/order',$Id);      
-    }       
 
-    //====================================================================//
-    // Class Tooling Functions
-    //====================================================================//
-
-    /**
-     *   @abstract   Get Standardized Order Status
-     * 
-     *   @return     bool 
-     */
-    public static function getStandardOrderState($State) {
-        //====================================================================//
-        // Generate Schema.org orderStatus From Order State
-        switch ($State)
-        {
-            case MageOrder::STATE_NEW:
-            case MageOrder::STATE_PENDING_PAYMENT:
-                return "OrderPaymentDue";
-            case MageOrder::STATE_PROCESSING:
-                return "OrderProcessing";
-            case MageOrder::STATE_COMPLETE:
-                return "OrderDelivered";
-            case MageOrder::STATE_CLOSED:
-                return "OrderReturned";
-            case MageOrder::STATE_CANCELED:
-                return "OrderCancelled";
-            case MageOrder::STATE_HOLDED:
-                return "OrderProblem";
-            case MageOrder::STATE_PAYMENT_REVIEW:
-                return "OrderProblem";
-        }
-        return "OrderDelivered";
-    }     
-    
 }
 
 ?>

@@ -127,7 +127,7 @@ class Local
             require_once( dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))).'/app/Mage.php' );
             // Initialize Magento ...
             Mage::app();
-//            Mage::app("default");
+//            Mage::app("admin");
         }
         //====================================================================//
         // Load Recurent Use Parameters
@@ -135,6 +135,7 @@ class Local
         $this->default_lang =   Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');       
         
         Mage::app()->setCurrentStore(\Mage_Core_Model_App::ADMIN_STORE_ID);
+        
         return True;
     }      
 
