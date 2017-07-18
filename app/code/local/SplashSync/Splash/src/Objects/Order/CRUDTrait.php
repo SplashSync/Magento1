@@ -30,6 +30,8 @@ use Mage_Sales_Model_Order      as MageOrder;
  */
 trait CRUDTrait {
     
+    protected   $Payments       = Null;
+        
     /**
      * @abstract    Load Request Object 
      * 
@@ -51,6 +53,9 @@ trait CRUDTrait {
         if ( $Order->getEntityId() != $Id )   {
             return Splash::Log()->Err("ErrLocalTpl",__CLASS__,__FUNCTION__," Unable to load Customer Order (" . $Id . ").");
         }
+        //====================================================================//
+        // Load Linked Objects 
+        $this->loadPayment($Order);
         return $Order;
     }    
     
@@ -100,6 +105,9 @@ trait CRUDTrait {
             Splash::Log()->Deb($ex->getTraceAsString());
             return Splash::Log()->Err("ErrLocalTpl",__CLASS__,__FUNCTION__,$ex->getMessage());
         }
+        //====================================================================//
+        // Load Linked Objects 
+        $this->loadPayment($Order);        
         return $Order;        
     }
     

@@ -25,7 +25,6 @@ use Splash\Core\SplashCore      as Splash;
 // Magento Namespaces
 use Mage;
 use Mage_Sales_Model_Order      as MageOrder;
-use Mage_Sales_Model_Order_Item as MageItem;
 use Mage_Core_Exception;
 
 /**
@@ -33,6 +32,15 @@ use Mage_Core_Exception;
  */
 trait MainTrait {
     
+    private $AvailableStatus = array(
+                                    "OrderPaymentDue"       => "Payment Due",
+                                    "OrderProcessing"       => "In Process",
+                                    "OrderReturned"         => "Returned",
+                                    "OrderDelivered"        => "Delivered",
+                                    "OrderCancelled"        => "Canceled",
+                                    "OrderProblem"          => "On Hold"
+                                );
+            
     /**
     *   @abstract     Build Address Fields using FieldFactory
     */
@@ -43,24 +51,21 @@ trait MainTrait {
         //====================================================================//        
 
         //====================================================================//
+        // ?ot All Order Status are Availables For Debug & Tests
+        if ( SPLASH_DEBUG ) {
+            unset($this->AvailableStatus["OrderCancelled"]);
+            unset($this->AvailableStatus["OrderReturned"]);
+            unset($this->AvailableStatus["OrderDelivered"]);
+        }        
+        
+        //====================================================================//
         // Order Current Status
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("state")
                 ->Name("Status")
                 ->MicroData("http://schema.org/Order","orderStatus")
                 ->isListed()
-                ->AddChoices(
-                    array(  "OrderPaymentDue"       => "Payment Due",
-                            "OrderProcessing"       => "In Process",
-//                            "OrderInTransit"        => "in Transit",
-//                            "OrderPickupAvailable"  => "Pick Up Available",
-                            "OrderDelivered"        => "Delivered",
-                            "OrderReturned"         => "Returned",
-                            "OrderCancelled"        => "Canceled",
-                            "OrderProblem"          => "On Hold"
-                        )
-                    )
-//                ->NotTested()
+                ->AddChoices($this->AvailableStatus)
                 ;      
         
         //====================================================================//
@@ -317,6 +322,9 @@ trait MainTrait {
                     break;
                 case "OrderProblem":
                     $this->Object->hold();
+//                    $this->Object->setData('state', MageOrder::STATE_HOLDED);
+//                    $this->Object->setStatus(MageOrder::STATE_HOLDED);
+//                    $this->Object->addStatusHistoryComment('Updated by SplashSync Module', false);
                     break;
             }        
 

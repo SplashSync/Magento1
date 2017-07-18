@@ -25,10 +25,16 @@ use Splash\Core\SplashCore      as Splash;
 use Mage;
 
 /**
- * @abstract    Magento 1 Customers CRUD Functions
+ * @abstract    Magento 1 Invoices CRUD Functions
  */
 trait CRUDTrait {
 
+    //====================================================================//
+    // General Class Variables	
+    //====================================================================//
+
+    protected   $Order          = Null;
+    protected   $Products       = Null;
     
     /**
      * @abstract    Load Request Object 
@@ -47,11 +53,17 @@ trait CRUDTrait {
         if (empty ($Id) ) {
             return Splash::Log()->Err("ErrLocalTpl",__CLASS__,__FUNCTION__," Missing Id.");
         }
-        $Order = Mage::getModel('sales/order_invoice')->load($Id);
-        if ( $Order->getEntityId() != $Id )   {
+        $Invoice = Mage::getModel('sales/order_invoice')->load($Id);
+        if ( $Invoice->getEntityId() != $Id )   {
             return Splash::Log()->Err("ErrLocalTpl",__CLASS__,__FUNCTION__," Unable to load Customer Invoice (" . $Id . ").");
         }
-        return $Order;
+        //====================================================================//
+        // Load Linked Objects 
+        $this->Order        = $Invoice->getOrder();
+        $this->Products     = $Invoice->getAllItems(); 
+        $this->loadPayment($this->Order);
+        
+        return $Invoice;
     }    
         
     /**

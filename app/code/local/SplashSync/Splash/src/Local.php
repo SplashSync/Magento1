@@ -136,6 +136,10 @@ class Local
         
         Mage::app()->setCurrentStore(\Mage_Core_Model_App::ADMIN_STORE_ID);
         
+        //====================================================================//
+        //  Load Local Translation File
+        Splash::Translator()->Load("main@local");  
+        
         return True;
     }      
 
@@ -342,7 +346,7 @@ class Local
             Mage::register('isSecureArea', true);
             return True;
         }        
-        return Splash::Log()->Err("ErrSelfTestNoUser");
+        return Splash::Log()->Err("ErrUnableToLoginUser");
     }
     
     /**

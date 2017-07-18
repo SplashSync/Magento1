@@ -33,13 +33,6 @@ trait MainTrait {
     */
     private function buildMainFields() {
         
-//        //====================================================================//
-//        // Delivery Date 
-//        $this->FieldsFactory()->Create(SPL_T_DATE)
-//                ->Identifier("date_livraison")
-//                ->Name($langs->trans("DeliveryDate"))
-//                ->MicroData("http://schema.org/ParcelDelivery","expectedArrivalUntil");
-        
         //====================================================================//
         // PRICES INFORMATIONS
         //====================================================================//
@@ -50,7 +43,6 @@ trait MainTrait {
                 ->Identifier("grand_total_excl_tax")
                 ->Name("Total (tax excl.)" . " (" . Mage::app()->getStore()->getCurrentCurrencyCode() . ")")
                 ->MicroData("http://schema.org/Invoice","totalPaymentDue")
-//                ->isListed()
                 ->ReadOnly();
         
         //====================================================================//
@@ -72,7 +64,6 @@ trait MainTrait {
                 ->Identifier("state")
                 ->Name("Status")
                 ->MicroData("http://schema.org/Invoice","paymentStatus")
-//                ->ReadOnly()
                 ->AddChoices(
                     array(  "PaymentDraft"          => "Draft",
                             "PaymentDue"            => "Payment Due",
@@ -103,6 +94,7 @@ trait MainTrait {
                 ->Name(Mage::helper('sales')->__('Invoice') . " : " . Mage::helper('sales')->__('Canceled'))
                 ->MicroData("http://schema.org/PaymentStatusType","PaymentDeclined")
                 ->Association("isCanceled","isValidated","isPaid")
+                ->Group("Meta")
                 ->ReadOnly();     
         
         //====================================================================//
@@ -112,6 +104,7 @@ trait MainTrait {
                 ->Name(Mage::helper('sales')->__('Invoice') . " : " . "Valid")
                 ->MicroData("http://schema.org/PaymentStatusType","PaymentDue")
                 ->Association("isCanceled","isValidated","isPaid")
+                ->Group("Meta")
                 ->ReadOnly();
 
         //====================================================================//
@@ -120,8 +113,8 @@ trait MainTrait {
                 ->Identifier("isPaid")
                 ->Name(Mage::helper('sales')->__('Invoice') . " : " . Mage::helper('sales')->__('Paid'))
                 ->MicroData("http://schema.org/PaymentStatusType","PaymentComplete")
-                ->ReadOnly()
-                ->NotTested();
+                ->Group("Meta")
+                ->ReadOnly();
         
         return;
     }

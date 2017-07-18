@@ -49,6 +49,7 @@ class Order extends AbstractObject
     use \Splash\Local\Objects\Order\AddressTrait;
     use \Splash\Local\Objects\Order\ItemsTrait;
     use \Splash\Local\Objects\Order\MetaTrait;
+    use \Splash\Local\Objects\Order\PaymentsTrait;
     
     //====================================================================//
     // Object Definition Parameters	

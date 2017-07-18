@@ -19,10 +19,25 @@
 
 namespace Splash\Local\Objects\Order;
 
+// Splash Namespaces
+use Splash\Core\SplashCore      as Splash;
+
+// Magento Namespaces
+use Mage;
+use Mage_Sales_Model_Order_Payment_Transaction      as Transaction;
+use Varien_Data_Collection;
+
 /**
- * @abstract    Magento 1 Order Payments Fields Access
+ * @abstract    Magento 1 Orders Payments Fields Access
  */
 trait PaymentsTrait {
+    
+    //====================================================================//
+    // General Class Variables	
+    //====================================================================//
+
+    protected   $Payment        = Null;    
+    protected   $Transactions   = Null;    
     
     public static       $PAYMENT_METHODS            =   array(
         "CreditCard"                => array(
@@ -53,7 +68,7 @@ trait PaymentsTrait {
     */
     private function buildPaymentLineFields() {
         
-        $ListName = Mage::helper('sales')->__('Payment Information') . " => " ;
+//        $ListName = Mage::helper('sales')->__('Payment Information') . " => " ;
         $ListName = "" ;
         
         //====================================================================//
@@ -73,9 +88,8 @@ trait PaymentsTrait {
                 ->InList("payments")
                 ->Name( $ListName .  Mage::helper('sales')->__('Date'))
                 ->MicroData("http://schema.org/PaymentChargeSpecification","validFrom")
-                ->Association("date@payments","mode@payments","amount@payments");        
-//                ->ReadOnly()
-//                ->NotTested();        
+                ->Association("date@payments","number@payments","amount@payments");        
+    
 
         //====================================================================//
         // Payment Line Payment Identifier
@@ -84,9 +98,8 @@ trait PaymentsTrait {
                 ->InList("payments")
                 ->Name( $ListName .  Mage::helper('sales')->__('Transaction ID'))
                 ->MicroData("http://schema.org/Invoice","paymentMethodId")        
-                ->Association("date@payments","mode@payments","amount@payments");        
-//                ->ReadOnly()
-//                ->NotTested();        
+                ->Association("date@payments","number@payments","amount@payments");        
+       
 
         //====================================================================//
         // Payment Line Amount
@@ -94,9 +107,9 @@ trait PaymentsTrait {
                 ->Identifier("amount")
                 ->InList("payments")
                 ->Name( $ListName .  Mage::helper('sales')->__("Amount"))
-                ->MicroData("http://schema.org/PaymentChargeSpecification","price");
-//                ->ReadOnly()
-//                ->NotTested();                    
+                ->MicroData("http://schema.org/PaymentChargeSpecification","price")
+                ->Association("date@payments","number@payments","amount@payments");        
+                  
     }        
     
     
@@ -113,7 +126,7 @@ trait PaymentsTrait {
         //====================================================================//
         // Detect Payment Metyhod Type from Default Payment "known" methods
         $Method = $OrderPayment->getMethod();
-        foreach ( Invoice::$PAYMENT_METHODS as $PaymentMethod => $Ids )
+        foreach ( static::$PAYMENT_METHODS as $PaymentMethod => $Ids )
         {
             if ( in_array($Method, $Ids) ) {
                 return $PaymentMethod;
@@ -121,6 +134,32 @@ trait PaymentsTrait {
         }
         return "free";
     }    
+    
+    
+    /**
+     *  @abstract     Read Order Payment
+     * 
+     *  @return         none
+     */
+    private function loadPayment($Order)
+    {
+        $this->Payment  =   $Order->getPayment();      
+    }  
+    
+    /**
+     *  @abstract     Read Order Transactions Collection
+     * 
+     *  @return         none
+     */
+    private function getTransactions()
+    {
+        return Mage::getModel('sales/order_payment_transaction')->getCollection()
+                    ->setOrderFilter($this->Payment->getOrder())
+                    ->addPaymentIdFilter($this->Payment->getId())
+                    ->addTxnTypeFilter(Transaction::TYPE_PAYMENT)
+//                    ->setOrder('created_at', Varien_Data_Collection::SORT_ORDER_DESC)
+                    ->setOrder('transaction_id', Varien_Data_Collection::SORT_ORDER_ASC);        
+    }   
     
     /**
      *  @abstract     Read requested Field
@@ -130,25 +169,16 @@ trait PaymentsTrait {
      * 
      *  @return         none
      */
-    private function getPaymentLineFields($Key,$FieldName)
+    private function getPaymentsFields($Key,$FieldName)
     {
         $Index  =   0;
         //====================================================================//
         // Decode Field Name
-        $ListFieldName = $this->List_InitOutput("payments",$FieldName);
-    
-        //====================================================================//
-        // Retrieve List of Order Transactions
-        $Transactions = Mage::getModel('sales/order_payment_transaction')->getCollection()
-                    ->setOrderFilter($this->Order)
-                    ->addPaymentIdFilter($this->Payment->getId())
-                    ->addTxnTypeFilter(Transaction::TYPE_PAYMENT)
-                    ->setOrder('created_at', Varien_Data_Collection::SORT_ORDER_DESC)
-                    ->setOrder('transaction_id', Varien_Data_Collection::SORT_ORDER_DESC);        
+        $ListFieldName = $this->Lists()->InitOutput( $this->Out, "payments",$FieldName);
         
         //====================================================================//
         // Fill List with Data
-        foreach ($Transactions as $Transaction) {
+        foreach ($this->getTransactions() as $Transaction) {
             //====================================================================//
             // READ Fields
             switch ($ListFieldName)
@@ -179,7 +209,7 @@ trait PaymentsTrait {
             }
             //====================================================================//
             // Do Fill List with Data
-            $this->List_Insert("payments",$FieldName,$Index,$Value);
+            $this->Lists()->Insert( $this->Out, "payments",$FieldName,$Index,$Value);
             $Index++;
         }
         unset($this->In[$Key]);
@@ -193,7 +223,7 @@ trait PaymentsTrait {
      * 
      *  @return         none
      */
-    private function setPayments($FieldName,$Data) 
+    private function setPaymentsFields($FieldName,$Data) 
     {
         //====================================================================//
         // Safety Check
@@ -206,77 +236,95 @@ trait PaymentsTrait {
             return True;
         }        
         
-        //====================================================================//
-        // Retrieve List of Order Transactions
-//        $this->Transactions = Mage::getModel('sales/order_payment_transaction')->getCollection()
-//                    ->setOrderFilter($this->Object->getOrder())
-//                    ->addPaymentIdFilter($this->Payment->getId())
-//                    ->addTxnTypeFilter(Transaction::TYPE_PAYMENT)
-//                    ->setOrder('created_at', Varien_Data_Collection::SORT_ORDER_DESC)
-//                    ->setOrder('transaction_id', Varien_Data_Collection::SORT_ORDER_DESC);        
+        $TxnIds = array();
         
         //====================================================================//
         // Verify Lines List & Update if Needed 
-        foreach ($Data as $LineData) {
-            
-            if ( !array_key_exists("number", $LineData) ) {
-                continue;
-            }
+        foreach ($Data as $PaymentData) {
             //====================================================================//
-            // Init Transaction Informations
-            $Transaction = $this->Payment->getTransaction($LineData["number"]);
-            
-            if ( !$Transaction ) {
-                $this->Payment->setTransactionId($LineData["number"]);
-                $Transaction = $this->Payment->addTransaction(Transaction::TYPE_PAYMENT,null,True);
-                if ( !$Transaction ) {
-                    continue;
-                }
-                $this->TxnUpdate    =   True;
-            }
+            // Update Transactions Data
+            $this->setTransaction($PaymentData);
             //====================================================================//
-            // Update Transaction Datas
-            if ( array_key_exists("date", $LineData) ) {
-                //====================================================================//
-                // Verify Date Changed
-                $CurrentDate = date( SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($Transaction->getCreatedAt()));
-                if ( $CurrentDate !== $LineData["date"] ) {
-                    $Transaction->setCreatedAt($LineData["date"]);
-                    $this->TxnUpdate    =   True;
-                }  
-            }
-            if ( array_key_exists("amount", $LineData) ) {
-                //====================================================================//
-                // Verify Amount Changed
-                $CurrentInfos = $Transaction->getAdditionalInformation(Transaction::RAW_DETAILS);
-                if ( !is_array($CurrentInfos) ) {
-                    $Transaction->setAdditionalInformation(Transaction::RAW_DETAILS, array("Amount" => $LineData["amount"] ));
-                    $this->TxnUpdate    =   True;
-                } elseif ( !isset($CurrentInfos["Amount"]) || ($CurrentInfos["Amount"] != $LineData["amount"] ) ) {
-                    $CurrentInfos["Amount"] = $LineData["amount"];
-                    $Transaction->setAdditionalInformation(Transaction::RAW_DETAILS, $CurrentInfos);
-                    $this->TxnUpdate    =   True;
-                }  
-            }
-            //====================================================================//
-            // Save Changes
-            if ( $this->TxnUpdate ) {  
-                $Transaction->save();
-                $this->TxnUpdate = False;
-                $this->update = True;
-            }        
-            
+            // Store Transactions Id to Manage Delete
+            if ( array_key_exists("number", $PaymentData) ) {
+                $TxnIds[] = $PaymentData["number"];
+            }            
         } 
         //====================================================================//
-        // Delete Remaining Lines
-//        foreach ($this->Products as $Product) {
-//            //====================================================================//
-//            // Perform Line Delete
-//            $Product->delete();
-//            $this->update = True;
-//        }        
+        // Delete Remaining Transactions
+        foreach ($this->getTransactions() as $Transaction) {
+            if( !in_array($Transaction->getTxnId(), $TxnIds) ) {
+                $Transaction->delete();
+            } 
+        }        
         unset($this->In[$FieldName]);
     } 
         
+    
+    /**
+     *  @abstract     Write A Payment Line Fields
+     * 
+     *  @param        mixed     $PaymentData            Transaction Data Array
+     * 
+     *  @return         none
+     */
+    private function setTransaction($PaymentData) 
+    {
+        //====================================================================//
+        // Safety Check
+        if ( !array_key_exists("number", $PaymentData) ) {
+            return;
+        }
+        
+        //====================================================================//
+        // Init Transaction Informations
+        $Transaction = $this->Payment->getTransaction($PaymentData["number"]);
+
+        if ( !$Transaction ) {
+            $this->Payment->setTransactionId($PaymentData["number"]);
+            $Transaction = $this->Payment->addTransaction(Transaction::TYPE_PAYMENT,null,True);
+            if ( !$Transaction ) {
+                return Splash::Log()->Err("ErrLocalTpl",__CLASS__,__FUNCTION__," Failed to add new transaction.");
+            }
+            $Transaction->save();
+        }
+        
+        //====================================================================//
+        // Update Transaction Data
+        if ( array_key_exists("date", $PaymentData) ) {
+            
+            //====================================================================//
+            // Verify Date Changed
+            $CurrentDate = date( SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($Transaction->getCreatedAt()));
+            if ( $CurrentDate !== $PaymentData["date"] ) {
+                $Transaction->setCreatedAt($PaymentData["date"]);
+                $this->TxnUpdate    =   True;
+            }  
+        }
+        
+        //====================================================================//
+        // Update Transaction Amount
+        if ( array_key_exists("amount", $PaymentData) ) {
+            //====================================================================//
+            // Verify Amount Changed
+            $CurrentInfos = $Transaction->getAdditionalInformation(Transaction::RAW_DETAILS);
+            if ( !is_array($CurrentInfos) ) {
+                $Transaction->setAdditionalInformation(Transaction::RAW_DETAILS, array("Amount" => $PaymentData["amount"] ));
+                $this->TxnUpdate    =   True;
+            } elseif ( !isset($CurrentInfos["Amount"]) || ($CurrentInfos["Amount"] != $PaymentData["amount"] ) ) {
+                $CurrentInfos["Amount"] = $PaymentData["amount"];
+                $Transaction->setAdditionalInformation(Transaction::RAW_DETAILS, $CurrentInfos);
+                $this->TxnUpdate    =   True;
+            }  
+        }
+        
+        //====================================================================//
+        // Save Changes
+        if ( $this->TxnUpdate ) {  
+            $Transaction->save();
+            $this->TxnUpdate = False;
+            $this->needUpdate();
+        }        
+    } 
     
 }
