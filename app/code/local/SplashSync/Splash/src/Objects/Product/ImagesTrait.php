@@ -24,6 +24,7 @@ use Splash\Core\SplashCore      as Splash;
 
 // Magento Namespaces
 use Mage;
+use Mage_Core_Exception;
 
 /**
  * @abstract    Magento 1 Products Images Fields Access
@@ -52,7 +53,7 @@ trait ImagesTrait {
                 ->Identifier("image")
                 ->InList("images")
                 ->Name("Images")
-                ->Group("Description")
+                ->Group("Images")
                 ->MicroData("http://schema.org/Product","image");
         
         return;
@@ -283,7 +284,7 @@ trait ImagesTrait {
     {
         //====================================================================//
         // Read Image Raw Data From Splash Server
-        $NewImageFile    =   Splash::File()->GetFile($ImgArray["filename"],$ImgArray["md5"]);
+        $NewImageFile    =   Splash::File()->GetFile($ImgArray["file"],$ImgArray["md5"]);
         //====================================================================//
         // File Imported => Write it Here
         if ( $NewImageFile == False ) {
@@ -292,14 +293,19 @@ trait ImagesTrait {
         //====================================================================//
         // Write Image On Local Import Folder
         $Path       = Mage::getBaseDir('media') . DS . 'import' . DS ;
-        Splash::File()->WriteFile($Path,$NewImageFile["filename"],$NewImageFile["md5"],$NewImageFile["raw"]); 
+        $Filename  = isset($ImgArray["filename"]) ? $ImgArray["filename"] : ( $NewImageFile["name"] );
+        Splash::File()->WriteFile($Path,$Filename,$NewImageFile["md5"],$NewImageFile["raw"]); 
         //====================================================================//
         // Create Image in Product Media Gallery
-        if ( file_exists($Path . $NewImageFile["filename"]) ) {
+        if ( file_exists($Path . $Filename) ) {
             try {
-                $this->Object->addImageToMediaGallery($Path . $NewImageFile["filename"], array('image'), true, false);
+                $this->Object->addImageToMediaGallery($Path . $Filename, array('image'), true, false);
                 $this->update = True;
             } catch (Exception $e) {
+                Splash::Log()->War("ErrLocalTpl",__CLASS__,__FUNCTION__,"Image Path (" . $Path . $Filename);
+                return Splash::Log()->Err("ErrLocalTpl",__CLASS__,__FUNCTION__,"Unable to add image (" . $e->getMessage() . ").");
+            } catch (Mage_Core_Exception $e) {
+                Splash::Log()->War("ErrLocalTpl",__CLASS__,__FUNCTION__,"Image Path (" . $Path . $Filename);
                 return Splash::Log()->Err("ErrLocalTpl",__CLASS__,__FUNCTION__,"Unable to add image (" . $e->getMessage() . ").");
             }
         }

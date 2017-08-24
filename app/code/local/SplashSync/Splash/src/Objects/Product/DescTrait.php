@@ -44,7 +44,7 @@ trait DescTrait {
                 ->Name("Product Name without Options")
                 ->Group("Description")
                 ->IsListed()
-                ->MicroData("http://schema.org/Product","alternateName")
+                ->MicroData("http://schema.org/Product","name")
                 ->isRequired();
 
         //====================================================================//
@@ -77,7 +77,7 @@ trait DescTrait {
                 ->Identifier("meta_title")
                 ->Name("SEO" . " " . "Meta title")
                 ->Group("SEO")
-                ->MicroData("http://schema.org/Article","name");
+                ->MicroData("http://schema.org/Article","alternateName");
         
         //====================================================================//
         // Url Path
