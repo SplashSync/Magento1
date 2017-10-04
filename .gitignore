@@ -106,5 +106,3 @@ var/
 /app/code/local/SplashSync/Splash/vendor/composer
 /dispatch.php
 /composer.lock
-!/app/design/adminhtml/default/default/template/Splash
-!/app/design/adminhtml/default/default/template/Splash/languages.phtml
