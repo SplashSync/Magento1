@@ -76,7 +76,7 @@ class Order extends AbstractObject
     protected static    $ICO     =  "fa fa-shopping-cart ";
     
     /**
-     *  Object Synchronistion Limitations 
+     *  Object Synchronization Limitations 
      *  
      *  This Flags are Used by Splash Server to Prevent Unexpected Operations on Remote Server
      */
@@ -85,11 +85,11 @@ class Order extends AbstractObject
     protected static    $ALLOW_PUSH_DELETED         =  TRUE;        // Allow Delete Of Existing Local Objects
     
     /**
-     *  Object Synchronistion Recommended Configuration 
+     *  Object Synchronization Recommended Configuration 
      */
-    protected static    $ENABLE_PUSH_CREATED       =  TRUE;         // Enable Creation Of New Local Objects when Not Existing
-    protected static    $ENABLE_PUSH_UPDATED       =  TRUE;         // Enable Update Of Existing Local Objects when Modified Remotly
-    protected static    $ENABLE_PUSH_DELETED       =  TRUE;         // Enable Delete Of Existing Local Objects when Deleted Remotly
+    protected static    $ENABLE_PUSH_CREATED       =  FALSE;        // Enable Creation Of New Local Objects when Not Existing
+    protected static    $ENABLE_PUSH_UPDATED       =  FALSE;        // Enable Update Of Existing Local Objects when Modified Remotly
+    protected static    $ENABLE_PUSH_DELETED       =  FALSE;        // Enable Delete Of Existing Local Objects when Deleted Remotly
 
     protected static    $ENABLE_PULL_CREATED       =  TRUE;         // Enable Import Of New Local Objects 
     protected static    $ENABLE_PULL_UPDATED       =  TRUE;         // Enable Import of Updates of Local Objects when Modified Localy
