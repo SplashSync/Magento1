@@ -16,8 +16,6 @@ class A05SelfTestsTest extends BaseCase {
         //====================================================================//
         //   Execute Action From Module  
         $Data = Splash::Local()->SelfTest();
-echo "Hello!!";
-$this->assertTrue(False);
         //====================================================================//
         //   Verify Response
         $this->VerifyResponse($Data);

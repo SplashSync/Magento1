@@ -7,9 +7,9 @@
     </modules>
     <global>
         <blocks>
-            <splashsync_splash>
+            <Splash>
                 <class>SplashSync_Splash_Block</class>
-            </splashsync_splash>
+            </Splash>
 <!--            <splashsync_splash_adminhtml>
                 <class>SplashSync_Splash_Block_Adminhtml</class>
             </splashsync_splash_adminhtml>-->

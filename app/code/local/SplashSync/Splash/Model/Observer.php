@@ -118,7 +118,7 @@ class SplashSync_Splash_Model_Observer
         $result = Splash::Commit($_Type,$_Id,$_Action,$_User,$_Comment);        
         //====================================================================//
         // Post Splash Messages
-//        $this->_importMessages(Splash::Log());
+        $this->_importMessages(Splash::Log());
         return $result;        
     }    
     
@@ -194,6 +194,37 @@ class SplashSync_Splash_Model_Observer
         $this->_CommitChanges($_Type, SPL_A_DELETE, $Object->getEntityId(),$_Comment);
     }    
     
+    protected function _importMessages($Log)
+    {
+        //====================================================================//
+        // Import Errors
+        if ( isset($Log->err) && !empty($Log->err) ) {
+            foreach ($Log->err as $Message) {
+                Mage::getSingleton('adminhtml/session')->addError($Message);
+            }
+        } 
+        //====================================================================//
+        // Import Warnings
+        if ( isset($Log->war) && !empty($Log->war) ) {
+            foreach ($Log->war as $Message) {
+                Mage::getSingleton('adminhtml/session')->addWarning($Message);
+            }
+        }
+        //====================================================================//
+        // Import Messages
+        if ( isset($Log->msg) && !empty($Log->msg) ) {
+            foreach ($Log->msg as $Message) {
+                Mage::getSingleton('adminhtml/session')->addSuccess($Message);
+            }
+        }
+        //====================================================================//
+        // Import Debug
+        if ( isset($Log->deb) && !empty($Log->deb) ) {
+            foreach ($Log->deb as $Message) {
+                Mage::getSingleton('adminhtml/session')->addSuccess($Message);
+            }
+        }
+    }    
     
     
 }
