@@ -102,8 +102,8 @@ skin/frontend/enterprise
 skin/install/
 var/
 
-
 /app/code/local/SplashSync/Splash/vendor
 /app/code/local/SplashSync/Splash/vendor/composer
 /dispatch.php
 /composer.lock
+!app/design/adminhtml/default/default/template/Splash/
