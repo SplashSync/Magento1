@@ -146,7 +146,9 @@ class ThirdParty extends AbstractObject
         //====================================================================//
         // Build LIMIT
         $Collection->setPageSize($params["max"]);
-        $Collection->setCurPage($params["offset"]);
+        if ( isset($params["max"]) || ($params["max"] > 0) ) {
+            $Collection->setCurPage( 1 + (int) ($params["offset"] / $params["max"]) );
+        } 
         //====================================================================//
         // Init Result Array
         $Data       = array();
