@@ -216,7 +216,18 @@ class Local
         if ( !$Stock->getStockId() ) {
             return Splash::Log()->Err("Wrong Product Warehouse Selected");
         }        
-//        Splash::Log()->War("WarSelfTestSkipped");
+        
+        //====================================================================//
+        //  Verify - Product Prices Include Tax Warning
+        if ( Mage::getStoreConfig('tax/calculation/price_includes_tax') ) {
+            Splash::Log()->War("You selected to store Products Prices Including Tax. It is highly recommanded to store Product Price without Tax to work with Splash.");
+        }        
+        //====================================================================//
+        //  Verify - Shipping Prices Include Tax Warning
+        if ( Mage::getStoreConfig('tax/calculation/shipping_includes_tax') ) {
+            Splash::Log()->War("You selected to store Shipping Prices Including Tax. It is highly recommanded to store Shipping Price without Tax to work with Splash.");
+        }        
+        
         return Splash::Log()->Msg("Self Test Passed");
     }       
     
@@ -260,9 +271,13 @@ class Local
         
         //====================================================================//
         // Server Informations
-        $Response->servertype       =   "Magento " . Mage::getVersion();;
-        $Response->serverurl        =   Mage::getStoreConfig('web/secure/base_url');
+        $Response->servertype       = "Magento " . Mage::getVersion();
+        $Response->serverurl        = Mage::getStoreConfig('web/secure/base_url');
         
+        //====================================================================//
+        // Module Informations
+        $Response->moduleversion    = $this->getExtensionVersion() . ' (Splash Php Core ' . SPLASH_VERSION . ')'; 
+                
         return $Response;
     }    
     
@@ -307,8 +322,66 @@ class Local
             $Parameters["Langs"][] = Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');
         } 
         
+        //====================================================================//
+        // Setup Magento Prices Parameters
+        //====================================================================//
+        
+        //====================================================================//
+        // Load Products Appliable Tax Rates
+        $Store              =   Mage::app()->getStore();
+        $TaxCalculation     =   Mage::getModel('tax/calculation');
+        $TaxRequest         =   $TaxCalculation->getRateRequest(null, null, null, $Store);
+        $AvailableTaxes     =   $TaxCalculation->getRatesForAllProductTaxClasses($TaxRequest);    
+        //====================================================================//
+        // Setup Appliable Tax Rate
+        if( !empty($AvailableTaxes) ) {
+            $Parameters["VAT"]              = array_shift($AvailableTaxes); 
+        }
+        
+        $Parameters["Currency"]         = Mage::app()->getStore()->getCurrentCurrencyCode(); 
+        $Parameters["CurrencySymbol"]   = Mage::app()->getLocale()->currency($Parameters["Currency"])->getSymbol(); 
+        $Parameters["PriceBase"]        = ( (bool) Mage::getStoreConfig('tax/calculation/price_includes_tax') ) ? "TTC" : "HT"; 
+        $Parameters["PricesPrecision"]  = 3; 
+        
+        
         return $Parameters;
     }   
+    
+    /**
+     *      @abstract       Return Local Server Test Sequences as Aarray
+     *                      
+     *      THIS FUNCTION IS OPTIONNAL - USE IT ONLY IF REQUIRED
+     * 
+     *      This function called on each initialization of module's tests sequences.
+     *      It's aim is to list different configurations for testing on local system.
+     * 
+     *      If Name = List, Result must be an array including list of Sequences Names.
+     * 
+     *      If Name = ASequenceName, Function will Setup Sequence on Local System.
+     * 
+     *      @return         array       $Sequences
+     */    
+    public static function TestSequences($Name = Null)
+    {
+        switch($Name) {
+            
+            case "ProductVATIncluded":
+                Splash::Local()->LoadLocalUser();
+                Mage::getConfig()->saveConfig('tax/calculation/price_includes_tax', '1');
+                Mage::getConfig()->cleanCache();
+                return;
+                
+            case "ProductVATExcluded":
+                Splash::Local()->LoadLocalUser();
+                Mage::getConfig()->saveConfig('tax/calculation/price_includes_tax', '0');
+                Mage::getConfig()->cleanCache();
+                return;
+            
+            case "List":
+                return array( "ProductVATIncluded" , "ProductVATExcluded" );
+                
+        }
+    }      
     
 //====================================================================//
 // *******************************************************************//
@@ -524,53 +597,17 @@ class Local
             $UpdateRequired = True;
         }   
         
-        //====================================================================//        
-        // Update Multilangual Contents
-//        foreach ($Data as $IsoCode => $Content) {
-//            //====================================================================//        
-//            // Check Language Is Valid
-//            $LanguageCode = self::Lang_Decode($IsoCode);
-//            if ( !Validate::isLanguageCode($LanguageCode) ) {   
-//                continue;  
-//            }
-//            //====================================================================//        
-//            // Load Language
-//            $Language = Language::getLanguageByIETFCode($LanguageCode);
-//            if ( empty($Language) ) {   
-//                Splash::Log()->War("MsgLocalTpl",__CLASS__,__FUNCTION__,"Language " . $LanguageCode . " not available on this server.");
-//                continue;  
-//            }
-//            //====================================================================//        
-//            // Store Contents
-//            //====================================================================//        
-//            //====================================================================//        
-//            // Extract Contents
-//            $Current   =   &$Object->$key;
-//            //====================================================================//        
-//            // Create Array if Needed
-//            if ( !is_array($Current) ) {    $Current = array();     }             
-//            //====================================================================//        
-//            // Compare Data
-//            if ( array_key_exists($Language->id, $Current) && ( $Current[$Language->id] === $Content) ) {             
-//                continue;
-//            }
-//            //====================================================================//        
-//            // Verify Data Lenght
-//            if ( $MaxLength &&  ( strlen($Content) > $MaxLength) ) {             
-//                Splash::Log()->War("MsgLocalTpl",__CLASS__,__FUNCTION__,"Text is too long for filed " . $key . ", modification skipped.");
-//                continue;
-//            }
-//            
-//            
-//            //====================================================================//        
-//            // Update Data
-//            $Current[$Language->id]     = $Content;
-//            $UpdateRequired = True;
-//        }
-
         return $UpdateRequired;
     }     
-    
+
+    private function getExtensionVersion()
+    {
+        if ( !isset(Mage::getConfig()->getNode()->modules->SplashSync_Splash->version) ) {
+            return 'Unknown';
+        }
+        return (string) Mage::getConfig()->getNode()->modules->SplashSync_Splash->version;
+    }
+
 }
 
 ?>

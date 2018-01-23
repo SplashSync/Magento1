@@ -43,6 +43,7 @@ class Product extends AbstractObject
     use \Splash\Local\Objects\Core\DataAccessTrait;
     use \Splash\Local\Objects\Core\SplashIdTrait;
     use \Splash\Local\Objects\Core\DatesTrait;
+    use \Splash\Local\Objects\Core\PricesTrait;
 
     // Product Traits
     use \Splash\Local\Objects\Product\CRUDTrait;

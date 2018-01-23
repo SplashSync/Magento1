@@ -85,9 +85,6 @@ trait MainTrait {
                 //====================================================================//
                 // PRODUCT SPECIFICATIONS
                 //====================================================================//
-//                case 'height':
-//                case 'depth':
-//                case 'width':
                 case 'weight':
                     $this->Out[$FieldName] = (double) $this->Object->getData($FieldName);                
                     break;
@@ -95,29 +92,8 @@ trait MainTrait {
                 //====================================================================//
                 // PRICE INFORMATIONS
                 //====================================================================//
-
                 case 'price':
-                    //====================================================================//
-                    // Load Product Appliable Tax Rate
-                    $Store              =   Mage::app()->getStore($this->Object->getStore());
-                    $TaxCalculation     =   Mage::getModel('tax/calculation');
-                    $TaxRequest         =   $TaxCalculation->getRateRequest(null, null, null, $Store);
-                    $Tax                =   (double)  $TaxCalculation->getRate(
-                            $TaxRequest->setProductClassId($this->Object->getTaxClassId())
-                    );                    
-                    //====================================================================//
-                    // Read HT Price
-                    $PriceHT    = (double)  $this->Object->getPrice();
-                    //====================================================================//
-                    // Read Current Currency Code
-                    $CurrencyCode   =   Mage::app()->getStore()->getCurrentCurrencyCode();
-                    //====================================================================//
-                    // Build Price Array
-                    $this->Out[$FieldName] = self::Prices()->Encode(
-                            $PriceHT,$Tax,Null,
-                            $CurrencyCode,
-                            Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
-                            Mage::app()->getLocale()->currency($CurrencyCode)->getName());
+                    $this->Out[$FieldName] = $this->getProductPrice();
                     break;
                 
             default:
@@ -157,20 +133,7 @@ trait MainTrait {
             // PRICES INFORMATIONS
             //====================================================================//
             case 'price':
-                //====================================================================//
-                // Read Current Product Price (Via Out Buffer)
-                $this->getMainFields(Null,"price");
-                //====================================================================//
-                // Compare Prices
-                if ( $this->Prices()->Compare($this->Out["price"],$Data) ) {
-                    break; 
-                }
-                //====================================================================//
-                // Update HT Price if Required
-                if ( abs ( (double) $this->Out["price"]["ht"] - (double) $Data["ht"] ) > 1E-6 ) {
-                    $this->Object->setPrice($Data["ht"]);
-                    $this->needUpdate();
-                }  
+                $this->setProductPrice($Data);
                 break;   
                 
             default:
