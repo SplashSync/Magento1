@@ -40,7 +40,7 @@ trait MetaTrait {
                 ->Identifier("status")
                 ->Group("Meta")
                 ->Name("Enabled")
-                ->MicroData("http://schema.org/Product","active")        
+                ->MicroData("http://schema.org/Product","offered")
                 ->isListed();
         
         //====================================================================//
@@ -49,7 +49,6 @@ trait MetaTrait {
                 ->Identifier("available_for_order")
                 ->Name("Available for order")
                 ->Group("Meta")
-                ->MicroData("http://schema.org/Product","offered")
                 ->ReadOnly();
         
         //====================================================================//
