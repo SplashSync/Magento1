@@ -19,7 +19,6 @@
  */
 
 use Splash\Client\Splash;
-use Mage;
 
 class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Template
 {
