@@ -110,7 +110,7 @@ trait CoreTrait {
             case 'email':
                 if ( $this->Object->getData($FieldName) != $Data ) {
                     $this->Object->setData($FieldName, $Data);
-                    $this->update = True;
+                    $this->needUpdate();
                 }  
                 unset($this->In[$FieldName]);
                 break;

@@ -156,7 +156,7 @@ trait MainTrait {
             //====================================================================//
             // Customer Date Of Birth
             case 'dob':
-                $this->Out[$FieldName] = date( SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
+                $this->Out[$FieldName] = date( SPL_T_DATECAST, Mage::getModel("core/date")->gmtTimestamp($this->Object->getData($FieldName)));
                 break;
 
             //====================================================================//
@@ -206,16 +206,17 @@ trait MainTrait {
                 // Update Gender Type
                 if ( $this->Object->getData($FieldName) != $Data ) {
                     $this->Object->setData($FieldName, $Data);
-                    $this->update = True;
+                    $this->needUpdate();
                 }  
                 break;                     
             //====================================================================//
             // Customer Date Of Birth
             case 'dob':
-                $CurrentDob = date( SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
+
+                $CurrentDob = date( SPL_T_DATECAST, Mage::getModel("core/date")->gmtTimestamp($this->Object->getData($FieldName)));
                 if ( $CurrentDob != $Data ) {
                     $this->Object->setData($FieldName, $Data);
-                    $this->update = True;
+                    $this->needUpdate();
                 }   
                 break;
             
@@ -226,7 +227,7 @@ trait MainTrait {
             case 'suffix':
                 if ( $this->Object->getData($FieldName) != $Data ) {
                     $this->Object->setData($FieldName, $Data);
-                    $this->update = True;
+                    $this->needUpdate();
                 }   
                 break;
                 

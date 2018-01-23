@@ -68,7 +68,7 @@ trait DatesTrait {
         {
             case 'created_at':
             case 'updated_at':
-                $this->Out[$FieldName] = date( SPL_T_DATETIMECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
+                $this->Out[$FieldName] = date( SPL_T_DATETIMECAST, Mage::getModel("core/date")->gmtTimestamp($this->Object->getData($FieldName)));
                 break;
             default:
                 return;            
