@@ -18,9 +18,6 @@
  * @generator   http://www.mgt-commerce.com/kickstarter/ Mgt Kickstarter
  */
 
-use Splash\Client\Splash;
-use Mage;
-
 class SplashSync_Splash_IndexController extends Mage_Adminhtml_Controller_Action
 {
     
