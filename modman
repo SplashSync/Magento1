@@ -1,0 +1,3 @@
+# Splash Module Modman Descriptor
+code                            app/code/local/SplashSync/Splash/
+SplashSync_Splash.xml           app/etc/modules/SplashSync_Splash.xml
