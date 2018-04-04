@@ -1,7 +1,9 @@
 # Travis CI Configuration File
 
 
-language: php
+language:   php
+sudo:       false
+
 php:
 #  - 5.3
 #  - 5.4
@@ -23,6 +25,7 @@ env:
 #  - MAGENTO_VERSION=magento-ce-1.8.1.0
 #  - MAGENTO_VERSION=magento-ce-1.8.0.0
 #  - MAGENTO_VERSION=magento-ce-1.7.0.2
+
 script:
   - curl -sSL https://raw.githubusercontent.com/AOEpeople/MageTestStand/master/setup.sh | bash
         
