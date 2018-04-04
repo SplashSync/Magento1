@@ -127,14 +127,12 @@ class Local
             require_once( dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))).'/app/Mage.php' );
             // Initialize Magento ...
             Mage::app();
-//            Mage::app("admin");
+            Mage::app()->setCurrentStore(\Mage_Core_Model_App::ADMIN_STORE_ID);
         }
         //====================================================================//
         // Load Recurent Use Parameters
         $this->multilang    =   Mage::getStoreConfig('splashsync_splash_options/langs/multilang');
         $this->default_lang =   Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');       
-        
-        Mage::app()->setCurrentStore(\Mage_Core_Model_App::ADMIN_STORE_ID);
         
         //====================================================================//
         //  Load Local Translation File
@@ -555,7 +553,10 @@ class Local
             return array(
                 Mage::getStoreConfig('splashsync_splash_options/langs/default_lang') => $Object->getData($key)
             );
-        }           
+        }
+
+Splash::Log()->www("Object" , $Object->getData() );
+
     }
 
     /**
@@ -588,7 +589,7 @@ class Local
             //====================================================================//        
             // Verify Data Lenght
             if ( $MaxLength &&  ( strlen($Data[$this->default_lang]) > $MaxLength) ) {             
-                Splash::Log()->War("MsgLocalTpl",__CLASS__,__FUNCTION__,"Text is too long for filed " . $key . ", modification skipped.");
+                Splash::Log()->War("MsgLocalTpl",__CLASS__,__FUNCTION__,"Text is too long for field " . $key . ", modification skipped.");
                 return $UpdateRequired;
             }
             //====================================================================//        

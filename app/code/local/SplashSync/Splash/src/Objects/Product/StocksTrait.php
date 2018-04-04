@@ -121,7 +121,7 @@ trait StocksTrait {
             case 'qty':
             case 'min_sale_qty':
                 //====================================================================//
-                // If New PRODUCT => Reload Product to get Stcok Item 
+                // If New PRODUCT => Reload Product to get Stock Item 
                 if ( empty($this->Object->getStockItem()) ) {
                     $StockItem = Mage::getModel('catalog/product')->load($this->ProductId)->getStockItem();
                 } else {
