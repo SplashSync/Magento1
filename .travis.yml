@@ -53,7 +53,7 @@ before_script:
 #    - ls -l 
 #    - ls -l ../
 #    - ls -l ../../
-    - cd /tmp/magetest
+#    - cd /tmp/magetest
     - pwd
 #    - cd ..
 
