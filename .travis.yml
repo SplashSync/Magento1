@@ -37,8 +37,8 @@ install:
 before_script:
     # Print Installation Infos
     - phpunit --version
-    - n98-magerun.phar sys:modules:list
-    - n98-magerun.phar config:get splashsync_splash_options/*
+    - ${BUILDENV}/tools/n98-magerun.phar sys:modules:list
+    - ${BUILDENV}/tools/n98-magerun.phar config:get splashsync_splash_options/*
 
 script:
 #  - curl -sSL https://raw.githubusercontent.com/SplashSync/MageTestStand/travis-ci_reject_vcs/setup.sh | bash
