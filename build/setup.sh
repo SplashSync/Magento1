@@ -22,7 +22,7 @@ git clone https://github.com/SplashSync/MageTestStand.git "${BUILDENV}" -b travi
 
 cp -rf "${WORKSPACE}" "${BUILDENV}/.modman/"
 cp -rf "${WORKSPACE}/build/composer.json" "${BUILDENV}/composer.json"
-cp -rf "${WORKSPACE}/build/phpunit.xml.dist" "${BUILDENV}/phpunit.xml.dist"
+cp -rf "${WORKSPACE}/build/phpunit.xml.dist" "${BUILDENV}/htdocs/phpunit.xml.dist"
 
 ${BUILDENV}/install.sh
 if [ -d "${WORKSPACE}/vendor" ] ; then
