@@ -42,11 +42,11 @@ install:
     
 before_script:
     # Print Installation Infos
-#    - pwd
-    - ls -l
-    - ls -l $BUILDENV
-    - ls -l ${BUILDENV}
-    - ls -l $(BUILDENV)
+    - pwd
+#    - ls -l
+#    - ls -l $BUILDENV
+#    - ls -l ${BUILDENV}
+#    - ls -l $(BUILDENV)
     - phpunit --version
 #    - ./n98-magerun.phar --version
     
@@ -54,9 +54,10 @@ before_script:
 #    - ls -l ../
 #    - ls -l ../../
 #    - cd $SOURCE_DIR
+    - cd ..
 
-    - ../tools/n98-magerun.phar --root-dir=htdocs sys:modules:list   
-    - ../tools/n98-magerun.phar --root-dir=htdocs config:get splashsync_splash_options/* 
+    - tools/n98-magerun.phar --root-dir=htdocs sys:modules:list   
+    - tools/n98-magerun.phar --root-dir=htdocs config:get splashsync_splash_options/* 
 #    - ./n98-magerun.phar sys:modules:list
 #    - ./n98-magerun.phar config:get splashsync_splash_options/*
 
