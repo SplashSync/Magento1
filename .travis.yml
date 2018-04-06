@@ -57,7 +57,8 @@ before_script:
 script:
 #  - curl -sSL https://raw.githubusercontent.com/SplashSync/MageTestStand/travis-ci_reject_vcs/setup.sh | bash
 #  - curl -sSL https://raw.githubusercontent.com/ffuenf/MageTestStand/master/script.sh | bash
-  - phpunit
+    - cd /tmp/magetest/htdocs
+    - phpunit
   
 #  - phpunit -c build/phpunit.xml.dist 
         
