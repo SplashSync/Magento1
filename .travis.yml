@@ -16,12 +16,7 @@ matrix:
   allow_failures:
 #  - php: 7.0
   - php: 5.6
-#  - php: hhvm
 
-global:
-#    - MAGENTO_DB_ALLOWSAME=1
-    - SKIP_CLEANUP=1
-    
 env:
     - SKIP_CLEANUP=1 MAGENTO_VERSION=magento-mirror-1.9.0.1
 #  - MAGENTO_VERSION=magento-ce-1.9.0.1
@@ -30,9 +25,11 @@ env:
 #  - MAGENTO_VERSION=magento-ce-1.7.0.2
 
 install:
+    # Run Composer
+    - composer update -no-dev
+    
     # Install Magento & Modules
     - bash build/setup.sh
-
     # Disable Xdebug ...
     - phpenv config-rm xdebug.ini
 
@@ -41,8 +38,12 @@ install:
 before_script:
     # Print Installation Infos
     - phpunit --version
-
     - tools/n98-magerun.phar --root-dir=htdocs sys:modules:list   
+
+    # Configure Splash Module
+    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/core/id     DoNotUseThisId 
+    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/core/key    DoNotUseThisKey 
+    
     - tools/n98-magerun.phar --root-dir=htdocs config:get splashsync_splash_options/* 
 #    - ./n98-magerun.phar sys:modules:list
 #    - ./n98-magerun.phar config:get splashsync_splash_options/*
