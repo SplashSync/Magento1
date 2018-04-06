@@ -28,8 +28,9 @@ env:
 #  - MAGENTO_VERSION=magento-ce-1.7.0.2
 
 script:
+  - curl -sSL https://raw.githubusercontent.com/SplashSync/MageTestStand/travis/setup.sh | bash
 #  - curl -sSL https://raw.githubusercontent.com/SplashSync/MageTestStand/travis-ci_reject_vcs/setup.sh | bash
-  - curl -sSL https://raw.githubusercontent.com/ffuenf/MageTestStand/master/script.sh | bash
+#  - curl -sSL https://raw.githubusercontent.com/ffuenf/MageTestStand/master/script.sh | bash
         
 notifications:
   email:         
