@@ -35,11 +35,14 @@ install:
     - phpenv config-rm xdebug.ini
     
 before_script:
+    # Print Installation Infos
+    - phpunit --version
+    - n98-magerun.phar sys:modules:list
+    - n98-magerun.phar config:get splashsync_splash_options/*
 
 script:
 #  - curl -sSL https://raw.githubusercontent.com/SplashSync/MageTestStand/travis-ci_reject_vcs/setup.sh | bash
 #  - curl -sSL https://raw.githubusercontent.com/ffuenf/MageTestStand/master/script.sh | bash
-  - phpunit --version
   - pwd
   - ls -l 
   - phpunit
