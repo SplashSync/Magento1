@@ -52,12 +52,13 @@ before_script:
     - phpunit --version
 #    - ./n98-magerun.phar --version
     
-    - echo ${SOURCE_DIR}
-#    - ls -l 
+#    - echo ${SOURCE_DIR}
 #    - ls -l ../
 #    - ls -l ../../
-#    - cd /tmp/magetest
+    - cd /tmp/magetest
     - pwd
+    - ls -l 
+    - ls -l tools/
 #    - cd ..
 
     - tools/n98-magerun.phar --root-dir=htdocs sys:modules:list   
