@@ -40,8 +40,9 @@ script:
 #  - curl -sSL https://raw.githubusercontent.com/SplashSync/MageTestStand/travis-ci_reject_vcs/setup.sh | bash
 #  - curl -sSL https://raw.githubusercontent.com/ffuenf/MageTestStand/master/script.sh | bash
   - phpunit --version
-  - echo pwd
+  - pwd
   - ls -l 
+  - phpunit
   
 #  - phpunit -c build/phpunit.xml.dist 
         
