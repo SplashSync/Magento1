@@ -29,7 +29,7 @@ env:
 
 script:
 #  - curl -sSL https://raw.githubusercontent.com/SplashSync/MageTestStand/travis-ci_reject_vcs/setup.sh | bash
-  - curl -sSL https://raw.githubusercontent.com/ffuenf/MageTestStand/master/setup.sh | bash
+  - curl -sSL https://raw.githubusercontent.com/ffuenf/MageTestStand/master/script.sh | bash
         
 notifications:
   email:         
