@@ -18,7 +18,7 @@ matrix:
   - php: 5.6
 
 env:
-    - SKIP_CLEANUP=1 MAGENTO_VERSION=magento-mirror-1.9.0.1
+    - MAGENTO_DB_ALLOWSAME=1  SKIP_CLEANUP=1 MAGENTO_VERSION=magento-mirror-1.9.0.1
 #  - MAGENTO_VERSION=magento-ce-1.9.0.1
 #  - MAGENTO_VERSION=magento-ce-1.8.1.0
 #  - MAGENTO_VERSION=magento-ce-1.8.0.0
@@ -32,6 +32,10 @@ install:
     - bash build/setup.sh
     # Disable Xdebug ...
     - phpenv config-rm xdebug.ini
+    
+    # Run Composer
+    - cd /tmp/magetest/app/code/local/SplashSync/Splash
+    - composer update --no-dev
 
     - cd /tmp/magetest
 
