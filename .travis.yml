@@ -47,7 +47,9 @@ before_script:
     - phpunit --version
     - ./n98-magerun.phar --version
     
-#    - ls -l $BUILDENV
+    - ls -l 
+    - ls -l ../
+    - ls -l ../../
 #    - cd $SOURCE_DIR
     
     - ./n98-magerun.phar sys:modules:list
