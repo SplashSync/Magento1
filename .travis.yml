@@ -34,8 +34,8 @@ install:
     - curl -sSL https://raw.githubusercontent.com/SplashSync/MageTestStand/travis/setup.sh | bash
 
     # Install MageRun
-    - wget https://files.magerun.net/n98-magerun.phar
-    - chmod +x ./n98-magerun.phar
+#    - wget https://files.magerun.net/n98-magerun.phar
+#    - chmod +x ./n98-magerun.phar
 
     # Disable Xdebug ...
     - phpenv config-rm xdebug.ini
@@ -52,8 +52,8 @@ before_script:
 #    - ls -l ../../
 #    - cd $SOURCE_DIR
 
-    - tools/n98-magerun.phar --root-dir=htdocs sys:modules:list   
-    - tools/n98-magerun.phar --root-dir=htdocs config:get splashsync_splash_options/* 
+    - ../tools/n98-magerun.phar --root-dir=htdocs sys:modules:list   
+    - ../tools/n98-magerun.phar --root-dir=htdocs config:get splashsync_splash_options/* 
 #    - ./n98-magerun.phar sys:modules:list
 #    - ./n98-magerun.phar config:get splashsync_splash_options/*
 
