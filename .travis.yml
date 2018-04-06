@@ -32,23 +32,28 @@ env:
 install:
     # Install Magento & Modules
     - curl -sSL https://raw.githubusercontent.com/SplashSync/MageTestStand/travis/setup.sh | bash
-    
+
+    # Install MageRun
+    - wget https://files.magerun.net/n98-magerun.phar
+    - chmod +x ./n98-magerun.phar
+
     # Disable Xdebug ...
     - phpenv config-rm xdebug.ini
     
 before_script:
     # Print Installation Infos
     - phpunit --version
+    - n98-magerun.phar --version
     
     - pwd
-    - echo "Build directory ${BUILDENV}"
-    - echo "Source directory ${SOURCE_DIR}"
-    - ls -l $SOURCE_DIR
-    - ls -l $BUILDENV
-    - cd $SOURCE_DIR
+#    - echo "Build directory ${BUILDENV}"
+#    - echo "Source directory ${SOURCE_DIR}"
+    - ls -l
+#    - ls -l $BUILDENV
+#    - cd $SOURCE_DIR
     
-    - $SOURCE_DIR/tools/n98-magerun.phar sys:modules:list
-    - $SOURCE_DIR/tools/n98-magerun.phar config:get splashsync_splash_options/*
+    - n98-magerun.phar sys:modules:list
+    - n98-magerun.phar config:get splashsync_splash_options/*
 
 script:
 #  - curl -sSL https://raw.githubusercontent.com/SplashSync/MageTestStand/travis-ci_reject_vcs/setup.sh | bash
