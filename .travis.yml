@@ -45,6 +45,8 @@ before_script:
 #    - pwd
     - ls -l
     - ls -l $BUILDENV
+    - ls -l ${BUILDENV}
+    - ls -l $(BUILDENV)
     - phpunit --version
 #    - ./n98-magerun.phar --version
     
