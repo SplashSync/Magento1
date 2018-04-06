@@ -20,8 +20,8 @@ matrix:
 env:
 #  global:
 #    - MAGENTO_DB_ALLOWSAME=1
-#    - SKIP_CLEANUP=1
-  - MAGENTO_VERSION=magento-mirror-1.9.0.1
+    - SKIP_CLEANUP=1
+    - MAGENTO_VERSION=magento-mirror-1.9.0.1
 #  - MAGENTO_VERSION=magento-ce-1.9.0.1
 #  - MAGENTO_VERSION=magento-ce-1.8.1.0
 #  - MAGENTO_VERSION=magento-ce-1.8.0.0
@@ -39,6 +39,8 @@ before_script:
     - phpunit --version
     
     - pwd
+    - echo "Build directory ${BUILDENV}"
+    - echo "Source directory ${SOURCE_DIR}"
     - ls -l $SOURCE_DIR
     - ls -l $BUILDENV
     - cd $SOURCE_DIR
