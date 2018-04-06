@@ -8,3 +8,5 @@ app/design/adminhtml/default/default/template/Splash            app/design/admin
 app/design/adminhtml/default/default/template/splashsync        app/design/adminhtml/default/default/template/splashsync
 
 
+# Run shell installer
+@shell  cd $PROJECT && composer update --no-dev
