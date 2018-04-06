@@ -31,7 +31,8 @@ env:
 
 install:
     # Install Magento & Modules
-    - curl -sSL https://raw.githubusercontent.com/SplashSync/MageTestStand/travis/setup.sh | bash
+#    - curl -sSL https://raw.githubusercontent.com/SplashSync/MageTestStand/travis/setup.sh | bash
+    - bash build/setup.sh
 
     # Install MageRun
 #    - wget https://files.magerun.net/n98-magerun.phar
