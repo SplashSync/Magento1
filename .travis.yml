@@ -33,6 +33,9 @@ install:
     # Disable Xdebug ...
     - phpenv config-rm xdebug.ini
     
+    - ls -l /tmp/magetest/app/code/local
+    - ls -l /tmp/magetest/app/code/local/SplashSync
+    
     # Run Composer
     - cd /tmp/magetest/app/code/local/SplashSync/Splash
     - composer update --no-dev
