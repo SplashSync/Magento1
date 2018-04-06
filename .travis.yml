@@ -31,34 +31,16 @@ env:
 
 install:
     # Install Magento & Modules
-#    - curl -sSL https://raw.githubusercontent.com/SplashSync/MageTestStand/travis/setup.sh | bash
     - bash build/setup.sh
-
-    # Install MageRun
-#    - wget https://files.magerun.net/n98-magerun.phar
-#    - chmod +x ./n98-magerun.phar
 
     # Disable Xdebug ...
     - phpenv config-rm xdebug.ini
-    
+
+    - cd /tmp/magetest
+
 before_script:
     # Print Installation Infos
-#    - pwd
-#    - ls -l
-#    - ls -l $BUILDENV
-#    - ls -l ${BUILDENV}
-#    - ls -l $(BUILDENV)
     - phpunit --version
-#    - ./n98-magerun.phar --version
-    
-#    - echo ${SOURCE_DIR}
-#    - ls -l ../
-#    - ls -l ../../
-    - cd /tmp/magetest
-    - pwd
-    - ls -l 
-    - ls -l tools/
-#    - cd ..
 
     - tools/n98-magerun.phar --root-dir=htdocs sys:modules:list   
     - tools/n98-magerun.phar --root-dir=htdocs config:get splashsync_splash_options/* 
