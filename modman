@@ -6,7 +6,3 @@ app/code/local/SplashSync/Splash                                app/code/local/S
 app/design/adminhtml/default/default/layout/*.xml               app/design/adminhtml/default/default/layout/
 app/design/adminhtml/default/default/template/Splash            app/design/adminhtml/default/default/template/Splash
 app/design/adminhtml/default/default/template/splashsync        app/design/adminhtml/default/default/template/splashsync
-
-
-# Run shell installer
-@shell  cd $PROJECT && composer update --no-dev
