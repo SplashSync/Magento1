@@ -29,4 +29,8 @@ if [ -d "${WORKSPACE}/vendor" ] ; then
   cp -rf ${WORKSPACE}/vendor/* "${BUILDENV}/vendor/"
 fi
  
+echo "Loading Splash Module vendors"
+cd ${BUILDENV}/app/code/local/SplashSync/Splash
+composer update -no-dev
+
 cd ${BUILDENV}
