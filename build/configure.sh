@@ -1,3 +1,5 @@
+cd /tmp/magetest
+
 echo "Store Main Options"
 tools/n98-magerun.phar --root-dir=htdocs config:set general/store_information/name                      Magento 1 
 tools/n98-magerun.phar --root-dir=htdocs config:set general/store_information/address                   Store Address
