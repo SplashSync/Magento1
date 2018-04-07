@@ -47,12 +47,18 @@ before_script:
     - tools/n98-magerun.phar --root-dir=htdocs sys:modules:list   
 
     # Configure Splash Module
-    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/core/id     DoNotUseThisId 
-    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/core/key    DoNotUseThisKey 
+    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/advanced/expert             0 
+
+    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/core/id                     DoNotUseThisId 
+    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/core/key                    DoNotUseThisKey 
     
-    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/user/login  admin 
-    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/user/pwd    password123 
-    
+    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/user/login                  admin 
+    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/user/pwd                    password123 
+
+    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/products/attribute_set      1 
+    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/products/default_stock      1 
+    - tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/thirdparty/store            1 
+
     - tools/n98-magerun.phar --root-dir=htdocs config:get splashsync_splash_options/* 
 #    - ./n98-magerun.phar sys:modules:list
 #    - ./n98-magerun.phar config:get splashsync_splash_options/*
