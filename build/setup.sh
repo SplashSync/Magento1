@@ -20,7 +20,8 @@ echo "Using build directory ${BUILDENV}"
 
 git clone https://github.com/SplashSync/MageTestStand.git "${BUILDENV}" -b travis
 
-cp -rf "${WORKSPACE}" "${BUILDENV}/.modman/"
+# cp -rf "${WORKSPACE}" "${BUILDENV}/.modman/"
+cp -rf "${WORKSPACE}" "${BUILDENV}/"
 cp -rf "${WORKSPACE}/build/composer.json" "${BUILDENV}/composer.json"
 
 ${BUILDENV}/install.sh
