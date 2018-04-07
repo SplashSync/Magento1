@@ -6,7 +6,7 @@ tools/n98-magerun.phar --root-dir=htdocs config:set general/store_information/ad
 tools/n98-magerun.phar --root-dir=htdocs config:set general/store_information/merchant_country          "France"
 # tools/n98-magerun.phar --root-dir=htdocs config:set web/secure/base_url                               "www.splashsync.com"
 # tools/n98-magerun.phar --root-dir=htdocs config:set trans_email/ident_general/email                   "contact@store"
-tools/n98-magerun.phar --root-dir=htdocs config:set general/store_information/phone                   "0123456789"
+tools/n98-magerun.phar --root-dir=htdocs config:set general/store_information/phone                     "0123456789"
 
 echo "Configure Splash Module Options"
 
