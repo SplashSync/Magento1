@@ -30,24 +30,21 @@ install:
     
     # Install Magento & Modules
     - bash build/setup.sh
+    
     # Disable Xdebug ...
     - phpenv config-rm xdebug.ini
-    
-    - ls -l /tmp/magetest/htdocs/app/code/local/SplashSync/Splash
-    
-#    # Run Composer
-#    - cd /tmp/magetest/htdocs/app/code/local/SplashSync/Splash
-#    - composer update --no-dev
 
-    - cd /tmp/magetest
+    # Configure Splash Module
+    - bash build/configure.sh
+    
 
 before_script:
+    - cd /tmp/magetest
+    
     # Print Installation Infos
     - phpunit --version
     - tools/n98-magerun.phar --root-dir=htdocs sys:modules:list   
 
-    # Configure Splash Module
-    - bash build/configure.sh
 #    - ./n98-magerun.phar sys:modules:list
 #    - ./n98-magerun.phar config:get splashsync_splash_options/*
 
