@@ -18,7 +18,8 @@ mkdir /tmp/magetest
  
 echo "Using build directory ${BUILDENV}"
 
-git clone https://github.com/SplashSync/MageTestStand.git "${BUILDENV}" -b travis
+# git clone https://github.com/SplashSync/MageTestStand.git "${BUILDENV}" -b travis
+git clone https://github.com/AOEpeople/MageTestStand.git "${BUILDENV}" -b master
 
 # cp -rf "${WORKSPACE}" "${BUILDENV}/.modman/"
 cp -rf "${WORKSPACE}" "${BUILDENV}/htdocs/"
