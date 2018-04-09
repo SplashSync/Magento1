@@ -39,14 +39,6 @@ install:
     # Configure Splash Module
     - bash build/configure.sh    
 
-before_script:
-    - cd /tmp/magetest
-    
-    # Print Installation Infos
-    - php -r "echo date_default_timezone_get();"
-    - tools/n98-magerun.phar --root-dir=htdocs sys:modules:list   
-    - tools/n98-magerun.phar --root-dir=htdocs config:get general/locale/* 
-
 script:
     - cd /tmp/magetest/htdocs
     - phpunit
@@ -57,3 +49,11 @@ notifications:
     on_failure: never # default: always
 
 after_failure:
+    
+    # Print Installation Infos
+    - phpunit --version
+    - php -r "echo date_default_timezone_get();"
+    - tools/n98-magerun.phar --version
+    - tools/n98-magerun.phar --root-dir=htdocs sys:modules:list   
+    - tools/n98-magerun.phar --root-dir=htdocs eav:attribute:list
+    - tools/n98-magerun.phar --root-dir=htdocs config:get general/locale/*     
