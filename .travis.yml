@@ -29,15 +29,17 @@ install:
     # Run Composer
     - composer update --no-dev
     
+    # Disable Xdebug ...
+    - phpenv config-rm xdebug.ini
+    
+    # Configure Php ...
+    - phpenv config-add build/myconfig.ini
+
     # Install Magento & Modules
     - bash build/setup.sh
     
-    # Disable Xdebug ...
-    - phpenv config-rm xdebug.ini
-
     # Configure Splash Module
-    - bash build/configure.sh
-    
+    - bash build/configure.sh    
 
 before_script:
     - cd /tmp/magetest
