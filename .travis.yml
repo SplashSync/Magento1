@@ -29,11 +29,8 @@ install:
     # Run Composer
     - composer update --no-dev
     
-    # Disable Xdebug ...
-    - phpenv config-rm xdebug.ini
-    
     # Configure Php ...
-    - phpenv config-add build/phpconfig.ini
+    - phpenv config-rm xdebug.ini
     - echo 'date.timezone = "Europe/Paris"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 
     # Install Magento & Modules
