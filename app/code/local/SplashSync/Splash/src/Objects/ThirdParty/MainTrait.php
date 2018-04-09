@@ -215,7 +215,7 @@ trait MainTrait {
 
                 $CurrentDob = date( SPL_T_DATECAST, Mage::getModel("core/date")->gmtTimestamp($this->Object->getData($FieldName)));
                 if ( $CurrentDob != $Data ) {
-                    $this->Object->setData($FieldName, $Data);
+                    $this->Object->setData($FieldName, Mage::getModel("core/date")->gmtDate(Null, $Data));
                     $this->needUpdate();
                 }   
                 break;
