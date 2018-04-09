@@ -86,7 +86,7 @@ trait CoreTrait {
             //====================================================================//
             // Order Official Date
             case 'created_at':
-                $this->Out[$FieldName] = date( SPL_T_DATECAST, Mage::getModel("core/date")->gmtTimestamp($this->Object->getData($FieldName)));
+                $this->Out[$FieldName] = date( SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
                 break;
             default:
                 return;
@@ -118,9 +118,9 @@ trait CoreTrait {
             //====================================================================//
             // Order Official Date
             case 'created_at':
-                $CurrentDate = date( SPL_T_DATECAST, Mage::getModel("core/date")->gmtTimestamp($this->Object->getData($FieldName)));
+                $CurrentDate = date( SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
                 if ( $CurrentDate != $Data ) {
-                    $this->Object->setData($FieldName, $Data);
+                    $this->Object->setData($FieldName, Mage::getModel("core/date")->gmtDate(Null, $Data));
                     $this->needUpdate();
                 }   
                 break;                
