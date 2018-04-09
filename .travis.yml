@@ -27,7 +27,7 @@ env:
 
 install:
     # Run Composer
-    - composer update --no-dev
+    - composer update --no-dev --ignore-platform-reqs
     
     # Configure Php ...
     - phpenv config-rm xdebug.ini
