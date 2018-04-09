@@ -2,7 +2,6 @@
 set -e
 set -x
  
-
 # check if this is a travis environment
 if [ ! -z $TRAVIS_BUILD_DIR ] ; then
   WORKSPACE=$TRAVIS_BUILD_DIR
@@ -18,20 +17,25 @@ mkdir /tmp/magetest
 
 echo "Using build directory ${BUILDENV}"
 
-git clone https://github.com/AOEpeople/MageTestStand.git "${BUILDENV}" -b master
+#git clone https://github.com/AOEpeople/MageTestStand.git "${BUILDENV}" -b master
+
+mkdir tools
+cd ${BUILDENV}/tools
+
+wget https://raw.githubusercontent.com/netz98/n98-magerun/master/n98-magerun.phar
 
 cd ${BUILDENV}
 
 tools/n98-magerun.phar self-update
 tools/n98-magerun.phar --version
 
-cp -rf "${WORKSPACE}" "${BUILDENV}/htdocs/"
-cp -rf "${WORKSPACE}/build/composer.json" "${BUILDENV}/composer.json"
-
-${BUILDENV}/install.sh
-if [ -d "${WORKSPACE}/vendor" ] ; then
-  cp -rf ${WORKSPACE}/vendor/* "${BUILDENV}/vendor/"
-fi
+#cp -rf "${WORKSPACE}" "${BUILDENV}/htdocs/"
+#cp -rf "${WORKSPACE}/build/composer.json" "${BUILDENV}/composer.json"
+#
+#${BUILDENV}/install.sh
+#if [ -d "${WORKSPACE}/vendor" ] ; then
+#  cp -rf ${WORKSPACE}/vendor/* "${BUILDENV}/vendor/"
+#fi
 
 cp -rf "${WORKSPACE}/build/phpunit.xml.dist" "${BUILDENV}/htdocs/phpunit.xml.dist"
 
