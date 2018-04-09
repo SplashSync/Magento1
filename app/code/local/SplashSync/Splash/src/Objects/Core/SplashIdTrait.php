@@ -36,7 +36,8 @@ trait SplashIdTrait {
                 ->Identifier("splash_id")
                 ->Name("Splash Id")
                 ->Group("Meta")
-                ->MicroData("http://splashync.com/schemas","ObjectId");
+                ->MicroData("http://splashync.com/schemas","ObjectId")
+                ->NotTested;
      
     } 
     
