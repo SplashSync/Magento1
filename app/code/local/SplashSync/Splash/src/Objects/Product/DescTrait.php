@@ -85,7 +85,9 @@ trait DescTrait {
                 ->Identifier("url_key")
                 ->Name("SEO" . " " . "Friendly URL")
                 ->Group("SEO")
-                ->MicroData("http://schema.org/Product","urlRewrite");
+                ->MicroData("http://schema.org/Product","urlRewrite")
+                ->AddOption("isLowerCase")
+                ;
         
     }    
 
