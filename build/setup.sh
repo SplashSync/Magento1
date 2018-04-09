@@ -20,6 +20,11 @@ echo "Using build directory ${BUILDENV}"
 
 git clone https://github.com/AOEpeople/MageTestStand.git "${BUILDENV}" -b master
 
+cd ${BUILDENV}
+
+tools/n98-magerun.phar self-update
+tools/n98-magerun.phar --version
+
 cp -rf "${WORKSPACE}" "${BUILDENV}/htdocs/"
 cp -rf "${WORKSPACE}/build/composer.json" "${BUILDENV}/composer.json"
 
