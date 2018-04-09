@@ -56,6 +56,7 @@ mysql -u${MAGENTO_DB_USER} ${MYSQLPASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT
   --installationFolder="${BUILDENV}/htdocs" \
   --baseUrl="http://magento.local/" || { echo "Installing Magento failed"; exit 1; }
 
+cp -rf "${WORKSPACE}" "${BUILDENV}/htdocs/"
 cp -rf "${WORKSPACE}/build/phpunit.xml.dist" "${BUILDENV}/htdocs/phpunit.xml.dist"
 
 cd ${BUILDENV}
