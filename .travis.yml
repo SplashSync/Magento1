@@ -34,6 +34,7 @@ install:
     
     # Configure Php ...
     - phpenv config-add build/phpconfig.ini
+    - echo 'date.timezone = "Europe/Paris"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 
     # Install Magento & Modules
     - bash build/setup.sh
