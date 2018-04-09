@@ -1,30 +1,24 @@
 # Travis CI Configuration File
-
-
 language:   php
-#sudo:       false
-#dist:       trusty
 
-php:
-#  - 5.3
-#  - 5.4
-#  - 5.5
-  - 5.6
-#  - 7.0
-#  - hhvm
 matrix:
-  allow_failures:
-#  - php: 7.0
-  - php: 5.6
-
-env:
-    - MAGENTO_VERSION=magento-mirror-1.9.0.1 
-    - MAGENTO_VERSION=magento-mirror-1.9.3.6 
-#  - MAGENTO_VERSION=magento-ce-1.9.0.1
-#  - MAGENTO_VERSION=magento-ce-1.8.1.0
-#  - MAGENTO_VERSION=magento-ce-1.8.0.0
-#  - MAGENTO_VERSION=magento-ce-1.7.0.2
-
+    include:
+          
+        # Magento 1.9 Branch       
+        - php: 5.6
+          env: MAGENTO_VERSION=magento-mirror-1.9.0.1    
+        - php: 5.6
+          env: MAGENTO_VERSION=magento-mirror-1.9.3.6    
+        - php: 7.0
+          env: MAGENTO_VERSION=magento-mirror-1.9.3.6    
+        - php: 7.1
+          env: MAGENTO_VERSION=magento-mirror-1.9.3.6    
+          
+    allow_failures:
+        - env: DOL_VERSION=develop DATA_VERSION=7.0.0
+          
+    fast_finish: true
+    
 install:
     # Run Composer
     - composer update --no-dev --ignore-platform-reqs
