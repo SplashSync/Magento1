@@ -52,8 +52,7 @@ mysql -u${MAGENTO_DB_USER} ${MYSQLPASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT
 
 ./n98-magerun.phar install \
   --dbHost="${MAGENTO_DB_HOST}" --dbUser="${MAGENTO_DB_USER}" --dbPass="${MAGENTO_DB_PASS}" --dbName="${MAGENTO_DB_NAME}" --dbPort="${MAGENTO_DB_PORT}" \
-  --installSampleData=no \
-  --useDefaultConfigParams=yes \
+  --installSampleData=yes --useDefaultConfigParams=yes \
   --magentoVersionByName="${MAGENTO_VERSION}" \
   --installationFolder="${BUILDENV}/htdocs" \
   --baseUrl="http://magento.local/" || { echo "Installing Magento failed"; exit 1; }
