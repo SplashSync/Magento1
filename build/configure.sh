@@ -9,8 +9,8 @@ echo "Enable Splash Module"
 
 echo "Configure Store Main Options"
 
-./n98-magerun.phar config:set general/store_information/name                      "Magento 1" 
-./n98-magerun.phar --root-dir=htdocs config:set general/store_information/name                      "Magento 1" 
+./n98-magerun.phar --scope-id=0 config:set general/store_information/name                      "Magento 1" 
+./n98-magerun.phar --root-dir=htdocs --scope-id=0 config:set general/store_information/name                      "Magento 1" 
 ./n98-magerun.phar --root-dir=htdocs config:set general/store_information/address                   "Store Address"
 ./n98-magerun.phar --root-dir=htdocs config:set general/store_information/merchant_country          "France"
 # ./n98-magerun.phar --root-dir=htdocs config:set web/secure/base_url                               "www.splashsync.com"
