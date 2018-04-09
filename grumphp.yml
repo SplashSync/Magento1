@@ -1,0 +1,35 @@
+parameters:
+    git_dir: .
+    bin_dir: app/code/local/SplashSync/Splash/vendor/bin
+    ascii:
+        failed: ~
+        succeeded: ~
+    tasks:
+        composer:
+            file: "./composer.json"
+        phplint:
+            exclude: ['app/code/local/SplashSync/Splash/vendor']
+            triggered_by: ['php']
+#        phpcs:
+#            standard: "PSR2"
+#            warning_severity: 0
+        git_blacklist:
+            keywords:
+                - "var_dump"
+                - "dump("
+                - "console.log"
+                - "print_r"
+                - "die("
+            triggered_by: [php, js, twig]
+        jsonlint:
+            detect_key_conflicts: true
+#        phpmd:
+#            ruleset: ["./ruleset/phpmd.xml"]
+        securitychecker: ~
+#        phpcpd:
+#            directory: 'app/code/local/SplashSync/Splash/src'
+#            exclude: ['vendor']
+        xmllint: ~
+        yamllint: ~
+#        phpstan:
+#            configuration: phpstan.neon
