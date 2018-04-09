@@ -26,7 +26,7 @@ tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/co
 tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/user/login                  admin 
 tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/user/pwd                    password123 
 
-tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/products/attribute_set      1 
+tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/products/attribute_set      4 
 tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/products/default_stock      1 
 tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/thirdparty/store            1 
 
