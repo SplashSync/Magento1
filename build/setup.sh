@@ -12,31 +12,50 @@ if [ -z $WORKSPACE ] ; then
   exit
 fi
  
+if [ -z $MAGENTO_DB_HOST ]; then MAGENTO_DB_HOST="localhost"; fi
+if [ -z $MAGENTO_DB_PORT ]; then MAGENTO_DB_PORT="3306"; fi
+if [ -z $MAGENTO_DB_USER ]; then MAGENTO_DB_USER="root"; fi
+if [ -z $MAGENTO_DB_PASS ]; then MAGENTO_DB_PASS=""; fi
+if [ -z $MAGENTO_DB_NAME ]; then MAGENTO_DB_NAME="mageteststand"; fi
+
+
+
 BUILDENV="/tmp/magetest"
 mkdir /tmp/magetest 
 
 echo "Using build directory ${BUILDENV}"
-
-#git clone https://github.com/AOEpeople/MageTestStand.git "${BUILDENV}" -b master
-
-mkdir tools
-cd ${BUILDENV}/tools
-
-wget https://raw.githubusercontent.com/netz98/n98-magerun/master/n98-magerun.phar
-
 cd ${BUILDENV}
 
-tools/n98-magerun.phar self-update
-tools/n98-magerun.phar --version
+echo "Download MageRun ToolKit"
+wget https://raw.githubusercontent.com/netz98/n98-magerun/master/n98-magerun.phar
+chmod +x ./n98-magerun.phar
+n98-magerun.phar --version
 
-#cp -rf "${WORKSPACE}" "${BUILDENV}/htdocs/"
-#cp -rf "${WORKSPACE}/build/composer.json" "${BUILDENV}/composer.json"
-#
-#${BUILDENV}/install.sh
-#if [ -d "${WORKSPACE}/vendor" ] ; then
-#  cp -rf ${WORKSPACE}/vendor/* "${BUILDENV}/vendor/"
-#fi
+echo
+echo "---------------------"
+echo "- Magento Install   -"
+echo "---------------------"
+echo
+echo "Installing ${MAGENTO_VERSION} in ${BUILDENV}/htdocs"
+echo "using Database Credentials:"
+echo "    Host: ${MAGENTO_DB_HOST}"
+echo "    Port: ${MAGENTO_DB_PORT}"
+echo "    User: ${MAGENTO_DB_USER}"
+echo "    Pass: [hidden]"
+echo "    Main DB: ${MAGENTO_DB_NAME}"
+echo
 
-cp -rf "${WORKSPACE}/build/phpunit.xml.dist" "${BUILDENV}/htdocs/phpunit.xml.dist"
+echo "Create Database"
+mysql -u${MAGENTO_DB_USER} ${MYSQLPASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT} -e "DROP DATABASE IF EXISTS \`${MAGENTO_DB_NAME}\`; CREATE DATABASE \`${MAGENTO_DB_NAME}\`;"
+
+n98-magerun.phar install \
+  --dbHost="${MAGENTO_DB_HOST}" --dbUser="${MAGENTO_DB_USER}" --dbPass="${MAGENTO_DB_PASS}" --dbName="${MAGENTO_DB_NAME}" --dbPort="${MAGENTO_DB_PORT}" \
+  --installSampleData=no \
+  --useDefaultConfigParams=yes \
+  --magentoVersionByName="${MAGENTO_VERSION}" \
+  --installationFolder="${BUILDENV}/htdocs" \
+  --baseUrl="http://magento.local/" || { echo "Installing Magento failed"; exit 1; }
+
+cp -rf "${WORKSPACE}/build/phpunit.xml.dist" "${BUILDENV}/phpunit.xml.dist"
 
 cd ${BUILDENV}
