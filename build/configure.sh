@@ -4,7 +4,7 @@ echo "Insert Dummy data in Store"
 tools/n98-magerun.phar dev:module:disable SplashSync_Splash
 tools/n98-magerun.phar customer:create:dummy 5 en_US
 
-echo "Enable Splahs Module"
+echo "Enable Splash Module"
 tools/n98-magerun.phar dev:module:enable SplashSync_Splash
 tools/n98-magerun.phar dev:module:list 
 
@@ -33,3 +33,6 @@ tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/pr
 tools/n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/thirdparty/store            1 
 
 tools/n98-magerun.phar --root-dir=htdocs config:get splashsync_splash_options/* 
+
+
+php -r "echo date_default_timezone_get();"
