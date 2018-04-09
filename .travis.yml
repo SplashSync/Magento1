@@ -34,10 +34,10 @@ install:
     - echo 'date.timezone = "Europe/Berlin"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 
     # Install Magento & Modules
-    - bash build/setup.sh
+    - sh build/setup.sh
     
     # Configure Splash Module
-    - bash build/configure.sh    
+    - sh build/configure.sh    
 
 script:
     - cd /tmp/magetest/htdocs
