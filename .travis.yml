@@ -27,6 +27,7 @@ env:
 
 install:
     # Run Composer
+    - composer require splash/phpcore "dev-master"
     - composer update --no-dev --ignore-platform-reqs
     
     # Configure Php ...
