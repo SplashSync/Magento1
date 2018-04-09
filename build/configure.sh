@@ -16,6 +16,8 @@ echo "Configure Store Main Options"
 # ./n98-magerun.phar --root-dir=htdocs config:set trans_email/ident_general/email                   "contact@store"
 ./n98-magerun.phar --root-dir=htdocs config:set general/store_information/phone                     "0123456789"
 
+./n98-magerun.phar --root-dir=htdocs config:get general/store_information/* 
+
 echo "Configure Splash Module Options"
 
 ./n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/advanced/expert             0 
