@@ -15,7 +15,8 @@ matrix:
           env: MAGENTO_VERSION=magento-mirror-1.9.3.6    
           
     allow_failures:
-        - env: DOL_VERSION=develop DATA_VERSION=7.0.0
+        - php: 7.0
+        - php: 7.1
           
     fast_finish: true
     
