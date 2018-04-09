@@ -213,7 +213,7 @@ trait MainTrait {
             // Customer Date Of Birth
             case 'dob':
 
-                $CurrentDob = date( SPL_T_DATECAST, Mage::getModel("core/date")->gmtTimestamp($this->Object->getData($FieldName)));
+                $CurrentDob = date( SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
                 if ( $CurrentDob != $Data ) {
                     $this->Object->setData($FieldName, Mage::getModel("core/date")->gmtDate(Null, $Data));
                     $this->needUpdate();
