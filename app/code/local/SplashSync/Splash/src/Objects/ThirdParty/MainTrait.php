@@ -156,7 +156,7 @@ trait MainTrait {
             //====================================================================//
             // Customer Date Of Birth
             case 'dob':
-                $this->Out[$FieldName] = date( SPL_T_DATECAST, Mage::getModel("core/date")->gmtTimestamp($this->Object->getData($FieldName)));
+                $this->Out[$FieldName] = date( SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
                 break;
 
             //====================================================================//
