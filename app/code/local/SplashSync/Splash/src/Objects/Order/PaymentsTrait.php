@@ -191,7 +191,7 @@ trait PaymentsTrait {
                 //====================================================================//
                 // Payment Line - Payment Date
                 case 'date':
-                    $Value = date( SPL_T_DATECAST, Mage::getModel("core/date")->gmtTimestamp($Transaction->getCreatedAt()));
+                    $Value = date( SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($Transaction->getCreatedAt()));
                     break;
                 //====================================================================//
                 // Payment Line - Payment Identification Number
@@ -295,9 +295,9 @@ trait PaymentsTrait {
             
             //====================================================================//
             // Verify Date Changed
-            $CurrentDate = date( SPL_T_DATECAST, Mage::getModel("core/date")->gmtTimestamp($Transaction->getCreatedAt()));
+            $CurrentDate = date( SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($Transaction->getCreatedAt()));
             if ( $CurrentDate !== $PaymentData["date"] ) {
-                $Transaction->setCreatedAt($PaymentData["date"]);
+                $Transaction->setCreatedAt(Mage::getModel("core/date")->gmtDate(Null, $PaymentData["date"]));
                 $this->TxnUpdate    =   True;
             }  
         }
