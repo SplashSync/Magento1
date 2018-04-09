@@ -59,4 +59,5 @@ after_failure:
     - ./n98-magerun.phar --root-dir=htdocs sys:store:list   
     - ./n98-magerun.phar --root-dir=htdocs sys:modules:list   
     - ./n98-magerun.phar --root-dir=htdocs eav:attribute:list
+    - ./n98-magerun.phar --root-dir=htdocs config:get general/store_information/*     
     - ./n98-magerun.phar --root-dir=htdocs config:get general/locale/*     
