@@ -29,7 +29,7 @@ cd ${BUILDENV}
 echo "Download MageRun ToolKit"
 wget https://raw.githubusercontent.com/netz98/n98-magerun/master/n98-magerun.phar
 chmod +x ./n98-magerun.phar
-n98-magerun.phar --version
+./n98-magerun.phar --version
 
 echo
 echo "---------------------"
