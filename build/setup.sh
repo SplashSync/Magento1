@@ -15,7 +15,7 @@ fi
  
 BUILDENV="/tmp/magetest"
 mkdir /tmp/magetest 
- 
+
 echo "Using build directory ${BUILDENV}"
 
 git clone https://github.com/AOEpeople/MageTestStand.git "${BUILDENV}" -b master
