@@ -40,7 +40,7 @@ class L01OrderBundleProductsTest extends ObjectsCase {
         
     }
 
-    private function verifyItems(int $objectId , string $objectType = 'sales/order')
+    private function verifyItems(int $objectId)
     {
         //====================================================================//
         //   Get Readable Object Fields List  
@@ -56,7 +56,7 @@ class L01OrderBundleProductsTest extends ObjectsCase {
         
         //====================================================================//
         //   Read Order from Magento
-        $Order  =   Mage::getModel($objectType)->load($objectId);
+        $Order  =   Mage::getModel('sales/order')->load($objectId);
         
         //====================================================================//
         //   Basic verifications  
