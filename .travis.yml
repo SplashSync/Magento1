@@ -55,6 +55,8 @@ after_failure:
     - php -r "echo date_default_timezone_get();"
     - cd /tmp/magetest
     - ./n98-magerun.phar --version
+    - ./n98-magerun.phar --root-dir=htdocs sys:info   
+    - ./n98-magerun.phar --root-dir=htdocs sys:store:list   
     - ./n98-magerun.phar --root-dir=htdocs sys:modules:list   
     - ./n98-magerun.phar --root-dir=htdocs eav:attribute:list
     - ./n98-magerun.phar --root-dir=htdocs config:get general/locale/*     
