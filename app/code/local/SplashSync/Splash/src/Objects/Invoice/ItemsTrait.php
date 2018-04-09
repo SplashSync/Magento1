@@ -204,7 +204,7 @@ trait ItemsTrait {
                     }
                     break;
                 case 'qty':
-                    $Value = (int) $Product->getData($FieldId);
+                    $Value = (int) ( $Product->getHasChildren() ? 0 : $Product->getData($FieldId) );
                     break;
                 //====================================================================//
                 // Invoice Line Product Id
