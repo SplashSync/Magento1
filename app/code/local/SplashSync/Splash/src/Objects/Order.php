@@ -50,6 +50,7 @@ class Order extends AbstractObject
     use \Splash\Local\Objects\Order\ItemsTrait;
     use \Splash\Local\Objects\Order\MetaTrait;
     use \Splash\Local\Objects\Order\PaymentsTrait;
+    use \Splash\Local\Objects\Order\TrackingTrait;
     
     //====================================================================//
     // Object Definition Parameters	
