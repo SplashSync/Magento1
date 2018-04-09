@@ -19,6 +19,9 @@ echo "Configure Store Main Options"
 
 ./n98-magerun.phar --root-dir=htdocs config:get general/store_information/* 
 
+./n98-magerun.phar --root-dir=htdocs cache:clean
+./n98-magerun.phar cache:clean
+
 echo "Configure Splash Module Options"
 
 ./n98-magerun.phar --root-dir=htdocs config:set splashsync_splash_options/advanced/expert             0 
