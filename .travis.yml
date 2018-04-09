@@ -33,7 +33,7 @@ install:
     - phpenv config-rm xdebug.ini
     
     # Configure Php ...
-    - phpenv config-add build/myconfig.ini
+    - phpenv config-add build/phpconfig.ini
 
     # Install Magento & Modules
     - bash build/setup.sh
