@@ -45,6 +45,8 @@ echo "    Pass: [hidden]"
 echo "    Main DB: ${MAGENTO_DB_NAME}"
 echo
 
+cp -rf "${WORKSPACE}" "${BUILDENV}/htdocs/"
+
 echo "Create Database"
 mysql -u${MAGENTO_DB_USER} ${MYSQLPASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT} -e "DROP DATABASE IF EXISTS \`${MAGENTO_DB_NAME}\`; CREATE DATABASE \`${MAGENTO_DB_NAME}\`;"
 
@@ -56,7 +58,6 @@ mysql -u${MAGENTO_DB_USER} ${MYSQLPASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT
   --installationFolder="${BUILDENV}/htdocs" \
   --baseUrl="http://magento.local/" || { echo "Installing Magento failed"; exit 1; }
 
-cp -rf "${WORKSPACE}" "${BUILDENV}/htdocs/"
 cp -rf "${WORKSPACE}/build/phpunit.xml.dist" "${BUILDENV}/htdocs/phpunit.xml.dist"
 
 cd ${BUILDENV}
