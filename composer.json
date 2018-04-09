@@ -21,8 +21,8 @@
     },
 
     "require": {
-        "php":              "^5.6|^7.0",
-        "splash/phpcore":   "*"
+        "php":                              "^5.6|^7.0",
+        "splash/phpcore":                   ">1.4.1"
     },
     
     "require-dev": {
