@@ -157,7 +157,6 @@ trait PaymentsTrait {
                     ->setOrderFilter($this->Payment->getOrder())
                     ->addPaymentIdFilter($this->Payment->getId())
                     ->addTxnTypeFilter(Transaction::TYPE_PAYMENT)
-//                    ->setOrder('created_at', Varien_Data_Collection::SORT_ORDER_DESC)
                     ->setOrder('transaction_id', Varien_Data_Collection::SORT_ORDER_ASC);        
     }   
     

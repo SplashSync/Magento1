@@ -45,7 +45,19 @@ trait MainTrait {
     *   @abstract     Build Address Fields using FieldFactory
     */
     private function buildMainFields() {
-                
+
+        //====================================================================//
+        // CUSTOMER INFOS
+        //====================================================================//        
+        
+        //====================================================================//
+        // Email
+        $this->FieldsFactory()->Create(SPL_T_EMAIL)
+                ->Identifier("customer_email")
+                ->Name("Customer Email")
+                ->MicroData("http://schema.org/ContactPoint","email")
+                ->readOnly();  
+        
         //====================================================================//
         // ORDER STATUS
         //====================================================================//        
@@ -131,6 +143,7 @@ trait MainTrait {
             case 'grand_total_excl_tax':
                 $this->Out[$FieldName] = $this->Object->getSubtotal() + $this->Object->getShippingAmount();
                 break;
+            case 'customer_email':
             case 'grand_total':
                 $this->getData($FieldName);
                 break;

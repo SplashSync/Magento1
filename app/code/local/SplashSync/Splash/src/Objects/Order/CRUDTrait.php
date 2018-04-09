@@ -56,6 +56,7 @@ trait CRUDTrait {
         //====================================================================//
         // Load Linked Objects 
         $this->loadPayment($Order);
+        $this->loadTracking($Order);
         return $Order;
     }    
     

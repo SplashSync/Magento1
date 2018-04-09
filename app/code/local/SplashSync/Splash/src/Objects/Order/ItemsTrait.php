@@ -36,7 +36,6 @@ trait ItemsTrait {
     */
     private function buildItemsFields() {
         
-//        $ListName = "Products => ";
         $ListName = "";
         
         //====================================================================//
@@ -136,11 +135,19 @@ trait ItemsTrait {
                 // Order Line Direct Reading Data
                 case 'sku':
                 case 'name':
-                case 'discount_percent':
                     $Value = $Product->getData($FieldId);
                     break;
+                case 'discount_percent':
+                    if ( !empty($Product->getData($FieldId)) ) {
+                        $Value = $Product->getData($FieldId);
+                    } elseif ( $Product->getPriceInclTax() && $Product->getQty() ) {
+                        $Value = (double) 100 * $Product->getDiscountAmount() / ($Product->getPriceInclTax() * $Product->getQty());
+                    } else {
+                        $Value = 0;
+                    }
+                    break;                
                 case 'qty_ordered':
-                    $Value = (int) $Product->getData($FieldId);
+                    $Value = (int) ( $Product->getHasChildren() ? 0 : $Product->getData($FieldId) );
                     break;
                 //====================================================================//
                 // Order Line Product Id
@@ -421,8 +428,6 @@ trait ItemsTrait {
         
     }   
 
-
-    
     /**
      *  @abstract     Init Given Order Line Data For Update
      * 
@@ -452,8 +457,6 @@ trait ItemsTrait {
         }
     }
     
-
-
     /**
      *  @abstract     Add or Update Given Order Shipping Informations
      * 
