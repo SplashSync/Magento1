@@ -24,7 +24,7 @@ parameters:
         jsonlint:
             detect_key_conflicts: true
 #        phpmd:
-#            ruleset: ["./ruleset/phpmd.xml"]
+#            ruleset: ["./phpmd.xml"]
         securitychecker: ~
 #        phpcpd:
 #            directory: 'app/code/local/SplashSync/Splash/src'
