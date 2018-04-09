@@ -1,6 +1,16 @@
 cd /tmp/magetest
 
-echo "Store Main Options"
+echo "Insert Dummy data in Store"
+tools/n98-magerun.phar dev:module:disable SplashSync_Splash
+tools/n98-magerun.phar customer:create:dummy 5 en_US
+
+echo "Enable Splahs Module"
+tools/n98-magerun.phar dev:module:enable SplashSync_Splash
+tools/n98-magerun.phar dev:module:list 
+
+
+echo "Configure Store Main Options"
+
 tools/n98-magerun.phar --root-dir=htdocs config:set general/store_information/name                      "Magento 1" 
 tools/n98-magerun.phar --root-dir=htdocs config:set general/store_information/address                   "Store Address"
 tools/n98-magerun.phar --root-dir=htdocs config:set general/store_information/merchant_country          "France"
