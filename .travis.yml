@@ -18,7 +18,7 @@ matrix:
   - php: 5.6
 
 env:
-#    - MAGENTO_VERSION=magento-mirror-1.9.3.0 MAGENTO_DB_ALLOWSAME=1 
+#    - MAGENTO_VERSION=magento-mirror-1.9.0.1 MAGENTO_DB_ALLOWSAME=1 
     - MAGENTO_VERSION=magento-mirror-1.9.3.6 MAGENTO_DB_ALLOWSAME=1
 #  - MAGENTO_VERSION=magento-ce-1.9.0.1
 #  - MAGENTO_VERSION=magento-ce-1.8.1.0
@@ -54,7 +54,7 @@ after_failure:
     - phpunit --version
     - php -r "echo date_default_timezone_get();"
     - cd /tmp/magetest
-    - tools/n98-magerun.phar --version
-    - tools/n98-magerun.phar --root-dir=htdocs sys:modules:list   
-    - tools/n98-magerun.phar --root-dir=htdocs eav:attribute:list
-    - tools/n98-magerun.phar --root-dir=htdocs config:get general/locale/*     
+    - ./n98-magerun.phar --version
+    - ./n98-magerun.phar --root-dir=htdocs sys:modules:list   
+    - ./n98-magerun.phar --root-dir=htdocs eav:attribute:list
+    - ./n98-magerun.phar --root-dir=htdocs config:get general/locale/*     
