@@ -35,22 +35,22 @@ class SplashSync_Splash_Model_System_Config_Source_Product_Stock
 {
     public function toOptionArray()
     {
-	/**
-	 * Get the resource model
-	 */
-	$resource = Mage::getSingleton('core/resource');
-	/**
-	 * Retrieve the read connection
-	 */
-	$readConnection = $resource->getConnection('core_read');
-	/**
-	 * Prepare SQL Query
-	 */
-	$query = 'SELECT * FROM ' . $resource->getTableName('cataloginventory/stock');
-	/**
-	 * Execute the query and store the results in $results
-	 */
-	$results = $readConnection->fetchAll($query);
+    /**
+     * Get the resource model
+     */
+        $resource = Mage::getSingleton('core/resource');
+    /**
+     * Retrieve the read connection
+     */
+        $readConnection = $resource->getConnection('core_read');
+    /**
+     * Prepare SQL Query
+     */
+        $query = 'SELECT * FROM ' . $resource->getTableName('cataloginventory/stock');
+    /**
+     * Execute the query and store the results in $results
+     */
+        $results = $readConnection->fetchAll($query);
         //====================================================================//
         // Iterate all Stocks
         $Select = array();
@@ -63,7 +63,7 @@ class SplashSync_Splash_Model_System_Config_Source_Product_Stock
             );
         }
         //====================================================================//
-        // Return Sets List        
+        // Return Sets List
         return $Select;
     }
 }

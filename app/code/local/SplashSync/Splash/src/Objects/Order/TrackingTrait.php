@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -22,48 +22,50 @@ namespace Splash\Local\Objects\Order;
 /**
  * @abstract    Magento 1 Orders Tracking Fields Access
  */
-trait TrackingTrait {
+trait TrackingTrait
+{
     
     //====================================================================//
-    // General Class Variables	
+    // General Class Variables
     //====================================================================//
 
-    protected   $trackings          = Null;    
-    protected   $tracking           = array(
+    protected $trackings          = null;
+    protected $tracking           = array(
         "title"             =>      "",
         "carrier_code"      =>      "",
         "track_number"      =>      "",
         "track_url"         =>      "",
-    );    
+    );
   
     /**
     *   @abstract     Build Fields using FieldFactory
     */
-    private function buildFirstTrackingFields() {
+    private function buildFirstTrackingFields()
+    {
         
         //====================================================================//
-        // Order Shipping Method 
+        // Order Shipping Method
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("title")
                 ->Name("Shipping Method")
-                ->MicroData("http://schema.org/ParcelDelivery","provider")
+                ->MicroData("http://schema.org/ParcelDelivery", "provider")
                 ->ReadOnly();
 
         //====================================================================//
-        // Order Shipping Method 
+        // Order Shipping Method
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("carrier_code")
                 ->Name("Carrier Code")
-                ->MicroData("http://schema.org/ParcelDelivery","identifier")
-                ->ReadOnly();        
+                ->MicroData("http://schema.org/ParcelDelivery", "identifier")
+                ->ReadOnly();
         
         //====================================================================//
-        // Order Tracking Number 
+        // Order Tracking Number
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("track_number")
                 ->Name("Tracking Number")
-                ->MicroData("http://schema.org/ParcelDelivery","trackingNumber")
-                ->ReadOnly();        
+                ->MicroData("http://schema.org/ParcelDelivery", "trackingNumber")
+                ->ReadOnly();
         
         //====================================================================//
         // Order Tracking Url
@@ -72,41 +74,41 @@ trait TrackingTrait {
 //                ->InList("tracking")
 //                ->Name("Tracking Url")
 //                ->MicroData("http://schema.org/ParcelDelivery","trackingurl")
-//                ->ReadOnly();       
-                  
+//                ->ReadOnly();
     }
     
     /**
     *   @abstract     Build Fields using FieldFactory
     */
-    private function buildTrackingFields() {
+    private function buildTrackingFields()
+    {
         
         //====================================================================//
-        // Order Shipping Method 
+        // Order Shipping Method
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("title")
                 ->InList("tracking")
                 ->Name("Shipping Method")
-                ->MicroData("http://schema.org/ParcelDelivery","provider")
+                ->MicroData("http://schema.org/ParcelDelivery", "provider")
                 ->ReadOnly();
 
         //====================================================================//
-        // Order Shipping Method 
+        // Order Shipping Method
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("carrier_code")
                 ->InList("tracking")
                 ->Name("Carrier Code")
-                ->MicroData("http://schema.org/ParcelDelivery","identifier")
-                ->ReadOnly();        
+                ->MicroData("http://schema.org/ParcelDelivery", "identifier")
+                ->ReadOnly();
         
         //====================================================================//
-        // Order Tracking Number 
+        // Order Tracking Number
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("track_number")
                 ->InList("tracking")
                 ->Name("Tracking Number")
-                ->MicroData("http://schema.org/ParcelDelivery","trackingNumber")
-                ->ReadOnly();        
+                ->MicroData("http://schema.org/ParcelDelivery", "trackingNumber")
+                ->ReadOnly();
         
         //====================================================================//
         // Order Tracking Url
@@ -115,54 +117,51 @@ trait TrackingTrait {
 //                ->InList("tracking")
 //                ->Name("Tracking Url")
 //                ->MicroData("http://schema.org/ParcelDelivery","trackingurl")
-//                ->ReadOnly();       
-                  
+//                ->ReadOnly();
     }
     
     
     /**
      *  @abstract     Read Order Payment
-     * 
+     *
      *  @return         none
      */
     private function loadTracking($Order)
     {
         //====================================================================//
-        // Load Order Tracking Collection 
-        $this->trackings  =   $Order->getTracksCollection()->getItems(); 
+        // Load Order Tracking Collection
+        $this->trackings  =   $Order->getTracksCollection()->getItems();
         
         //====================================================================//
-        // Load First Tracking Number 
-        if ( $Order->getTracksCollection()->count() > 0 ) {
-            $this->tracking["title"]            =  $Order->getTracksCollection()->getFirstItem()->getTitle(); 
-            $this->tracking["carrier_code"]     =  $Order->getTracksCollection()->getFirstItem()->getCarrierCode(); 
-            $this->tracking["track_number"]     =  $Order->getTracksCollection()->getFirstItem()->getTrackNumber(); 
-        } 
-    }  
+        // Load First Tracking Number
+        if ($Order->getTracksCollection()->count() > 0) {
+            $this->tracking["title"]            =  $Order->getTracksCollection()->getFirstItem()->getTitle();
+            $this->tracking["carrier_code"]     =  $Order->getTracksCollection()->getFirstItem()->getCarrierCode();
+            $this->tracking["track_number"]     =  $Order->getTracksCollection()->getFirstItem()->getTrackNumber();
+        }
+    }
     
     /**
      *  @abstract     Read requested Field
-     * 
+     *
      *  @param        string    $Key                    Input List Key
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
-    private function getTrackingFields($Key,$FieldName)
+    private function getTrackingFields($Key, $FieldName)
     {
         $Index  =   0;
         //====================================================================//
         // Decode Field Name
-        $ListFieldName = $this->Lists()->InitOutput( $this->Out, "tracking",$FieldName);
+        $ListFieldName = $this->Lists()->InitOutput($this->Out, "tracking", $FieldName);
         
         //====================================================================//
         // Fill List with Data
         foreach ($this->trackings as $Tracking) {
             //====================================================================//
             // READ Fields
-            switch ($ListFieldName)
-            {
-                
+            switch ($ListFieldName) {
                 //====================================================================//
                 // Generic Infos
                 case 'title':
@@ -176,7 +175,7 @@ trait TrackingTrait {
             }
             //====================================================================//
             // Do Fill List with Data
-            $this->Lists()->Insert( $this->Out, "tracking",$FieldName,$Index,$Value);
+            $this->Lists()->Insert($this->Out, "tracking", $FieldName, $Index, $Value);
             $Index++;
         }
         unset($this->In[$Key]);
@@ -184,19 +183,17 @@ trait TrackingTrait {
 
     /**
      *  @abstract     Read requested Field
-     * 
+     *
      *  @param        string    $Key                    Input List Key
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
-    private function getFirstTrackingFields($Key,$FieldName)
+    private function getFirstTrackingFields($Key, $FieldName)
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName)
-        {
-
+        switch ($FieldName) {
             //====================================================================//
             // Generic Infos
             case 'title':
@@ -210,5 +207,4 @@ trait TrackingTrait {
         }
         unset($this->In[$Key]);
     }
-    
 }

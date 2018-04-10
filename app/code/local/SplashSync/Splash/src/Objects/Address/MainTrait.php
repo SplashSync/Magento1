@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -25,7 +25,8 @@ use Mage;
 /**
  * @abstract    Magento 1 Customers Address Main Fields Access
  */
-trait MainTrait {
+trait MainTrait
+{
 
     /**
     *   @abstract     Build Address Main Fields using FieldFactory
@@ -40,7 +41,7 @@ trait MainTrait {
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("street")
                 ->Name("Address")
-                ->MicroData("http://schema.org/PostalAddress","streetAddress")
+                ->MicroData("http://schema.org/PostalAddress", "streetAddress")
                 ->Group($AddressGroup)
                 ->isRequired();
         
@@ -49,7 +50,7 @@ trait MainTrait {
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("postcode")
                 ->Name("Zip/Postal Code")
-                ->MicroData("http://schema.org/PostalAddress","postalCode")
+                ->MicroData("http://schema.org/PostalAddress", "postalCode")
                 ->Group($AddressGroup)
                 ->isRequired();
         
@@ -58,7 +59,7 @@ trait MainTrait {
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("city")
                 ->Name("City")
-                ->MicroData("http://schema.org/PostalAddress","addressLocality")
+                ->MicroData("http://schema.org/PostalAddress", "addressLocality")
                 ->isRequired()
                 ->Group($AddressGroup)
                 ->isListed();
@@ -76,7 +77,7 @@ trait MainTrait {
         $this->FieldsFactory()->Create(SPL_T_STATE)
                 ->Identifier("region_id")
                 ->Name("StateCode")
-                ->MicroData("http://schema.org/PostalAddress","addressRegion")
+                ->MicroData("http://schema.org/PostalAddress", "addressRegion")
                 ->Group($AddressGroup)
                 ->NotTested();
         
@@ -94,7 +95,7 @@ trait MainTrait {
         $this->FieldsFactory()->Create(SPL_T_COUNTRY)
                 ->Identifier("country_id")
                 ->Name("CountryCode")
-                ->MicroData("http://schema.org/PostalAddress","addressCountry")
+                ->MicroData("http://schema.org/PostalAddress", "addressCountry")
                 ->Group($AddressGroup)
                 ->isRequired();
     }
@@ -102,18 +103,17 @@ trait MainTrait {
 
     /**
      *  @abstract     Read requested Field
-     * 
+     *
      *  @param        string    $Key                    Input List Key
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
-    private function getMainFields($Key,$FieldName)
+    private function getMainFields($Key, $FieldName)
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // Direct Readings
             case 'street':
@@ -144,33 +144,32 @@ trait MainTrait {
                 return;
         }
         unset($this->In[$Key]);
-    }    
+    }
 
     /**
      *  @abstract     Write Given Fields
-     * 
+     *
      *  @param        string    $FieldName              Field Identifier / Name
      *  @param        mixed     $Data                   Field Data
-     * 
+     *
      *  @return         none
      */
-    private function setMainFields($FieldName,$Data) 
+    private function setMainFields($FieldName, $Data)
     {
         
         //====================================================================//
         // WRITE Field
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // Direct Readings
             case 'street':
             case 'postcode':
             case 'city':
             case 'country_id':
-                if ( $this->Object->getData($FieldName) != $Data ) {
+                if ($this->Object->getData($FieldName) != $Data) {
                     $this->Object->setData($FieldName, $Data);
-                    $this->update = True;
-                }  
+                    $this->update = true;
+                }
                 break;
 
             //====================================================================//
@@ -180,16 +179,15 @@ trait MainTrait {
                 // Get Country ISO Id - From Inputs or From Current Objects
                 $CountryId  =   isset($this->In["country_id"])?$this->In["country_id"]:$this->Object->getData("country_id");
                 $RegionId   =   Mage::getModel('directory/region')
-                        ->loadByCode($Data,$CountryId)->getRegionId();
-                if ( ( $RegionId ) && $this->Object->getData($FieldName)  != $RegionId ) {
+                        ->loadByCode($Data, $CountryId)->getRegionId();
+                if (( $RegionId ) && $this->Object->getData($FieldName)  != $RegionId) {
                     $this->Object->setData($FieldName, $RegionId);
-                    $this->update = True;
-                }  
+                    $this->update = true;
+                }
                 unset($this->In[$FieldName]);
             default:
-                return;            
+                return;
         }
         unset($this->In[$FieldName]);
-    }     
-    
+    }
 }

@@ -55,7 +55,7 @@ class Product extends AbstractObject
     use \Splash\Local\Objects\Product\MetaTrait;
     
     //====================================================================//
-    // Object Definition Parameters	
+    // Object Definition Parameters
     //====================================================================//
     
     /**
@@ -66,37 +66,37 @@ class Product extends AbstractObject
     /**
      *  Object Name (Translated by Module)
      */
-    protected static    $NAME            =  "Product";
+    protected static $NAME            =  "Product";
     
     /**
-     *  Object Description (Translated by Module) 
+     *  Object Description (Translated by Module)
      */
-    protected static    $DESCRIPTION     =  "Magento 1 Product Object";    
+    protected static $DESCRIPTION     =  "Magento 1 Product Object";
     
     /**
-     *  Object Icon (FontAwesome or Glyph ico tag) 
+     *  Object Icon (FontAwesome or Glyph ico tag)
      */
-    protected static    $ICO     =  "fa fa-product-hunt";
+    protected static $ICO     =  "fa fa-product-hunt";
     
     /**
-     *  Object Synchronistion Limitations 
-     *  
+     *  Object Synchronistion Limitations
+     *
      *  This Flags are Used by Splash Server to Prevent Unexpected Operations on Remote Server
      */
-    protected static    $ALLOW_PUSH_CREATED         =  TRUE;        // Allow Creation Of New Local Objects
-    protected static    $ALLOW_PUSH_UPDATED         =  TRUE;        // Allow Update Of Existing Local Objects
-    protected static    $ALLOW_PUSH_DELETED         =  TRUE;        // Allow Delete Of Existing Local Objects
+    protected static $ALLOW_PUSH_CREATED         =  true;        // Allow Creation Of New Local Objects
+    protected static $ALLOW_PUSH_UPDATED         =  true;        // Allow Update Of Existing Local Objects
+    protected static $ALLOW_PUSH_DELETED         =  true;        // Allow Delete Of Existing Local Objects
     
     /**
-     *  Object Synchronistion Recommended Configuration 
+     *  Object Synchronistion Recommended Configuration
      */
-    protected static    $ENABLE_PUSH_CREATED       =  FALSE;        // Enable Creation Of New Local Objects when Not Existing
-    protected static    $ENABLE_PUSH_UPDATED       =  FALSE;        // Enable Update Of Existing Local Objects when Modified Remotly
-    protected static    $ENABLE_PUSH_DELETED       =  FALSE;        // Enable Delete Of Existing Local Objects when Deleted Remotly
+    protected static $ENABLE_PUSH_CREATED       =  false;        // Enable Creation Of New Local Objects when Not Existing
+    protected static $ENABLE_PUSH_UPDATED       =  false;        // Enable Update Of Existing Local Objects when Modified Remotly
+    protected static $ENABLE_PUSH_DELETED       =  false;        // Enable Delete Of Existing Local Objects when Deleted Remotly
 
-    protected static    $ENABLE_PULL_CREATED       =  TRUE;         // Enable Import Of New Local Objects 
-    protected static    $ENABLE_PULL_UPDATED       =  TRUE;         // Enable Import of Updates of Local Objects when Modified Localy
-    protected static    $ENABLE_PULL_DELETED       =  TRUE;         // Enable Delete Of Remotes Objects when Deleted Localy       
+    protected static $ENABLE_PULL_CREATED       =  true;         // Enable Import Of New Local Objects
+    protected static $ENABLE_PULL_UPDATED       =  true;         // Enable Import of Updates of Local Objects when Modified Localy
+    protected static $ENABLE_PULL_DELETED       =  true;         // Enable Delete Of Remotes Objects when Deleted Localy
     
     //====================================================================//
     // Class Main Functions
@@ -105,67 +105,58 @@ class Product extends AbstractObject
     
     /**
     *   @abstract     Return List Of Objects with required filters
-     * 
-    *   @param        string  $filter                   Filters/Search String for Contact List. 
-    *   @param        array   $params                   Search parameters for result List. 
-    *                         $params["max"]            Maximum Number of results 
-    *                         $params["offset"]         List Start Offset 
-    *                         $params["sortfield"]      Field name for sort list (Available fields listed below)    
-    *                         $params["sortorder"]      List Order Constraign (Default = ASC)    
-     * 
+     *
+    *   @param        string  $filter                   Filters/Search String for Contact List.
+    *   @param        array   $params                   Search parameters for result List.
+    *                         $params["max"]            Maximum Number of results
+    *                         $params["offset"]         List Start Offset
+    *                         $params["sortfield"]      Field name for sort list (Available fields listed below)
+    *                         $params["sortorder"]      List Order Constraign (Default = ASC)
+     *
     *   @return       array   $data                     List of all customers main data
     *                         $data["meta"]["total"]     ==> Total Number of results
     *                         $data["meta"]["current"]   ==> Total Number of results
     */
-    public function ObjectsList($filter=NULL,$params=NULL)
+    public function ObjectsList($filter = null, $params = null)
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__,__FUNCTION__);             
-	/* Get customer model, run a query */
-	$Collection = Mage::getModel('catalog/product')
-				  ->getCollection()
-				  ->addAttributeToSelect('*');        
-//        //====================================================================//
-//        // Setup filters
-//        // Add filters with names convertions. Added LOWER function to be NON case sensitive
-//        if ( !empty($filter) && is_string($filter)) {
-//            //====================================================================//
-//            // Search in Customer Company
-//            $Where  = " LOWER( c.`company` ) LIKE LOWER( '%" . $filter ."%') ";        
-//            //====================================================================//
-//            // Search in Customer FirstName
-//            $Where .= " OR LOWER( c.`firstname` ) LIKE LOWER( '%" . $filter ."%') ";        
-//            //====================================================================//
-//            // Search in Customer LastName
-//            $Where .= " OR LOWER( c.`lastname` ) LIKE LOWER( '%" . $filter ."%') ";        
-//            //====================================================================//
-//            // Search in Customer Email
-//            $Where .= " OR LOWER( c.`email` ) LIKE LOWER( '%" . $filter ."%') ";        
-//            $sql->where($Where);        
-//        } 
-        
+        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        /* Get customer model, run a query */
+        $Collection = Mage::getModel('catalog/product')
+                  ->getCollection()
+                  ->addAttributeToSelect('*');
+        //====================================================================//
+        // Setup filters
+        // Add filters with names convertions. Added LOWER function to be NON case sensitive
+        if ( !empty($filter) && is_string($filter)) {
+            $Collection->addFieldToFilter(
+                array(
+                    array('attribute' => 'sku',     'like' => "%" . $filter . "%"),
+                    array('attribute' => 'name',    'like' => "%" . $filter . "%"),
+                )
+            );
+        }        
         //====================================================================//
         // Setup sortorder
         $sortfield = empty($params["sortfield"])?"sku":$params["sortfield"];
         // Build ORDER BY
-        $Collection->setOrder($sortfield, $params["sortorder"] );
+        $Collection->setOrder($sortfield, $params["sortorder"]);
         //====================================================================//
         // Compute Total Number of Results
         $total      = $Collection->getSize();
         //====================================================================//
         // Build LIMIT
         $Collection->setPageSize($params["max"]);
-        if ( isset($params["max"]) || ($params["max"] > 0) ) {
-            $Collection->setCurPage( 1 + (int) ($params["offset"] / $params["max"]) );
-        } 
+        if (isset($params["max"]) || ($params["max"] > 0)) {
+            $Collection->setCurPage(1 + (int) ($params["offset"] / $params["max"]));
+        }
         //====================================================================//
         // Init Result Array
         $Data       = array();
         //====================================================================//
         // For each result, read information and add to $Data
-        foreach ($Collection->getItems() as $key => $Customer)
-        {
+        foreach ($Collection->getItems() as $key => $Customer) {
 //            $Data[$key]         = $Customer->toArray();
             $Data[$key]["id"]       = $Customer->getEntityId();
             $Data[$key]["sku"]      = $Customer->getSku();
@@ -174,14 +165,12 @@ class Product extends AbstractObject
             $Data[$key]["price"]    = $Customer->getPrice();
             
             $Data[$key]["qty"]      = $Customer->getStockItem()->getQty();
-            
         }
         //====================================================================//
         // Prepare List result meta infos
         $Data["meta"]["current"]    =   count($Data);  // Store Current Number of results
         $Data["meta"]["total"]      =   $total;  // Store Total Number of results
-        Splash::Log()->Deb("MsgLocalTpl",__CLASS__,__FUNCTION__,(count($Data)-1)." Products Found.");
+        Splash::Log()->Deb("MsgLocalTpl", __CLASS__, __FUNCTION__, (count($Data)-1)." Products Found.");
         return $Data;
-    } 
-
+    }
 }

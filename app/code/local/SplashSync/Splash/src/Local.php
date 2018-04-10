@@ -23,7 +23,7 @@ namespace Splash\Local;
 use Splash\Core\SplashCore      as Splash;
 use Mage;
 
-class Local 
+class Local
 {
     //====================================================================//
     // Class Constructor
@@ -33,9 +33,9 @@ class Local
      *      @abstract       Class Constructor (Used only if localy necessary)
      *      @return         int                     0 if KO, >0 if OK
      */
-    function __construct()
+    public function __construct()
     {
-        return True;
+        return true;
     }
 
 //====================================================================//
@@ -46,15 +46,15 @@ class Local
     
     /**
      *      @abstract       Return Local Server Parameters as Aarray
-     *                      
-     *      THIS FUNCTION IS MANDATORY 
-     * 
+     *
+     *      THIS FUNCTION IS MANDATORY
+     *
      *      This function called on each initialisation of the module
-     * 
+     *
      *      Result must be an array including mandatory parameters as strings
      *         ["DefaultLanguage"]   =>>  Name of Module Default Language
      *         =>>  An Osws_Local_MyObject Class with standard access functions
-     * 
+     *
      *      @return         array       $parameters
      */
     public static function Parameters()
@@ -68,8 +68,8 @@ class Local
         
         //====================================================================//
         // If Expert Mode => Allow Overide of Server Host Address
-        if ( Mage::getStoreConfig('splashsync_splash_options/advanced/expert') ) {
-            if ( !empty(Mage::getStoreConfig('splashsync_splash_options/advanced/server_url')) ) {
+        if (Mage::getStoreConfig('splashsync_splash_options/advanced/expert')) {
+            if (!empty(Mage::getStoreConfig('splashsync_splash_options/advanced/server_url'))) {
                 $Parameters["WsHost"]           =   Mage::getStoreConfig('splashsync_splash_options/advanced/server_url');
             }
         }
@@ -83,48 +83,31 @@ class Local
         $Parameters["localname"]            =   Mage::getStoreConfig('general/store_information/name');
         
         return $Parameters;
-    }    
+    }
     
     /**
      *      @abstract       Include Local Includes Files
-     * 
-     *      Include here any local files required by local functions. 
-     *      This Function is called each time the module is loaded 
-     * 
-     *      There may be differents scenarios depending if module is 
-     *      loaded as a library or as a NuSOAP Server. 
-     * 
+     *
+     *      Include here any local files required by local functions.
+     *      This Function is called each time the module is loaded
+     *
+     *      There may be differents scenarios depending if module is
+     *      loaded as a library or as a NuSOAP Server.
+     *
      *      This is triggered by global constant SPLASH_SERVER_MODE.
-     * 
-     *      @return         bool                     
+     *
+     *      @return         bool
      */
     public function Includes()
     {
-        //====================================================================//
-        // When Library is called in server mode ONLY
-        //====================================================================//
-        if ( SPLASH_SERVER_MODE )
-        {
-            // NOTHING TO DO 
-        }
-
-        //====================================================================//
-        // When Library is called in client mode ONLY
-        //====================================================================//
-        else
-        {
-            // NOTHING TO DO 
-        }
-
         //====================================================================//
         // When Library is called in both clinet & server mode
         //====================================================================//
 
         //====================================================================//
         // Initialize Magento ...
-        if ( !defined("BP") )
-        {
-            require_once( dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))).'/app/Mage.php' );
+        if (!defined("BP")) {
+            require_once(dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))).'/app/Mage.php');
             // Initialize Magento ...
             Mage::app();
 //            Mage::app()->setCurrentStore(\Mage_Core_Model_App::ADMIN_STORE_ID);
@@ -132,27 +115,27 @@ class Local
         //====================================================================//
         // Load Recurent Use Parameters
         $this->multilang    =   Mage::getStoreConfig('splashsync_splash_options/langs/multilang');
-        $this->default_lang =   Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');       
+        $this->default_lang =   Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');
         
         //====================================================================//
         //  Load Local Translation File
-        Splash::Translator()->Load("main@local");  
+        Splash::Translator()->Load("main@local");
         
-        return True;
-    }      
+        return true;
+    }
 
     /**
      *      @abstract       Return Local Server Self Test Result
-     *                      
-     *      THIS FUNCTION IS MANDATORY 
-     * 
+     *
+     *      THIS FUNCTION IS MANDATORY
+     *
      *      This function called during Server Validation Process
-     * 
+     *
      *      We recommand using this function to validate all functions or parameters
      *      that may be required by Objects, Widgets or any other modul specific action.
-     * 
+     *
      *      Use Module Logging system & translation tools to retrun test results Logs
-     * 
+     *
      *      @return         bool    global test result
      */
     public static function SelfTest()
@@ -160,87 +143,106 @@ class Local
 
         //====================================================================//
         //  Load Local Translation File
-        Splash::Translator()->Load("main@local");          
+        Splash::Translator()->Load("main@local");
         
         //====================================================================//
+        //  Verify - Core Parameters
+        if ( !self::SelfTestCoreParameters() ) {
+            return false;
+        }
+
+        //====================================================================//
+        //  Verify - Products Parameters
+        if ( !self::SelfTestProductsParameters() ) {
+            return false;
+        }
+        
+        return Splash::Log()->Msg("Self Test Passed");
+    }
+    
+    private static function SelfTestCoreParameters()
+    {
+        //====================================================================//
         //  Verify - Server Identifier Given
-        if ( empty(Mage::getStoreConfig('splashsync_splash_options/core/id')) ) {
+        if (empty(Mage::getStoreConfig('splashsync_splash_options/core/id'))) {
             return Splash::Log()->Err("ErrSelfTestNoWsId");
-        }        
+        }
                 
         //====================================================================//
         //  Verify - Server Encrypt Key Given
-        if ( empty(Mage::getStoreConfig('splashsync_splash_options/core/key')) ) {
+        if (empty(Mage::getStoreConfig('splashsync_splash_options/core/key'))) {
             return Splash::Log()->Err("ErrSelfTestNoWsKey");
-        }        
-        
-        //====================================================================//
-        //  Verify - Default Language is Given
-        if ( empty(Mage::getStoreConfig('splashsync_splash_options/core/lang')) ) {
-            return Splash::Log()->Err("ErrSelfTestDfLang");
-        }        
-
-        
-        //====================================================================//
-        //  Verify - User Selected
-        if ( empty(Mage::getStoreConfig('splashsync_splash_options/user/login')) || empty(Mage::getStoreConfig('splashsync_splash_options/user/pwd')) ) {
-            return Splash::Log()->Err("ErrSelfTestNoUser");
-        }        
-
-        //====================================================================//
-        //  Verify - FIELDS TRANSLATIONS CONFIG
-        if ( !self::validateLanguageParameters() )
-        {
-            return False;
         }
         
         //====================================================================//
+        //  Verify - Default Language is Given
+        if (empty(Mage::getStoreConfig('splashsync_splash_options/core/lang'))) {
+            return Splash::Log()->Err("ErrSelfTestDfLang");
+        }
+
+        //====================================================================//
+        //  Verify - User Selected
+        if (empty(Mage::getStoreConfig('splashsync_splash_options/user/login')) || empty(Mage::getStoreConfig('splashsync_splash_options/user/pwd'))) {
+            return Splash::Log()->Err("ErrSelfTestNoUser");
+        }
+
+        //====================================================================//
+        //  Verify - FIELDS TRANSLATIONS CONFIG
+        if (!self::validateLanguageParameters()) {
+            return false;
+        }
+        
+        
+        return true;
+    }
+
+    private static function SelfTestProductsParameters()
+    {
+
+        //====================================================================//
         //  Verify - PRODUCT DEFAULT ATTRIBUTE SET
         $AttributeSetId =   Mage::getStoreConfig('splashsync_splash_options/products/attribute_set');
-        if ( empty($AttributeSetId) ) {
+        if (empty($AttributeSetId)) {
             return Splash::Log()->Err("No Default Product Attribute Set Selected");
-        }        
+        }
         $AttributeSet    =   Mage::getModel('eav/entity_attribute_set')->load($AttributeSetId);
-        if ( !$AttributeSet->getAttributeSetId() ) {
+        if (!$AttributeSet->getAttributeSetId()) {
             return Splash::Log()->Err("Wrong Product Attribute Set Identifier");
-        }        
+        }
         //====================================================================//
         //  Verify - PRODUCT DEFAULT STOCK
         $StockId    =   Mage::getStoreConfig('splashsync_splash_options/products/default_stock');
-        if ( empty($StockId) ) {
+        if (empty($StockId)) {
             return Splash::Log()->Err("No Default Product Warehouse Selected");
-        }        
+        }
         $Stock    =   Mage::getModel('cataloginventory/stock')->load($StockId);
-        if ( !$Stock->getStockId() ) {
+        if (!$Stock->getStockId()) {
             return Splash::Log()->Err("Wrong Product Warehouse Selected");
-        }        
+        }
         
         //====================================================================//
         //  Verify - Product Prices Include Tax Warning
-        if ( Mage::getStoreConfig('tax/calculation/price_includes_tax') ) {
+        if (Mage::getStoreConfig('tax/calculation/price_includes_tax')) {
             Splash::Log()->War("You selected to store Products Prices Including Tax. It is highly recommanded to store Product Price without Tax to work with Splash.");
-        }        
+        }
         //====================================================================//
         //  Verify - Shipping Prices Include Tax Warning
-        if ( Mage::getStoreConfig('tax/calculation/shipping_includes_tax') ) {
+        if (Mage::getStoreConfig('tax/calculation/shipping_includes_tax')) {
             Splash::Log()->War("You selected to store Shipping Prices Including Tax. It is highly recommanded to store Shipping Price without Tax to work with Splash.");
-        }        
+        }
         
-        return Splash::Log()->Msg("Self Test Passed");
-    }       
+        return true;
+    }
     
     /**
      *  @abstract   Update Server Informations with local Data
-     * 
+     *
      *  @param     arrayobject  $Informations   Informations Inputs
-     * 
+     *
      *  @return     arrayobject
      */
     public function Informations($Informations)
     {
-        global $conf;
-        $g = $conf->global;
-        
         //====================================================================//
         // Init Response Object
         $Response = $Informations;
@@ -274,10 +276,10 @@ class Local
         
         //====================================================================//
         // Module Informations
-        $Response->moduleversion    = $this->getExtensionVersion() . ' (Splash Php Core ' . SPLASH_VERSION . ')'; 
+        $Response->moduleversion    = $this->getExtensionVersion() . ' (Splash Php Core ' . SPLASH_VERSION . ')';
                 
         return $Response;
-    }    
+    }
     
 //====================================================================//
 // *******************************************************************//
@@ -287,16 +289,16 @@ class Local
     
     /**
      *      @abstract       Return Local Server Test Parameters as Aarray
-     *                      
+     *
      *      THIS FUNCTION IS OPTIONNAL - USE IT ONLY IF REQUIRED
-     * 
+     *
      *      This function called on each initialisation of module's tests sequences.
      *      It's aim is to overide general Tests settings to be adjusted to local system.
-     * 
+     *
      *      Result must be an array including parameters as strings or array.
-     * 
+     *
      *      @see Splash\Tests\Tools\ObjectsCase::settings for objects tests settings
-     * 
+     *
      *      @return         array       $parameters
      */
     public static function TestParameters()
@@ -316,9 +318,9 @@ class Local
         
         //====================================================================//
         // Single Language Mode
-        if ( empty($multilang) && !empty($default_lang) ) {
+        if (empty($multilang) && !empty($default_lang)) {
             $Parameters["Langs"][] = Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');
-        } 
+        }
         
         //====================================================================//
         // Setup Magento Prices Parameters
@@ -329,40 +331,39 @@ class Local
         $Store              =   Mage::app()->getStore();
         $TaxCalculation     =   Mage::getModel('tax/calculation');
         $TaxRequest         =   $TaxCalculation->getRateRequest(null, null, null, $Store);
-        $AvailableTaxes     =   $TaxCalculation->getRatesForAllProductTaxClasses($TaxRequest);    
+        $AvailableTaxes     =   $TaxCalculation->getRatesForAllProductTaxClasses($TaxRequest);
         //====================================================================//
         // Setup Appliable Tax Rate
-        if( !empty($AvailableTaxes) ) {
-            $Parameters["VAT"]              = array_shift($AvailableTaxes); 
+        if (!empty($AvailableTaxes)) {
+            $Parameters["VAT"]              = array_shift($AvailableTaxes);
         }
         
-        $Parameters["Currency"]         = Mage::app()->getStore()->getCurrentCurrencyCode(); 
-        $Parameters["CurrencySymbol"]   = Mage::app()->getLocale()->currency($Parameters["Currency"])->getSymbol(); 
-        $Parameters["PriceBase"]        = ( (bool) Mage::getStoreConfig('tax/calculation/price_includes_tax') ) ? "TTC" : "HT"; 
-        $Parameters["PricesPrecision"]  = 3; 
+        $Parameters["Currency"]         = Mage::app()->getStore()->getCurrentCurrencyCode();
+        $Parameters["CurrencySymbol"]   = Mage::app()->getLocale()->currency($Parameters["Currency"])->getSymbol();
+        $Parameters["PriceBase"]        = ( (bool) Mage::getStoreConfig('tax/calculation/price_includes_tax') ) ? "TTC" : "HT";
+        $Parameters["PricesPrecision"]  = 3;
         
         
         return $Parameters;
-    }   
+    }
     
     /**
      *      @abstract       Return Local Server Test Sequences as Aarray
-     *                      
+     *
      *      THIS FUNCTION IS OPTIONNAL - USE IT ONLY IF REQUIRED
-     * 
+     *
      *      This function called on each initialization of module's tests sequences.
      *      It's aim is to list different configurations for testing on local system.
-     * 
+     *
      *      If Name = List, Result must be an array including list of Sequences Names.
-     * 
+     *
      *      If Name = ASequenceName, Function will Setup Sequence on Local System.
-     * 
+     *
      *      @return         array       $Sequences
-     */    
-    public static function TestSequences($Name = Null)
+     */
+    public static function TestSequences($Name = null)
     {
-        switch($Name) {
-            
+        switch ($Name) {
             case "ProductVATIncluded":
                 Splash::Local()->LoadLocalUser();
                 Mage::getConfig()->saveConfig('tax/calculation/price_includes_tax', '1');
@@ -377,9 +378,8 @@ class Local
             
             case "List":
                 return array( "ProductVATIncluded" , "ProductVATExcluded" );
-                
         }
-    }      
+    }
     
 //====================================================================//
 // *******************************************************************//
@@ -395,8 +395,8 @@ class Local
     {
         //====================================================================//
         // Verify User Not Already Authenticated
-        if ( Mage::registry('isSecureArea') ) {
-            return True;
+        if (Mage::registry('isSecureArea')) {
+            return true;
         }
                 
         //====================================================================//
@@ -407,16 +407,16 @@ class Local
         
         //====================================================================//
         // Safety Check
-        if ( empty($Login) || empty($Pwd) ) {
+        if (empty($Login) || empty($Pwd)) {
             return Splash::Log()->Err("ErrSelfTestNoUser");
-        }        
+        }
         
         //====================================================================//
         // Authenticate Admin User
-        if (Mage::getModel('admin/user')->authenticate($Login, $Pwd) ) {
+        if (Mage::getModel('admin/user')->authenticate($Login, $Pwd)) {
             Mage::register('isSecureArea', true);
-            return True;
-        }        
+            return true;
+        }
         return Splash::Log()->Err("ErrUnableToLoginUser");
     }
     
@@ -424,71 +424,71 @@ class Local
     *   @abstract   Generic Delete of requested Object
     *   @param      string      $Type           Object Magento Type
     *   @param      int         $Id             Object Id.  If NULL, Object needs to be created.
-    *   @return     int                         0 if KO, >0 if OK 
-    */    
-    public function ObjectDelete($Type, $Id=NULL)
+    *   @return     int                         0 if KO, >0 if OK
+    */
+    public function ObjectDelete($Type, $Id = null)
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__,__FUNCTION__);    
+        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
         //====================================================================//
-        // Safety Checks 
+        // Safety Checks
         if (empty($Id)) {
-            return Splash::Log()->Err("ErrSchNoObjectId",__CLASS__."::".__FUNCTION__);
+            return Splash::Log()->Err("ErrSchNoObjectId", __CLASS__."::".__FUNCTION__);
         }
         //====================================================================//
         // Initialize Remote Admin user ...
-        if ( !Splash::Local()->LoadLocalUser() ) {
-            return True;       
-        }      
+        if (!Splash::Local()->LoadLocalUser()) {
+            return true;
+        }
         //====================================================================//
         // Load Object From DataBase
         //====================================================================//
         $Object = Mage::getModel($Type)->load($Id);
-        if ( $Object->getEntityId() != $Id )   {
-            return Splash::Log()->War("ErrLocalTpl",__CLASS__,__FUNCTION__,"Unable to load (" . $Id . ").");
-        }          
+        if ($Object->getEntityId() != $Id) {
+            return Splash::Log()->War("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to load (" . $Id . ").");
+        }
         //====================================================================//
         // Delete Object From DataBase
         //====================================================================//
         $Object->delete();
-        return True;       
-    }   
+        return true;
+    }
     
     /**
      *   @abstract   Generic Save of requested Object
      *   @param      mixed      $Object          Magento Object
      *   @param      bool       $Updated         Object Updated Flag.  If False, no action but dispatch a Debug & Trace Message.
-     *   @param      string     $Name            Object Name for Messaging. 
-     *   @return     int                         Magento Object Id 
-     */    
-    public function ObjectSave($Object, $Updated = True, $Name = "Object")
+     *   @param      string     $Name            Object Name for Messaging.
+     *   @return     int                         Magento Object Id
+     */
+    public function ObjectSave($Object, $Updated = true, $Name = "Object")
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__,__FUNCTION__);    
+        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Verify Update Is requiered
-        if ( $Updated == False ) {
-            Splash::Log()->Deb("MsgLocalNoUpdateReq",__CLASS__,__FUNCTION__);
+        if ($Updated == false) {
+            Splash::Log()->Deb("MsgLocalNoUpdateReq", __CLASS__, __FUNCTION__);
             return $Object->getEntityId();
         }
         //====================================================================//
         // If Id Given = > Update Object
         //====================================================================//
         $Object->save();
-        if ( $Object->_hasDataChanges ) {  
-            return Splash::Log()->Err("ErrLocalTpl",__CLASS__,__FUNCTION__,"Unable to update (" . $Object->getEntityId() . ").");
+        if ($Object->_hasDataChanges) {
+            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to update (" . $Object->getEntityId() . ").");
         }
-        Splash::Log()->Deb("MsgLocalTpl",__CLASS__,__FUNCTION__,$Name . " Updated");
-        return $Object->getEntityId();   
-    } 
+        Splash::Log()->Deb("MsgLocalTpl", __CLASS__, __FUNCTION__, $Name . " Updated");
+        return $Object->getEntityId();
+    }
     
     /**
      *   @abstract   Generic - Compute Numeric Values Changes for a Given Object
      *   @param      mixed      $Object          Magento Object
-     *   @return     array                       Result Array 
-     */    
+     *   @return     array                       Result Array
+     */
     public function ObjectChanges($Object)
     {
         //====================================================================//
@@ -496,32 +496,32 @@ class Local
         $Changes = $Object->getOrigData();
         //====================================================================//
         // Compute Data Changes
-        array_walk_recursive($Object->getData(), function($item, $key) use (&$Changes){
-            if ( isset($Changes[$key]) && is_numeric($item) && is_numeric($Changes[$key])) {
+        array_walk_recursive($Object->getData(), function ($item, $key) use (&$Changes) {
+            if (isset($Changes[$key]) && is_numeric($item) && is_numeric($Changes[$key])) {
                 $Changes[$key] = $item - $Changes[$key];
             } else {
-                $Changes[$key] = Null;
+                $Changes[$key] = null;
             }
         });
 
         return $Changes;
-    }    
+    }
         
 //====================================================================//
 //  Magento Dedicated Parameter SelfTests
 //====================================================================//
     /**
      *   @abstract   Verify Langage Parameters are correctly set.
-     *   @return     mixed 
-     */    
+     *   @return     mixed
+     */
     public static function validateLanguageParameters()
     {
         //====================================================================//
         //  Verify - SINGLE LANGUAGE MODE
-        if (    empty(Mage::getStoreConfig('splashsync_splash_options/langs/multilang')) ) {
-            if (    empty(Mage::getStoreConfig('splashsync_splash_options/langs/default_lang')) ) {
+        if (empty(Mage::getStoreConfig('splashsync_splash_options/langs/multilang'))) {
+            if (empty(Mage::getStoreConfig('splashsync_splash_options/langs/default_lang'))) {
                 return Splash::Log()->Err("In single Language mode, You must select a default Language for Multilang Fields");
-            }        
+            }
             return true;
         }
         
@@ -529,13 +529,13 @@ class Local
         //  Verify - MULTILANG MODE - ALL STORES HAVE AN ISO LANGUAGE
         foreach (Mage::app()->getWebsites() as $Website) {
             foreach ($Website->getStores() as $Store) {
-                if ( empty($Store->getConfig('splashsync_splash_options/langs/store_lang')) ) {
-                    return Splash::Log()->Err("Multi-Language mode, You must select a Language for Store: " . $Store->getName() );
+                if (empty($Store->getConfig('splashsync_splash_options/langs/store_lang'))) {
+                    return Splash::Log()->Err("Multi-Language mode, You must select a Language for Store: " . $Store->getName());
                 }
             }
-        }       
+        }
         return true;
-    }   
+    }
     
 //====================================================================//
 //  Magento Getters & Setters
@@ -547,68 +547,64 @@ class Local
      *      @param          array       $key        Id of a Multilangual Contents
      *      @return         int                     0 if KO, 1 if OK
      */
-    public function getMultilang(&$Object=Null,$key=Null)
+    public function getMultilang(&$Object = null, $key = null)
     {
-        if ( empty($this->multilang) && !empty($this->default_lang) ) {
+        if (empty($this->multilang) && !empty($this->default_lang)) {
             return array(
                 Mage::getStoreConfig('splashsync_splash_options/langs/default_lang') => $Object->getData($key)
             );
         }
 
-Splash::Log()->www("Object" , $Object->getData() );
-
+        Splash::Log()->www("Object", $Object->getData());
     }
 
     /**
      *      @abstract       Update Multilangual Fields of an Object
-     * 
+     *
      *      @param          object      $Object     Pointer to Prestashop Object
      *      @param          array       $key        Id of a Multilangual Contents
      *      @param          array       $Data       New Multilangual Contents
      *      @param          int         $MaxLength  Maximum Contents Lenght
-     * 
+     *
      *      @return         bool                     0 if no update needed, 1 if update needed
      */
-    public function setMultilang($Object=Null,$key=Null,$Data=Null,$MaxLength=null)
+    public function setMultilang($Object = null, $key = null, $Data = null, $MaxLength = null)
     {
-        //====================================================================//        
+        //====================================================================//
         // Check Received Data Are Valid
-        if ( !is_array($Data) && !is_a($Data, "ArrayObject") ) { 
-            return False;
+        if (!is_array($Data) && !is_a($Data, "ArrayObject")) {
+            return false;
         }
         
-        $UpdateRequired = False;
+        $UpdateRequired = false;
         
-        if ( empty($this->multilang) && !empty($this->default_lang) ) {
-            //====================================================================//        
+        if (empty($this->multilang) && !empty($this->default_lang)) {
+            //====================================================================//
             // Compare Data
-            if ( !array_key_exists($this->default_lang,$Data) 
-                ||  ( $Object->getData($key) === $Data[$this->default_lang]) ) {             
+            if (!array_key_exists($this->default_lang, $Data)
+                ||  ( $Object->getData($key) === $Data[$this->default_lang]) ) {
                 return $UpdateRequired;
             }
-            //====================================================================//        
+            //====================================================================//
             // Verify Data Lenght
-            if ( $MaxLength &&  ( strlen($Data[$this->default_lang]) > $MaxLength) ) {             
-                Splash::Log()->War("MsgLocalTpl",__CLASS__,__FUNCTION__,"Text is too long for field " . $key . ", modification skipped.");
+            if ($MaxLength &&  ( strlen($Data[$this->default_lang]) > $MaxLength)) {
+                Splash::Log()->War("MsgLocalTpl", __CLASS__, __FUNCTION__, "Text is too long for field " . $key . ", modification skipped.");
                 return $UpdateRequired;
             }
-            //====================================================================//        
+            //====================================================================//
             // Update Data
-            $Object->setData($key,$Data[$this->default_lang]);
-            $UpdateRequired = True;
-        }   
+            $Object->setData($key, $Data[$this->default_lang]);
+            $UpdateRequired = true;
+        }
         
         return $UpdateRequired;
-    }     
+    }
 
     private function getExtensionVersion()
     {
-        if ( !isset(Mage::getConfig()->getNode()->modules->SplashSync_Splash->version) ) {
+        if (!isset(Mage::getConfig()->getNode()->modules->SplashSync_Splash->version)) {
             return 'Unknown';
         }
         return (string) Mage::getConfig()->getNode()->modules->SplashSync_Splash->version;
     }
-
 }
-
-?>

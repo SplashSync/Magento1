@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -30,7 +30,8 @@ use Mage_Core_Exception;
 /**
  * @abstract    Magento 1 Order MAin Fields Access
  */
-trait MainTrait {
+trait MainTrait
+{
     
     private $AvailableStatus = array(
                                     "OrderPaymentDue"       => "Payment Due",
@@ -44,41 +45,42 @@ trait MainTrait {
     /**
     *   @abstract     Build Address Fields using FieldFactory
     */
-    private function buildMainFields() {
+    private function buildMainFields()
+    {
 
         //====================================================================//
         // CUSTOMER INFOS
-        //====================================================================//        
+        //====================================================================//
         
         //====================================================================//
         // Email
         $this->FieldsFactory()->Create(SPL_T_EMAIL)
                 ->Identifier("customer_email")
                 ->Name("Customer Email")
-                ->MicroData("http://schema.org/ContactPoint","email")
-                ->readOnly();  
+                ->MicroData("http://schema.org/ContactPoint", "email")
+                ->readOnly();
         
         //====================================================================//
         // ORDER STATUS
-        //====================================================================//        
+        //====================================================================//
 
         //====================================================================//
         // ?ot All Order Status are Availables For Debug & Tests
-        if ( SPLASH_DEBUG ) {
+        if (SPLASH_DEBUG) {
             unset($this->AvailableStatus["OrderCancelled"]);
             unset($this->AvailableStatus["OrderReturned"]);
             unset($this->AvailableStatus["OrderDelivered"]);
-        }        
+        }
         
         //====================================================================//
         // Order Current Status
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("state")
                 ->Name("Status")
-                ->MicroData("http://schema.org/Order","orderStatus")
+                ->MicroData("http://schema.org/Order", "orderStatus")
                 ->isListed()
                 ->AddChoices($this->AvailableStatus)
-                ;      
+                ;
         
         //====================================================================//
         // PRICES INFORMATIONS
@@ -89,7 +91,7 @@ trait MainTrait {
         $this->FieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("grand_total_excl_tax")
                 ->Name("Total (tax excl.)" . " (" . Mage::app()->getStore()->getCurrentCurrencyCode() . ")")
-                ->MicroData("http://schema.org/Invoice","totalPaymentDue")
+                ->MicroData("http://schema.org/Invoice", "totalPaymentDue")
                 ->ReadOnly();
         
         //====================================================================//
@@ -97,46 +99,42 @@ trait MainTrait {
         $this->FieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("grand_total")
                 ->Name("Total (tax incl.)" . " (" . Mage::app()->getStore()->getCurrentCurrencyCode() . ")")
-                ->MicroData("http://schema.org/Invoice","totalPaymentDueTaxIncluded")
+                ->MicroData("http://schema.org/Invoice", "totalPaymentDueTaxIncluded")
                 ->isListed()
-                ->ReadOnly();        
+                ->ReadOnly();
         
         //====================================================================//
         // ORDER Currency Data
-        //====================================================================//        
+        //====================================================================//
         
         //====================================================================//
-        // Order Currency 
+        // Order Currency
         $this->FieldsFactory()->Create(SPL_T_CURRENCY)
                 ->Identifier("order_currency_code")
                 ->Name("Currency")
-                ->MicroData("https://schema.org/PriceSpecification","priceCurrency");
+                ->MicroData("https://schema.org/PriceSpecification", "priceCurrency");
 
         //====================================================================//
-        // Order Currency 
+        // Order Currency
         $this->FieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("base_to_order_rate")
                 ->Name("Currency Rate")
-                ->MicroData("https://schema.org/PriceSpecification","priceCurrencyRate");
-        
-        return;
+                ->MicroData("https://schema.org/PriceSpecification", "priceCurrencyRate");
     }
         
     /**
      *  @abstract     Read requested Field
-     * 
+     *
      *  @param        string    $Key                    Input List Key
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
-    private function getMainFields($Key,$FieldName)
+    private function getMainFields($Key, $FieldName)
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName)
-        {
-            
+        switch ($FieldName) {
             //====================================================================//
             // PRICE INFORMATIONS
             //====================================================================//
@@ -150,19 +148,19 @@ trait MainTrait {
             
             //====================================================================//
             // ORDER STATUS
-            //====================================================================//   
+            //====================================================================//
             case 'state':
                 $this->Out[$FieldName]  = self::getStandardOrderState($this->Object->getState());
-            break;    
+                break;
         
         
             //====================================================================//
             // ORDER Currency Data
-            //====================================================================//        
+            //====================================================================//
             case 'order_currency_code':
             case 'base_to_order_rate':
                 $this->getData($FieldName);
-                break;  
+                break;
                 
             default:
                 return;
@@ -175,32 +173,31 @@ trait MainTrait {
     
     /**
      *  @abstract     Write Given Fields
-     * 
+     *
      *  @param        string    $FieldName              Field Identifier / Name
      *  @param        mixed     $Data                   Field Data
-     * 
+     *
      *  @return         none
      */
-    private function setMainFields($FieldName,$Data) 
-    {   
+    private function setMainFields($FieldName, $Data)
+    {
         //====================================================================//
         // WRITE Field
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // ORDER STATUS
-            //====================================================================//   
+            //====================================================================//
             case 'state':
                 $this->setOrderStatus($Data);
-            break;                           
+                break;
                 
             //====================================================================//
             // ORDER Currency Data
-            //====================================================================//        
+            //====================================================================//
             case 'order_currency_code':
             case 'base_to_order_rate':
-                $this->setData($FieldName,$Data);
-                break;          
+                $this->setData($FieldName, $Data);
+                break;
                 
             default:
                 return;
@@ -214,14 +211,14 @@ trait MainTrait {
 
     /**
      *   @abstract   Get Standardized Order Status
-     * 
-     *   @return     bool 
+     *
+     *   @return     bool
      */
-    public static function getStandardOrderState($State) {
+    public static function getStandardOrderState($State)
+    {
         //====================================================================//
         // Generate Schema.org orderStatus From Order State
-        switch ($State)
-        {
+        switch ($State) {
             case MageOrder::STATE_NEW:
             case MageOrder::STATE_PENDING_PAYMENT:
                 return "OrderPaymentDue";
@@ -239,18 +236,18 @@ trait MainTrait {
                 return "OrderProblem";
         }
         return "OrderDelivered";
-    }     
+    }
     
     /**
      *   @abstract   Get Magento Order Status
-     * 
-     *   @return     bool 
+     *
+     *   @return     bool
      */
-    public static function getMagentoOrderState($State) {
+    public static function getMagentoOrderState($State)
+    {
         //====================================================================//
         // Generate Magento Order State from Schema.org orderStatus
-        switch ($State)
-        {
+        switch ($State) {
             case "OrderPaymentDue":
                 return MageOrder::STATE_PENDING_PAYMENT;
             case "OrderProcessing":
@@ -267,83 +264,48 @@ trait MainTrait {
                 return MageOrder::STATE_HOLDED;
         }
         return MageOrder::STATE_COMPLETE;
-    }      
+    }
         
 
     /**
      *   @abstract   Check if this Order was Created by Splash
-     * 
-     *   @return     bool 
+     *
+     *   @return     bool
      */
-    private function isSplash() {
-        return ( $this->Object->getExtOrderId() === self::SPLASH_LABEL )? True:False;
-    }     
+    private function isSplash()
+    {
+        return ( $this->Object->getExtOrderId() === self::SPLASH_LABEL )? true:false;
+    }
 
     /**
      *   @abstract   Update Order Status
-     * 
+     *
      *   @param      string     $Status         Schema.org Order Status String
-     * 
-     *   @return     bool 
+     *
+     *   @return     bool
      */
-    private function setOrderStatus($Status) {
+    private function setOrderStatus($Status)
+    {
         
-        if ( !$this->isSplash() ) {
-            Splash::Log()->War("You Cannot Change Status of Orders Created on Magento");  
-            return True;
+        if (!$this->isSplash()) {
+            Splash::Log()->War("You Cannot Change Status of Orders Created on Magento");
+            return true;
         }
-
-//Splash::Log()->www("Payment" , $this->Object->getPayment()->getData());
 
         //====================================================================//
         // Generate Magento Order State from Schema.org orderStatus
-        if ( $this->Object->getState() == self::getMagentoOrderState($Status) ) {
-            return True;
+        if ($this->Object->getState() == self::getMagentoOrderState($Status)) {
+            return true;
         }
         
         //====================================================================//
         // Update Order State if Requiered
         try {
-            
-            
             //====================================================================//
             // EXECUTE SYSTEM ACTIONS if Necessary
-            switch ($Status)
-            {
-                case "OrderPaymentDue":
-                    $this->Object->setState(MageOrder::STATE_PENDING_PAYMENT, True, 'Updated by SplashSync Module',True);
-                    break;
-                case "OrderProcessing":
-                case "OrderInTransit":
-                case "OrderPickupAvailable":
-                    $this->Object->setState(MageOrder::STATE_PROCESSING, True, 'Updated by SplashSync Module',True);
-                    break;
-                case "OrderDelivered":
-                    $this->Object->setData('state', MageOrder::STATE_COMPLETE);
-                    $this->Object->setStatus(MageOrder::STATE_COMPLETE);
-                    $this->Object->addStatusHistoryComment('Updated by SplashSync Module', false);
-                    break;
-                case "OrderReturned":
-                    $this->Object->setData('state', MageOrder::STATE_CLOSED);
-                    $this->Object->setStatus(MageOrder::STATE_CLOSED);
-                    $this->Object->addStatusHistoryComment('Updated by SplashSync Module', false);
-//                    $this->Object->setState(MageOrder::STATE_CLOSED, True, 'Updated by SplashSync Module',True);
-                    break;
-                case "OrderCancelled":
-//                    $this->Object->setState(MageOrder::STATE_CANCELED, True, 'Updated by SplashSync Module',True);
-                    $this->Object->cancel();
-                    break;
-                case "OrderProblem":
-                    $this->Object->hold();
-//                    $this->Object->setData('state', MageOrder::STATE_HOLDED);
-//                    $this->Object->setStatus(MageOrder::STATE_HOLDED);
-//                    $this->Object->addStatusHistoryComment('Updated by SplashSync Module', false);
-                    break;
-            }        
-
+            $this->doOrderStatusUpdate($Status);
         } catch (Mage_Core_Exception $exc) {
-//            Splash::Log()->War($exc->getMessage());  
-            Splash::Log()->Err("ErrLocalTpl",__CLASS__,__FUNCTION__,$exc->getMessage());
+            Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, $exc->getMessage());
         }
             
 //            //====================================================================//
@@ -351,11 +313,52 @@ trait MainTrait {
 //            try {
 //                $this->Object->setState(self::getMagentoOrderState($Status), True, 'Updated by SplashSync Module',True);
 //            } catch (Mage_Core_Exception $exc) {
-//            }            
+//            }
         
         $this->needUpdate();
-        return True;
-    }    
-        
+        return true;
+    }
     
+    /**
+     *   @abstract   Try Update of Order Status
+     *
+     *   @param      string     $Status         Schema.org Order Status String
+     *
+     *   @return     bool
+     */
+    private function doOrderStatusUpdate($Status)
+    {
+        switch ($Status) {
+            case "OrderPaymentDue":
+                $this->Object->setState(MageOrder::STATE_PENDING_PAYMENT, true, 'Updated by SplashSync Module', true);
+                break;
+            case "OrderProcessing":
+            case "OrderInTransit":
+            case "OrderPickupAvailable":
+                $this->Object->setState(MageOrder::STATE_PROCESSING, true, 'Updated by SplashSync Module', true);
+                break;
+            case "OrderDelivered":
+                $this->Object->setData('state', MageOrder::STATE_COMPLETE);
+                $this->Object->setStatus(MageOrder::STATE_COMPLETE);
+                $this->Object->addStatusHistoryComment('Updated by SplashSync Module', false);
+                break;
+            case "OrderReturned":
+                $this->Object->setData('state', MageOrder::STATE_CLOSED);
+                $this->Object->setStatus(MageOrder::STATE_CLOSED);
+                $this->Object->addStatusHistoryComment('Updated by SplashSync Module', false);
+//                    $this->Object->setState(MageOrder::STATE_CLOSED, True, 'Updated by SplashSync Module',True);
+                break;
+            case "OrderCancelled":
+//                    $this->Object->setState(MageOrder::STATE_CANCELED, True, 'Updated by SplashSync Module',True);
+                $this->Object->cancel();
+                break;
+            case "OrderProblem":
+                $this->Object->hold();
+//                    $this->Object->setData('state', MageOrder::STATE_HOLDED);
+//                    $this->Object->setStatus(MageOrder::STATE_HOLDED);
+//                    $this->Object->addStatusHistoryComment('Updated by SplashSync Module', false);
+                break;
+        }
+    }
+        
 }

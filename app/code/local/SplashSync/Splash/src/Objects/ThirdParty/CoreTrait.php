@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -28,7 +28,8 @@ use Mage_Customer_Exception;
 /**
  * @abstract    Magento 1 Customers Core Fields Access
  */
-trait CoreTrait {
+trait CoreTrait
+{
     
     /**
     *   @abstract     Build Customers Core Fields using FieldFactory
@@ -40,47 +41,45 @@ trait CoreTrait {
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("firstname")
                 ->Name("First name")
-                ->MicroData("http://schema.org/Person","familyName")
-                ->Association("firstname","lastname")        
+                ->MicroData("http://schema.org/Person", "familyName")
+                ->Association("firstname", "lastname")
                 ->isRequired()
-                ->isListed();        
+                ->isListed();
         
         //====================================================================//
         // Lastname
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("lastname")
                 ->Name("Last name")
-                ->MicroData("http://schema.org/Person","givenName")
-                ->Association("firstname","lastname")            
+                ->MicroData("http://schema.org/Person", "givenName")
+                ->Association("firstname", "lastname")
                 ->isRequired()
-                ->isListed();       
+                ->isListed();
 
         //====================================================================//
         // Email
         $this->FieldsFactory()->Create(SPL_T_EMAIL)
                 ->Identifier("email")
                 ->Name("Email address")
-                ->MicroData("http://schema.org/ContactPoint","email")
-                ->Association("firstname","lastname")
+                ->MicroData("http://schema.org/ContactPoint", "email")
+                ->Association("firstname", "lastname")
                 ->isRequired()
-                ->isListed();        
-        
+                ->isListed();
     }
     
     /**
      *  @abstract     Read requested Field
-     * 
+     *
      *  @param        string    $Key                    Input List Key
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
-    private function getCoreFields($Key,$FieldName)
+    private function getCoreFields($Key, $FieldName)
     {
         //====================================================================//
         // READ Field
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             case 'lastname':
             case 'firstname':
             case 'email':
@@ -94,28 +93,26 @@ trait CoreTrait {
     
     /**
      *  @abstract     Write Given Fields
-     * 
+     *
      *  @param        string    $FieldName              Field Identifier / Name
      *  @param        mixed     $Data                   Field Data
-     * 
+     *
      *  @return         none
      */
-    private function setCoreFields($FieldName,$Data) {
+    private function setCoreFields($FieldName, $Data)
+    {
         //====================================================================//
         // WRITE Fields
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             case 'firstname':
             case 'lastname':
             case 'email':
-                if ( $this->Object->getData($FieldName) != $Data ) {
+                if ($this->Object->getData($FieldName) != $Data) {
                     $this->Object->setData($FieldName, $Data);
                     $this->needUpdate();
-                }  
+                }
                 unset($this->In[$FieldName]);
                 break;
         }
     }
-    
-    
 }

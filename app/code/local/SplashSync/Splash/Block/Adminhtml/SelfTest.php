@@ -42,13 +42,13 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
         $this->TST_SelfTests();
         $this->TST_ListObjects();
         $this->TST_ServerPing();
-        $this->TST_ServerConnect();   
+        $this->TST_ServerConnect();
         
         //====================================================================//
         // Post Splash Messages
         $this->Messages = Splash::Log();
 
-        $this->setData(array( 
+        $this->setData(array(
                 'results'   => $this->Results,
                 'messages'  => $this->Messages->GetRawLog()
                 ));
@@ -73,7 +73,6 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
             "desc"  =>  'Verify configuration & functionnality of this server.',
             "result"=>  Splash::SelfTest()?"Pass":"Fail",
         );
-      
     }
     
     public function TST_ListObjects()
@@ -87,7 +86,7 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
         }
         $ObjectsList    .= ")";
         
-        $this->Results[] = Array(
+        $this->Results[] = array(
             "id"    =>  count($this->Results) + 1,
             "name"  =>  'Available Objects',
             "desc"  =>  'List of all Available objects on this server.',
@@ -100,11 +99,11 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
         //====================================================================//
         // Splash Server Ping
         //====================================================================//
-        $this->Results[] = Array(
+        $this->Results[] = array(
             "id"    =>  count($this->Results) + 1,
             "name"  =>  'Ping Test',
             "desc"  =>  'Test to Ping Splash Server.',
-            "result"=>  Splash::Ping(False)?"Pass":"Fail",
+            "result"=>  Splash::Ping(false)?"Pass":"Fail",
         );
     }
 
@@ -113,15 +112,11 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
         //====================================================================//
         // Splash Server Connect
         //====================================================================//
-        $this->Results[] = Array(
+        $this->Results[] = array(
             "id"    =>  count($this->Results) + 1,
             "name"  =>  'Connect Test',
             "desc"  =>  'Test to Connect to Splash Server.',
-            "result"=>  Splash::Connect(False)?"Pass":"Fail",
+            "result"=>  Splash::Connect(false)?"Pass":"Fail",
         );
     }
-
-            
-
-    
 }

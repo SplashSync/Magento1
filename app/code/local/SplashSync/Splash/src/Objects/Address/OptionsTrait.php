@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -22,7 +22,8 @@ namespace Splash\Local\Objects\Address;
 /**
  * @abstract    Magento 1 Customers Address Optionnal Fields Access
  */
-trait OptionsTrait {
+trait OptionsTrait
+{
     
     /**
     *   @abstract     Build Address Optional Fields using FieldFactory
@@ -37,7 +38,7 @@ trait OptionsTrait {
                 ->Identifier("telephone")
                 ->Name("Phone")
                 ->Group($ContactGroup)
-                ->MicroData("http://schema.org/PostalAddress","telephone");
+                ->MicroData("http://schema.org/PostalAddress", "telephone");
         
         //====================================================================//
         // Fax
@@ -45,32 +46,30 @@ trait OptionsTrait {
                 ->Identifier("fax")
                 ->Name("Fax")
                 ->Group($ContactGroup)
-                ->MicroData("http://schema.org/PostalAddress","faxNumber");
+                ->MicroData("http://schema.org/PostalAddress", "faxNumber");
 
         //====================================================================//
         // VAT ID
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("vat_id")
                 ->Name("VAT Number")
-                ->MicroData("http://schema.org/Organization","vatID");
-        
-    }  
+                ->MicroData("http://schema.org/Organization", "vatID");
+    }
     
     
     /**
      *  @abstract     Read requested Field
-     * 
+     *
      *  @param        string    $Key                    Input List Key
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
-    private function getOptionalFields($Key,$FieldName)
+    private function getOptionalFields($Key, $FieldName)
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // Direct Readings
             case 'telephone':
@@ -82,22 +81,21 @@ trait OptionsTrait {
                 return;
         }
         unset($this->In[$Key]);
-    } 
+    }
     
     /**
      *  @abstract     Write Given Fields
-     * 
+     *
      *  @param        string    $FieldName              Field Identifier / Name
      *  @param        mixed     $Data                   Field Data
-     * 
+     *
      *  @return         none
      */
-    private function setOptionalFields($FieldName,$Data) 
+    private function setOptionalFields($FieldName, $Data)
     {
         //====================================================================//
         // WRITE Field
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // Direct Readings
             case 'telephone':
@@ -106,9 +104,8 @@ trait OptionsTrait {
                 $this->setData($FieldName, $Data);
                 break;
             default:
-                return;            
+                return;
         }
         unset($this->In[$FieldName]);
     }
-    
 }

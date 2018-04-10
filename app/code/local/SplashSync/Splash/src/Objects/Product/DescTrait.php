@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -25,13 +25,15 @@ use Splash\Core\SplashCore      as Splash;
 /**
  * @abstract    Magento 1 Products Descriptions Fields Access
  */
-trait DescTrait {
+trait DescTrait
+{
     
 
     /**
     *   @abstract     Build Description Fields using FieldFactory
     */
-    private function buildDescFields()   {
+    private function buildDescFields()
+    {
         
         //====================================================================//
         // PRODUCT DESCRIPTIONS
@@ -44,7 +46,7 @@ trait DescTrait {
                 ->Name("Product Name without Options")
                 ->Group("Description")
                 ->IsListed()
-                ->MicroData("http://schema.org/Product","name")
+                ->MicroData("http://schema.org/Product", "name")
                 ->isRequired();
 
         //====================================================================//
@@ -53,7 +55,7 @@ trait DescTrait {
                 ->Identifier("description")
                 ->Name("Description")
                 ->Group("Description")
-                ->MicroData("http://schema.org/Article","articleBody");
+                ->MicroData("http://schema.org/Article", "articleBody");
         
         //====================================================================//
         // Short Description
@@ -61,7 +63,7 @@ trait DescTrait {
                 ->Identifier("short_description")
                 ->Name("Short Description")
                 ->Group("Description")
-                ->MicroData("http://schema.org/Product","description");
+                ->MicroData("http://schema.org/Product", "description");
 
         //====================================================================//
         // Meta Description
@@ -69,7 +71,7 @@ trait DescTrait {
                 ->Identifier("meta_description")
                 ->Name("SEO" . " " . "Meta description")
                 ->Group("SEO")
-                ->MicroData("http://schema.org/Article","headline");
+                ->MicroData("http://schema.org/Article", "headline");
 
         //====================================================================//
         // Meta Title
@@ -77,7 +79,7 @@ trait DescTrait {
                 ->Identifier("meta_title")
                 ->Name("SEO" . " " . "Meta title")
                 ->Group("SEO")
-                ->MicroData("http://schema.org/Article","alternateName");
+                ->MicroData("http://schema.org/Article", "alternateName");
         
         //====================================================================//
         // Url Path
@@ -85,28 +87,26 @@ trait DescTrait {
                 ->Identifier("url_key")
                 ->Name("SEO" . " " . "Friendly URL")
                 ->Group("SEO")
-                ->MicroData("http://schema.org/Product","urlRewrite")
+                ->MicroData("http://schema.org/Product", "urlRewrite")
                 ->AddOption("isLowerCase")
                 ;
-        
-    }    
+    }
 
 
 
     /**
      *  @abstract     Read requested Field
-     * 
+     *
      *  @param        string    $Key                    Input List Key
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
-    private function getDescFields($Key,$FieldName)
+    private function getDescFields($Key, $FieldName)
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // PRODUCT MULTILANGUAGES CONTENTS
             //====================================================================//
@@ -117,7 +117,7 @@ trait DescTrait {
             case 'meta_description':
             case 'meta_keywords':
             case 'url_key':
-                $this->Out[$FieldName] = Splash::Local()->getMultilang($this->Object,$FieldName);
+                $this->Out[$FieldName] = Splash::Local()->getMultilang($this->Object, $FieldName);
                 break;
                 
             default:
@@ -125,25 +125,23 @@ trait DescTrait {
         }
         
         unset($this->In[$Key]);
-    }   
+    }
     
 
     
     /**
      *  @abstract     Write Given Fields
-     * 
+     *
      *  @param        string    $FieldName              Field Identifier / Name
      *  @param        mixed     $Data                   Field Data
-     * 
+     *
      *  @return         none
      */
-    private function setDescFields($FieldName,$Data) 
+    private function setDescFields($FieldName, $Data)
     {
         //====================================================================//
         // WRITE Field
-        switch ($FieldName)
-        {
-            
+        switch ($FieldName) {
             //====================================================================//
             // PRODUCT MULTILANGUAGES CONTENTS
             //====================================================================//
@@ -154,15 +152,13 @@ trait DescTrait {
             case 'meta_description':
             case 'meta_keywords':
             case 'url_key':
-                if ( Splash::Local()->setMultilang($this->Object,$FieldName,$Data) ) {
+                if (Splash::Local()->setMultilang($this->Object, $FieldName, $Data)) {
                     $this->needUpdate();
-                } 
+                }
                 break;
             default:
                 return;
         }
         unset($this->In[$FieldName]);
     }
- 
-    
 }

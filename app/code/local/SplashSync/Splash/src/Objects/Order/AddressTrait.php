@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -25,59 +25,59 @@ use Mage;
 /**
  * @abstract    Magento 1 Order Address Fields Access
  */
-trait AddressTrait {
+trait AddressTrait
+{
     
     /**
     *   @abstract     Build Address Fields using FieldFactory
     */
-    private function buildAddressFields()   {
+    private function buildAddressFields()
+    {
         
         //====================================================================//
         // Billing Address
-        $this->FieldsFactory()->Create(self::Objects()->Encode( "Address" , SPL_T_ID))
+        $this->FieldsFactory()->Create(self::Objects()->Encode("Address", SPL_T_ID))
                 ->Identifier("billing_address_id")
                 ->Name('Billing Address ID')
-                ->MicroData("http://schema.org/Order","billingAddress")
-                ->isRequired();  
+                ->MicroData("http://schema.org/Order", "billingAddress")
+                ->isRequired();
         
         //====================================================================//
         // Shipping Address
-        $this->FieldsFactory()->Create(self::Objects()->Encode( "Address" , SPL_T_ID))
+        $this->FieldsFactory()->Create(self::Objects()->Encode("Address", SPL_T_ID))
                 ->Identifier("shipping_address_id")
                 ->Name('Shipping Address ID')
-                ->MicroData("http://schema.org/Order","orderDelivery");  
-        
-    }    
+                ->MicroData("http://schema.org/Order", "orderDelivery");
+    }
     
 
     /**
      *  @abstract     Read requested Field
-     * 
+     *
      *  @param        string    $Key                    Input List Key
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
-    private function getAddressFields($Key,$FieldName)
+    private function getAddressFields($Key, $FieldName)
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // Billing/Shipping Address Object Id Readings
             case 'billing_address_id':
             case 'shipping_address_id':
                 if ($FieldName == "billing_address_id") {
-                    $Address    =  $this->Object->getBillingAddress(); 
+                    $Address    =  $this->Object->getBillingAddress();
                 } else {
-                    $Address    =  $this->Object->getShippingAddress(); 
+                    $Address    =  $this->Object->getShippingAddress();
                 }
-                if ($Address && $Address->getCustomerAddressId() ) {
-                    $this->Out[$FieldName] = self::Objects()->Encode( "Address" , $Address->getCustomerAddressId() );
+                if ($Address && $Address->getCustomerAddressId()) {
+                    $this->Out[$FieldName] = self::Objects()->Encode("Address", $Address->getCustomerAddressId());
                     break;
                 }
-                $this->Out[$FieldName] = Null;
+                $this->Out[$FieldName] = null;
                 break;
             default:
                 return;
@@ -88,38 +88,37 @@ trait AddressTrait {
 
     /**
      *  @abstract     Write Given Fields
-     * 
+     *
      *  @param        string    $FieldName              Field Identifier / Name
      *  @param        mixed     $Data                   Field Data
-     * 
+     *
      *  @return         none
      */
-    private function setAddressFields($FieldName,$Data) 
+    private function setAddressFields($FieldName, $Data)
     {
         //====================================================================//
         // WRITE Field
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // Billing/Shipping Address Writting
             case 'billing_address_id':
-                $this->setAddressContents('billing', self::Objects()->Id( $Data ));
-                break;                
+                $this->setAddressContents('billing', self::Objects()->Id($Data));
+                break;
             case 'shipping_address_id':
                 //====================================================================//
-                // Retrieve Address Object Id 
-                $AdressId = self::Objects()->Id( $Data );
+                // Retrieve Address Object Id
+                $AdressId = self::Objects()->Id($Data);
                 //====================================================================//
-                // Setup Address Object & Set Order as "Non Virtual" => With Shipping 
+                // Setup Address Object & Set Order as "Non Virtual" => With Shipping
                 if ($AdressId > 0) {
-                    $this->setAddressContents('shipping', self::Objects()->Id( $Data ));
-                    $this->Object->setIsVirtual(False);
+                    $this->setAddressContents('shipping', self::Objects()->Id($Data));
+                    $this->Object->setIsVirtual(false);
                 //====================================================================//
-                // No Address Setup & Set Order as "Virtual" => No Shipping 
+                // No Address Setup & Set Order as "Virtual" => No Shipping
                 } else {
-                    $this->Object->setIsVirtual(True);
+                    $this->Object->setIsVirtual(true);
                 }
-                break;                
+                break;
                 
             default:
                 return;
@@ -130,41 +129,42 @@ trait AddressTrait {
 
     /**
      *  @abstract     Set Given Order Address
-     * 
+     *
      *  @return         none
      */
-    private function setAddressContents($Type,$AddressId) {
+    private function setAddressContents($Type, $AddressId)
+    {
         
         //====================================================================//
-        // Read Original Billing/Shipping Order Address        
-        if( $Type === "billing") {
+        // Read Original Billing/Shipping Order Address
+        if ($Type === "billing") {
             $Address    = $this->Object->getBillingAddress();
-        } elseif( $Type === "shipping") {
+        } elseif ($Type === "shipping") {
             $Address    = $this->Object->getShippingAddress();
         } else {
-            return False;
+            return false;
         }
         //====================================================================//
-        // Empty => Create Order Address        
-        if( !$Address ) {
+        // Empty => Create Order Address
+        if (!$Address) {
             $Address    =   Mage::getModel('sales/order_address')
                     ->setOrder($this->Object)
                     ->setAddressType($Type);
         }
 
         //====================================================================//
-        // Check For Changes       
-        if ( $Address->getCustomerAddressId() == $AddressId ) {
-            return False;
-        } 
-        //====================================================================//
-        // Load Customer Address 
-        $CustomerAddress = Mage::getModel('customer/address')->load($AddressId);
-        if ( $CustomerAddress->getEntityId() != $AddressId ) {
-            return False;
+        // Check For Changes
+        if ($Address->getCustomerAddressId() == $AddressId) {
+            return false;
         }
         //====================================================================//
-        // Update Address 
+        // Load Customer Address
+        $CustomerAddress = Mage::getModel('customer/address')->load($AddressId);
+        if ($CustomerAddress->getEntityId() != $AddressId) {
+            return false;
+        }
+        //====================================================================//
+        // Update Address
         $Address
             ->setCustomerAddressId($AddressId)
             ->setFirstname($CustomerAddress->getFirstname())
@@ -179,18 +179,17 @@ trait AddressTrait {
             ->setRegion_id($CustomerAddress->getRegion_id())
             ->setPostcode($CustomerAddress->getPostcode())
             ->setTelephone($CustomerAddress->getTelephone())
-            ->setFax($CustomerAddress->getFax())                
+            ->setFax($CustomerAddress->getFax())
             ->save();
-        $this->update = True;
+        $this->update = true;
 //        Splash::Log()->www("Address After", $Address->getData());
         //====================================================================//
-        // Update Order Address Collection       
-        if( $Type === "billing") {
+        // Update Order Address Collection
+        if ($Type === "billing") {
             $this->Object->setBillingAddress($Address);
-        } elseif( $Type === "shipping") {
+        } elseif ($Type === "shipping") {
             $this->Object->setShippingAddress($Address);
         }
-        return True;
-    }         
-    
+        return true;
+    }
 }

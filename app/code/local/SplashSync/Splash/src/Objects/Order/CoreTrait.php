@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -24,55 +24,55 @@ use Mage;
 /**
  * @abstract    Magento 1 Order Core Fields Access
  */
-trait CoreTrait {
+trait CoreTrait
+{
     
 
 
     /**
     *   @abstract     Build Core Fields using FieldFactory
     */
-    private function buildCoreFields()   {
+    private function buildCoreFields()
+    {
         
         //====================================================================//
         // Customer Object
-        $this->FieldsFactory()->Create(self::Objects()->Encode( "ThirdParty" , SPL_T_ID))
+        $this->FieldsFactory()->Create(self::Objects()->Encode("ThirdParty", SPL_T_ID))
                 ->Identifier("customer_id")
                 ->Name('Customer')
-                ->MicroData("http://schema.org/Organization","ID")
-                ->isRequired();  
+                ->MicroData("http://schema.org/Organization", "ID")
+                ->isRequired();
         
         //====================================================================//
         // Reference
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("increment_id")
                 ->Name('Reference')
-                ->MicroData("http://schema.org/Order","orderNumber")       
+                ->MicroData("http://schema.org/Order", "orderNumber")
                 ->IsListed();
 
         //====================================================================//
-        // Order Date 
+        // Order Date
         $this->FieldsFactory()->Create(SPL_T_DATE)
                 ->Identifier("created_at")
                 ->Name("Date")
-                ->MicroData("http://schema.org/Order","orderDate")
+                ->MicroData("http://schema.org/Order", "orderDate")
                 ->IsListed();
-        
-    }    
+    }
 
         /**
      *  @abstract     Read requested Field
-     * 
+     *
      *  @param        string    $Key                    Input List Key
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
-    private function getCoreFields($Key,$FieldName)
+    private function getCoreFields($Key, $FieldName)
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // Direct Readings
             case 'increment_id':
@@ -81,12 +81,12 @@ trait CoreTrait {
             //====================================================================//
             // Customer Object Id Readings
             case 'customer_id':
-                $this->Out[$FieldName] = self::Objects()->Encode( "ThirdParty" , $this->Object->getData($FieldName) );
+                $this->Out[$FieldName] = self::Objects()->Encode("ThirdParty", $this->Object->getData($FieldName));
                 break;
             //====================================================================//
             // Order Official Date
             case 'created_at':
-                $this->Out[$FieldName] = date( SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
+                $this->Out[$FieldName] = date(SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
                 break;
             default:
                 return;
@@ -97,18 +97,17 @@ trait CoreTrait {
  
     /**
      *  @abstract     Write Given Fields
-     * 
+     *
      *  @param        string    $FieldName              Field Identifier / Name
      *  @param        mixed     $Data                   Field Data
-     * 
+     *
      *  @return         none
      */
-    private function setCoreFields($FieldName,$Data) 
+    private function setCoreFields($FieldName, $Data)
     {
         //====================================================================//
         // WRITE Field
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // Direct Readings
             case 'increment_id':
@@ -118,26 +117,26 @@ trait CoreTrait {
             //====================================================================//
             // Order Official Date
             case 'created_at':
-                $CurrentDate = date( SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
-                if ( $CurrentDate != $Data ) {
-                    $this->Object->setData($FieldName, Mage::getModel("core/date")->gmtDate(Null, $Data));
+                $CurrentDate = date(SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
+                if ($CurrentDate != $Data) {
+                    $this->Object->setData($FieldName, Mage::getModel("core/date")->gmtDate(null, $Data));
                     $this->needUpdate();
-                }   
-                break;                
+                }
+                break;
                     
             //====================================================================//
-            // Order Company Id 
+            // Order Company Id
             case 'customer_id':
-                $CustomerId = self::Objects()->Id( $Data );
-                if ( $this->Object->getCustomerId() != $CustomerId ) {
+                $CustomerId = self::Objects()->Id($Data);
+                if ($this->Object->getCustomerId() != $CustomerId) {
                     //====================================================================//
-                    // Load Customer Object 
+                    // Load Customer Object
                     $NewCustomer = Mage::getModel("customer/customer")->load($CustomerId);
                     //====================================================================//
-                    //Update Customer Id 
+                    //Update Customer Id
                     $this->Object->setCustomer(Mage::getModel("customer/customer")->load($CustomerId));
                     //====================================================================//
-                    //Update Customer Infos 
+                    //Update Customer Infos
                     $this->Object->setCustomerEmail($NewCustomer->getEmail());
                     $this->Object->setCustomerFirstname($NewCustomer->getFirstname());
                     $this->Object->setCustomerLastname($NewCustomer->getLastname());
@@ -146,8 +145,8 @@ trait CoreTrait {
                     $this->Object->setCustomerSufix($NewCustomer->getSufix());
                     
                     $this->needUpdate();
-                }   
-                break;              
+                }
+                break;
                 
             default:
                 return;

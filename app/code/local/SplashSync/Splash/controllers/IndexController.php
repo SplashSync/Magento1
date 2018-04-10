@@ -22,14 +22,14 @@ class SplashSync_Splash_IndexController extends Mage_Adminhtml_Controller_Action
 {
     
     /**
-    *  @abstract    Splash Module Class Constructor 
+    *  @abstract    Splash Module Class Constructor
     *  @return      None
-    */    
+    */
     public function __construct(Zend_Controller_Request_Abstract $Controller, Zend_Controller_Response_Abstract $Response)
     {
         //====================================================================//
         // Load Splash Module
-        require_once( dirname(dirname(__FILE__)) . '/vendor/autoload.php'); 
+        require_once(dirname(dirname(__FILE__)) . '/vendor/autoload.php');
         parent::__construct($Controller, $Response);
     }
     
@@ -37,7 +37,7 @@ class SplashSync_Splash_IndexController extends Mage_Adminhtml_Controller_Action
     {
         //====================================================================//
         // Load Magento Layout
-        $this->loadLayout();     
+        $this->loadLayout();
         //====================================================================//
         // Create SelfTests Block
         $this->_addContent($this->getLayout()->createBlock('Splash/Adminhtml_SelfTest'));
@@ -50,5 +50,4 @@ class SplashSync_Splash_IndexController extends Mage_Adminhtml_Controller_Action
         
         $this->renderLayout();
     }
-    
 }

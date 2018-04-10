@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -27,7 +27,8 @@ use Mage;
 /**
  * @abstract    Magento 1 Object SplashOrigin Access
  */
-trait SplashOriginTrait {
+trait SplashOriginTrait
+{
     
 
     /**
@@ -41,53 +42,51 @@ trait SplashOriginTrait {
                 ->Identifier("splash_origin")
                 ->Name("Splash Origin Node")
                 ->Group("Meta")
-                ->MicroData("http://splashync.com/schemas","SourceNodeId");
-    } 
+                ->MicroData("http://splashync.com/schemas", "SourceNodeId");
+    }
     
     /**
      *  @abstract     Read requested Field
-     * 
+     *
      *  @param        string    $Key                    Input List Key
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
-    private function getSplashOriginFields($Key,$FieldName)
+    private function getSplashOriginFields($Key, $FieldName)
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             case 'splash_origin':
                 $this->getData($FieldName);
                 break;
             default:
-                return;            
+                return;
         }
         unset($this->In[$Key]);
-    }  
+    }
     
 
     /**
      *  @abstract     Write Given Fields
-     * 
+     *
      *  @param        string    $FieldName              Field Identifier / Name
      *  @param        mixed     $Data                   Field Data
-     * 
+     *
      *  @return         none
      */
-    private function setSplashOriginFields($FieldName,$Data) {
+    private function setSplashOriginFields($FieldName, $Data)
+    {
         //====================================================================//
         // WRITE Fields
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             case 'splash_origin':
-                $this->setData($FieldName,$Data);
+                $this->setData($FieldName, $Data);
                 break;
             default:
                 return;
         }
         unset($this->In[$FieldName]);
-    }    
-      
+    }
 }

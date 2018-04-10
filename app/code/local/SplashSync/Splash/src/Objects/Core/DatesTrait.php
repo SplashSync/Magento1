@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -25,7 +25,8 @@ use Mage;
 /**
  * @abstract    Magento 1 Object Dates Access
  */
-trait DatesTrait {
+trait DatesTrait
+{
     
 
     /**
@@ -34,45 +35,44 @@ trait DatesTrait {
     private function buildDatesFields()
     {
         //====================================================================//
-        // Creation Date 
+        // Creation Date
         $this->FieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("created_at")
                 ->Name("Registration")
                 ->Group("Meta")
-                ->MicroData("http://schema.org/DataFeedItem","dateCreated")
+                ->MicroData("http://schema.org/DataFeedItem", "dateCreated")
                 ->ReadOnly();
         
         //====================================================================//
-        // Last Change Date 
+        // Last Change Date
         $this->FieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("updated_at")
                 ->Name("Last update")
                 ->Group("Meta")
-                ->MicroData("http://schema.org/DataFeedItem","dateModified")
+                ->MicroData("http://schema.org/DataFeedItem", "dateModified")
                 ->ReadOnly();
-    } 
+    }
     
     /**
      *  @abstract     Read requested Field
-     * 
+     *
      *  @param        string    $Key                    Input List Key
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
-    private function getDatesFields($Key,$FieldName)
+    private function getDatesFields($Key, $FieldName)
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             case 'created_at':
             case 'updated_at':
-                $this->Out[$FieldName] = date( SPL_T_DATETIMECAST, Mage::getModel("core/date")->gmtTimestamp($this->Object->getData($FieldName)));
+                $this->Out[$FieldName] = date(SPL_T_DATETIMECAST, Mage::getModel("core/date")->gmtTimestamp($this->Object->getData($FieldName)));
                 break;
             default:
-                return;            
+                return;
         }
         unset($this->In[$Key]);
-    }  
+    }
 }

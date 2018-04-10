@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -22,21 +22,23 @@ namespace Splash\Local\Objects\Product;
 /**
  * @abstract    Magento 1 Products Core Fields Access
  */
-trait CoreTrait {
+trait CoreTrait
+{
     
 
     
     /**
     *   @abstract     Build Core Fields using FieldFactory
     */
-    private function buildCoreFields()   {
+    private function buildCoreFields()
+    {
         //====================================================================//
         // Reference
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("sku")
                 ->Name('Reference - SKU')
                 ->IsListed()
-                ->MicroData("http://schema.org/Product","model")
+                ->MicroData("http://schema.org/Product", "model")
                 ->isRequired();
         
         //====================================================================//
@@ -45,32 +47,30 @@ trait CoreTrait {
                 ->Identifier("type_id")
                 ->Name('Type Identifier')
                 ->Description('Product Type Identifier')
-                ->MicroData("http://schema.org/Product","type")
+                ->MicroData("http://schema.org/Product", "type")
                 ->ReadOnly();
-        
-    }    
+    }
 
     
     /**
      *  @abstract     Read requested Field
-     * 
+     *
      *  @param        string    $Key                    Input List Key
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
-    private function getCoreFields($Key,$FieldName)
+    private function getCoreFields($Key, $FieldName)
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // MAIN INFORMATIONS
             //====================================================================//
             case 'sku':
             case 'type_id':
-                $this->getData($FieldName);             
+                $this->getData($FieldName);
                 break;
             
             default:
@@ -82,24 +82,23 @@ trait CoreTrait {
     
     /**
      *  @abstract     Write Given Fields
-     * 
+     *
      *  @param        string    $FieldName              Field Identifier / Name
      *  @param        mixed     $Data                   Field Data
-     * 
+     *
      *  @return         none
      */
-    private function setCoreFields($FieldName,$Data) 
+    private function setCoreFields($FieldName, $Data)
     {
 
         //====================================================================//
         // WRITE Field
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // MAIN INFORMATIONS
             //====================================================================//
             case 'sku':
-                $this->setData($FieldName,$Data);
+                $this->setData($FieldName, $Data);
                 break;
             
             default:
@@ -107,6 +106,4 @@ trait CoreTrait {
         }
         unset($this->In[$FieldName]);
     }
- 
-    
 }

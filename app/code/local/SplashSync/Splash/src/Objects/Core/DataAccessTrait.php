@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -28,35 +28,36 @@ use Mage_Customer_Exception;
 /**
  * @abstract    Magento 1 Generic Data Access
  */
-trait DataAccessTrait {
+trait DataAccessTrait
+{
     
     
     /**
      *  @abstract     Generic Read of A Field
-     * 
+     *
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
     private function getData($FieldName)
     {
         $this->Out[$FieldName] = $this->Object->getData($FieldName);
-    }  
+    }
     
 
     /**
      *  @abstract     Generic Write of Given Fields
-     * 
+     *
      *  @param        string    $FieldName              Field Identifier / Name
      *  @param        mixed     $Data                   Field Data
-     * 
+     *
      *  @return         none
      */
-    private function setData($FieldName,$Data) {
-        if ( $this->Object->getData($FieldName) != $Data ) {
+    private function setData($FieldName, $Data)
+    {
+        if ($this->Object->getData($FieldName) != $Data) {
             $this->Object->setData($FieldName, $Data);
             $this->needUpdate();
-        }   
-    }      
-    
+        }
+    }
 }

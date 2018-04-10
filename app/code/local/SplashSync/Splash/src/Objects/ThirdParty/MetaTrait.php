@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -26,7 +26,8 @@ use Mage_Newsletter_Model_Subscriber;
 /**
  * @abstract    Magento 1 Customers Meta Fields Access
  */
-trait MetaTrait {
+trait MetaTrait
+{
     
 
         /**
@@ -45,7 +46,7 @@ trait MetaTrait {
                 ->Identifier("is_active")
                 ->Name("Is Enabled")
                 ->Group("Meta")
-                ->MicroData("http://schema.org/Organization","active")
+                ->MicroData("http://schema.org/Organization", "active")
                 ->IsListed()->ReadOnly();
         
         //====================================================================//
@@ -54,24 +55,23 @@ trait MetaTrait {
                 ->Identifier("newsletter")
                 ->Name("Newletter")
                 ->Group("Meta")
-                ->MicroData("http://schema.org/Organization","newsletter");
-    } 
+                ->MicroData("http://schema.org/Organization", "newsletter");
+    }
     
     /**
      *  @abstract     Read requested Field
-     * 
+     *
      *  @param        string    $Key                    Input List Key
      *  @param        string    $FieldName              Field Identifier / Name
-     * 
+     *
      *  @return         none
      */
-    private function getMetaFields($Key,$FieldName)
+    private function getMetaFields($Key, $FieldName)
     {
             
         //====================================================================//
         // READ Fields
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // Active Flag
             case 'is_active':
@@ -81,43 +81,43 @@ trait MetaTrait {
                 $this->Out[$FieldName] = Mage::getModel('newsletter/subscriber')->loadByCustomer($this->Object)->isSubscribed();
                 break;
             default:
-                return;            
+                return;
         }
         unset($this->In[$Key]);
-    }  
+    }
     
 
     /**
      *  @abstract     Write Given Fields
-     * 
+     *
      *  @param        string    $FieldName              Field Identifier / Name
      *  @param        mixed     $Data                   Field Data
-     * 
+     *
      *  @return         none
      */
-    private function setMetaFields($FieldName,$Data) {
+    private function setMetaFields($FieldName, $Data)
+    {
         //====================================================================//
         // WRITE Fields
-        switch ($FieldName)
-        {
+        switch ($FieldName) {
             //====================================================================//
             // Active Flag
             case 'is_active':
-                if ( $this->Object->getData($FieldName) != $Data ) {
+                if ($this->Object->getData($FieldName) != $Data) {
                     $this->Object->setData($FieldName, $Data);
-                    $this->update = True;
-                }   
+                    $this->update = true;
+                }
                 break;
             case 'newsletter':
                 $subscriber = Mage::getModel('newsletter/subscriber')->loadByCustomer($this->Object);
                 //====================================================================//
                 // Read Newsletter Status
-                if ( $subscriber->isSubscribed() == $Data ) {
+                if ($subscriber->isSubscribed() == $Data) {
                     break;
                 }
                 //====================================================================//
                 // Status Change Requiered => Subscribe
-                if ( $Data ) {
+                if ($Data) {
                     $subscriber->setStatus(Mage_Newsletter_Model_Subscriber::STATUS_SUBSCRIBED);
                 } else {
                     $subscriber->setStatus(Mage_Newsletter_Model_Subscriber::STATUS_UNSUBSCRIBED);
@@ -125,14 +125,13 @@ trait MetaTrait {
                 $subscriber->setSubscriberEmail($this->Object->getEmail());
                 $subscriber->setSubscriberConfirmCode($subscriber->RandomSequence());
                 $subscriber->setStoreId(Mage::app()->getStore()->getId());
-                $subscriber->setCustomerId($this->Object->getId());        
+                $subscriber->setCustomerId($this->Object->getId());
                 $subscriber->save();
-                $this->update = True;
+                $this->update = true;
                 break;
             default:
                 return;
         }
         unset($this->In[$FieldName]);
-    }    
-      
+    }
 }

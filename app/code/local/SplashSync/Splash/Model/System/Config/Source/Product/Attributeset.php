@@ -42,7 +42,7 @@ class SplashSync_Splash_Model_System_Config_Source_Product_Attributeset
             // Search for Products Entity Type Name
             if ($EntityType->getEntityModel() === 'catalog/product') {
                 $EntityTypeId = $EntityType->getEntityTypeId();
-            } 
+            }
         }
         //====================================================================//
         // Load List Of Products Attributes Set
@@ -55,7 +55,7 @@ class SplashSync_Splash_Model_System_Config_Source_Product_Attributeset
             // Verify This set is for Products
             if ($AttributeSet->getEntityTypeId() != $EntityTypeId) {
                 continue;
-            } 
+            }
             //====================================================================//
             // Add Attribute Set to Select List
             $Select[] = array(
@@ -64,7 +64,7 @@ class SplashSync_Splash_Model_System_Config_Source_Product_Attributeset
             );
         }
         //====================================================================//
-        // Return Sets List        
+        // Return Sets List
         return $Select;
     }
 }

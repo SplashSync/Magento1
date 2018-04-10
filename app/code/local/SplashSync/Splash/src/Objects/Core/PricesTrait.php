@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -27,19 +27,19 @@ use Splash\Core\SplashCore      as Splash;
 /**
  * @abstract    Magento 1 Object Prices Getter & Setters
  */
-trait PricesTrait {
+trait PricesTrait
+{
     
     /**
      *  @abstract     Check if Magento Prices Include VAT or Not
-     * 
+     *
      *  @param        string    $Context                Context ( Products / Shipping )
-     * 
+     *
      *  @return       bool
      */
     private function isVatIncluded($Context = 'Products')
     {
-        switch ($Context)
-        {
+        switch ($Context) {
             case 'Shipping':
                 return (bool)   Mage::getStoreConfig('tax/calculation/shipping_includes_tax');
                 
@@ -47,12 +47,12 @@ trait PricesTrait {
             default:
                 return (bool)   Mage::getStoreConfig('tax/calculation/price_includes_tax');
         }
-    } 
+    }
     
     
     /**
      *  @abstract     Encode Magento Product Price
-     * 
+     *
      *  @return       array
      */
     public function getProductPrice()
@@ -63,37 +63,40 @@ trait PricesTrait {
         $TaxCalculation     =   Mage::getModel('tax/calculation');
         $TaxRequest         =   $TaxCalculation->getRateRequest(null, null, null, $Store);
         $Tax                =   (double)  $TaxCalculation->getRate(
-                $TaxRequest->setProductClassId($this->Object->getTaxClassId())
-        );       
+            $TaxRequest->setProductClassId($this->Object->getTaxClassId())
+        );
 
         //====================================================================//
         // Read Current Currency Code
         $CurrencyCode   =   Mage::app()->getStore()->getCurrentCurrencyCode();
         //====================================================================//
         // Read Price
-        if ( $this->isVatIncluded()   ) {
+        if ($this->isVatIncluded()) {
             $PriceTTC   = (double)  $this->Object->getPrice();
-            $PriceHT    = Null;
+            $PriceHT    = null;
         } else {
-            $PriceTTC   = Null;
+            $PriceTTC   = null;
             $PriceHT    = (double)  $this->Object->getPrice();
         }
 
         //====================================================================//
         // Build Price Array
         return self::Prices()->Encode(
-                $PriceHT,$Tax,$PriceTTC,
-                $CurrencyCode,
-                Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
-                Mage::app()->getLocale()->currency($CurrencyCode)->getName());
-    }  
+            $PriceHT,
+            $Tax,
+            $PriceTTC,
+            $CurrencyCode,
+            Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
+            Mage::app()->getLocale()->currency($CurrencyCode)->getName()
+        );
+    }
     
     
     /**
      * @abstract     Update Magento Product Price
-     * 
+     *
      * @param   array   $SplashPrice        Splash Price Array Description
-     * 
+     *
      * @return       array
      */
     public function setProductPrice($SplashPrice)
@@ -104,48 +107,47 @@ trait PricesTrait {
         
         //====================================================================//
         // Compare Prices
-        if ( self::Prices()->Compare($CurrentPrice,$SplashPrice) ) {
-            return; 
+        if (self::Prices()->Compare($CurrentPrice, $SplashPrice)) {
+            return;
         }
         
         //====================================================================//
         // Update Product Price if Required
-        if ( $this->isVatIncluded()   ) {
+        if ($this->isVatIncluded()) {
             $OldPrice   = (double)  self::Prices()->TaxIncluded($CurrentPrice);
             $NewPrice   = (double)  self::Prices()->TaxIncluded($SplashPrice);
         } else {
             $OldPrice   = (double)  self::Prices()->TaxExcluded($CurrentPrice);
             $NewPrice   = (double)  self::Prices()->TaxExcluded($SplashPrice);
         }
-        if ( abs ( $OldPrice - $NewPrice ) > 1E-6 ) {
+        if (abs($OldPrice - $NewPrice) > 1E-6) {
             $this->Object->setPrice($NewPrice);
             $this->needUpdate();
-        }  
+        }
 
         //====================================================================//
         // Update Product Tax Class if Required
-        $OldTaxId     = $this->identifyPriceTaxClass( self::Prices()->TaxPercent($CurrentPrice) );
-        $NewTaxId     = $this->identifyPriceTaxClass( self::Prices()->TaxPercent($SplashPrice) );
-        if ( $OldTaxId != $NewTaxId ) {
+        $OldTaxId     = $this->identifyPriceTaxClass(self::Prices()->TaxPercent($CurrentPrice));
+        $NewTaxId     = $this->identifyPriceTaxClass(self::Prices()->TaxPercent($SplashPrice));
+        if ($OldTaxId != $NewTaxId) {
             $this->Object->setTaxClassId($NewTaxId);
             $this->needUpdate();
-        }  
-        
-    }   
+        }
+    }
     
     
     /**
      *  @abstract     Identify Tax Class Id from Tax Percentile
-     * 
+     *
      *  @return       int
      */
-    private function identifyPriceTaxClass( $Tax_Percent = 0 ) 
+    private function identifyPriceTaxClass($Tax_Percent = 0)
     {
         //====================================================================//
         // No Tax Rate Applied
-        if ( $Tax_Percent == 0 ) {
+        if ($Tax_Percent == 0) {
             return 0;
-        } 
+        }
         
         //====================================================================//
         // Load Products Appliable Tax Rates
@@ -158,15 +160,13 @@ trait PricesTrait {
         // For Each Additionnal Tax Class
         $BestId     =   0;
         $BestRate   =   0;
-        foreach ( $AvailableTaxes as $TaxClassId => $TaxRate ) {
-
-            if ( abs($Tax_Percent - $TaxRate) <  abs($Tax_Percent - $BestRate) ) {
+        foreach ($AvailableTaxes as $TaxClassId => $TaxRate) {
+            if (abs($Tax_Percent - $TaxRate) <  abs($Tax_Percent - $BestRate)) {
                 $BestId     =   $TaxClassId;
                 $BestRate   =   $TaxRate;
-            } 
-        }  
+            }
+        }
         
         return $BestId;
-    }      
-    
+    }
 }

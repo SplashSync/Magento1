@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -27,60 +27,60 @@ use Mage;
 /**
  * @abstract    Magento 1 Invoices CRUD Functions
  */
-trait CRUDTrait {
+trait CRUDTrait
+{
 
     //====================================================================//
-    // General Class Variables	
+    // General Class Variables
     //====================================================================//
 
-    protected   $Order          = Null;
-    protected   $Products       = Null;
+    protected $Order          = null;
+    protected $Products       = null;
     
     /**
-     * @abstract    Load Request Object 
-     * 
+     * @abstract    Load Request Object
+     *
      * @param       array   $Id               Object id
-     * 
+     *
      * @return      mixed
      */
-    public function Load( $Id )
+    public function Load($Id)
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__,__FUNCTION__);  
+        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
         //====================================================================//
-        // Safety Checks 
-        if (empty ($Id) ) {
-            return Splash::Log()->Err("ErrLocalTpl",__CLASS__,__FUNCTION__," Missing Id.");
+        // Safety Checks
+        if (empty($Id)) {
+            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Missing Id.");
         }
         $Invoice = Mage::getModel('sales/order_invoice')->load($Id);
-        if ( $Invoice->getEntityId() != $Id )   {
-            return Splash::Log()->Err("ErrLocalTpl",__CLASS__,__FUNCTION__," Unable to load Customer Invoice (" . $Id . ").");
+        if ($Invoice->getEntityId() != $Id) {
+            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Customer Invoice (" . $Id . ").");
         }
         //====================================================================//
-        // Load Linked Objects 
+        // Load Linked Objects
         $this->Order        = $Invoice->getOrder();
-        $this->Products     = $Invoice->getAllItems(); 
+        $this->Products     = $Invoice->getAllItems();
         $this->loadPayment($this->Order);
         
         return $Invoice;
-    }    
+    }
         
     /**
      * @abstract    Delete requested Object
-     * 
+     *
      * @param       int     $Id     Object Id.  If NULL, Object needs to be created.
-     * 
-     * @return      bool                          
-     */    
-    public function Delete($Id = NULL)
+     *
+     * @return      bool
+     */
+    public function Delete($Id = null)
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__,__FUNCTION__); 
+        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Execute Generic Magento Delete Function ...
-        return Splash::Local()->ObjectDelete('sales/order_invoice',$Id);         
-    } 
-    
+        return Splash::Local()->ObjectDelete('sales/order_invoice', $Id);
+    }
 }
