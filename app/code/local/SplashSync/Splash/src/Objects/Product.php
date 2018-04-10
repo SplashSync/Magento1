@@ -40,10 +40,12 @@ class Product extends AbstractObject
 
     
     // Core / Common Traits
+    use \Splash\Local\Objects\Core\CRUDTrait;
     use \Splash\Local\Objects\Core\DataAccessTrait;
     use \Splash\Local\Objects\Core\SplashIdTrait;
     use \Splash\Local\Objects\Core\DatesTrait;
     use \Splash\Local\Objects\Core\PricesTrait;
+    use \Splash\Local\Objects\Core\MultilangTrait;
 
     // Product Traits
     use \Splash\Local\Objects\Product\CRUDTrait;

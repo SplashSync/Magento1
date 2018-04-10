@@ -117,7 +117,7 @@ trait DescTrait
             case 'meta_description':
             case 'meta_keywords':
             case 'url_key':
-                $this->Out[$FieldName] = Splash::Local()->getMultilang($this->Object, $FieldName);
+                $this->Out[$FieldName] = $this->getMultilang($this->Object, $FieldName);
                 break;
                 
             default:
@@ -152,7 +152,7 @@ trait DescTrait
             case 'meta_description':
             case 'meta_keywords':
             case 'url_key':
-                if (Splash::Local()->setMultilang($this->Object, $FieldName, $Data)) {
+                if ($this->setMultilang($this->Object, $FieldName, $Data)) {
                     $this->needUpdate();
                 }
                 break;

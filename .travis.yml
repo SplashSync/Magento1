@@ -27,11 +27,9 @@ matrix:
 install:
     # Run Composer
     - composer update
-#    - composer update --no-dev --ignore-platform-reqs
     
     # Configure Php ...
     - phpenv config-rm xdebug.ini
-#    - echo 'date.timezone = "Europe/Berlin"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 
     # Install Magento & Modules
     - sh build/setup.sh
@@ -41,6 +39,7 @@ install:
 
 script:
     - cd /tmp/magetest/htdocs
+    - php ./app/code/local/SplashSync/Splash/vendor/bin/grumphp run
     - phpunit
         
 notifications:

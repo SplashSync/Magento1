@@ -36,6 +36,7 @@ class ThirdParty extends AbstractObject
     use IntelParserTrait;
     
     // Core / Common Traits
+    use \Splash\Local\Objects\Core\CRUDTrait;
     use \Splash\Local\Objects\Core\DataAccessTrait;
     use \Splash\Local\Objects\Core\SplashIdTrait;
     use \Splash\Local\Objects\Core\SplashOriginTrait;

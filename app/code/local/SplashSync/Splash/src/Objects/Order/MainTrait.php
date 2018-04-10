@@ -211,8 +211,7 @@ trait MainTrait
 
     /**
      *   @abstract   Get Standardized Order Status
-     *
-     *   @return     bool
+     *   @return     string
      */
     public static function getStandardOrderState($State)
     {
@@ -240,8 +239,7 @@ trait MainTrait
     
     /**
      *   @abstract   Get Magento Order Status
-     *
-     *   @return     bool
+     *   @return     string
      */
     public static function getMagentoOrderState($State)
     {

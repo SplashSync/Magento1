@@ -220,44 +220,7 @@ trait ImagesTrait
         //====================================================================//
         // Given List Is Not Empty
         foreach ($Data as $InValue) {
-            if (!isset($InValue["image"]) || empty($InValue["image"])) {
-                continue;
-            }
-            $this->ImgPosition++;
-            $InImage = $InValue["image"];
-            //====================================================================//
-            // Search For Image In Current List
-            $ImageFound = false;
-            foreach ($ObjectImagesList["images"] as $key => $Image) {
-                //====================================================================//
-                // Compute Md5 CheckSum for this Image
-                $CheckSum = md5_file($this->Object->getMediaConfig()->getMediaPath($Image['file']));
-                //====================================================================//
-                // If CheckSum are Different => Continue
-                if ($InImage["md5"] !== $CheckSum) {
-                    continue;
-                }
-                //====================================================================//
-                // If Positions are Different => Continue
-                if ($this->ImgPosition !== $Image['position']) {
-                    continue;
-                }
-                
-                $ImageFound = $Image;
-                //====================================================================//
-                // If Object Found, Unset from Current List
-                unset($ObjectImagesList["images"][$key]);
-                break;
-            }
-
-            //====================================================================//
-            // If found => Next
-            if ($ImageFound) {
-                continue;
-            }
-            //====================================================================//
-            // If Not found, Add this object to list
-            $this->addImage($InImage);
+            $this->setImage($ObjectImagesList, $InValue);
         }
         
         //====================================================================//
@@ -270,6 +233,52 @@ trait ImagesTrait
         return true;
     }
             
+    /**
+    *   @abstract     Update Product Image from Server Data
+    *   @param        array   $Data             Input Image List for Update
+    */
+    public function setImage(&$ObjectImagesList, $InValue)
+    {
+        if (!isset($InValue["image"]) || empty($InValue["image"])) {
+            return;
+        }
+        $this->ImgPosition++;
+        $InImage = $InValue["image"];
+        //====================================================================//
+        // Search For Image In Current List
+        $ImageFound = false;
+        foreach ($ObjectImagesList["images"] as $key => $Image) {
+            //====================================================================//
+            // Compute Md5 CheckSum for this Image
+            $CheckSum = md5_file($this->Object->getMediaConfig()->getMediaPath($Image['file']));
+            //====================================================================//
+            // If CheckSum are Different => Continue
+            if ($InImage["md5"] !== $CheckSum) {
+                return;
+            }
+            //====================================================================//
+            // If Positions are Different => Continue
+            if ($this->ImgPosition !== $Image['position']) {
+                return;
+            }
+
+            $ImageFound = $Image;
+            //====================================================================//
+            // If Object Found, Unset from Current List
+            unset($ObjectImagesList["images"][$key]);
+            break;
+        }
+
+        //====================================================================//
+        // If found => Next
+        if ($ImageFound) {
+            return;
+        }
+        //====================================================================//
+        // If Not found, Add this object to list
+        $this->addImage($InImage);
+    }
+    
     /**
     *   @abstract     Import a Product Image from Server Data
     *   @param        array   $ImgArray             Splash Image Definition Array

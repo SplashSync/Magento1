@@ -121,11 +121,7 @@ trait MainTrait
             //====================================================================//
             // Customer Company Overriden by User Id
             case 'company':
-                if (!empty($this->Object->getData($FieldName))) {
-                    $this->Out[$FieldName] = $this->Object->getData($FieldName);
-                    break;
-                }
-                $this->Out[$FieldName] = "Magento1("  . $this->Object->getEntityId() . ")";
+                $this->Out[$FieldName] = $this->getCompany();
                 break;
             
             //====================================================================//
@@ -171,6 +167,18 @@ trait MainTrait
     }
     
     /**
+     *  @abstract     Read Customer Company Name
+     *  @return       string
+     */
+    private function getCompany()
+    {
+        if (!empty($this->Object->getData('company'))) {
+            return $this->Object->getData('company');
+        }
+        return "Magento1("  . $this->Object->getEntityId() . ")";
+    } 
+    
+    /**
      *  @abstract     Read Customer Gender Name
      *  @return       string
      */
@@ -209,10 +217,7 @@ trait MainTrait
                 $Data++;
                 //====================================================================//
                 // Update Gender Type
-                if ($this->Object->getData($FieldName) != $Data) {
-                    $this->Object->setData($FieldName, $Data);
-                    $this->needUpdate();
-                }
+                $this->setData($FieldName, $Data);
                 break;
             //====================================================================//
             // Customer Date Of Birth
@@ -232,10 +237,7 @@ trait MainTrait
             case 'prefix':
             case 'middlename':
             case 'suffix':
-                if ($this->Object->getData($FieldName) != $Data) {
-                    $this->Object->setData($FieldName, $Data);
-                    $this->needUpdate();
-                }
+                $this->setData($FieldName, $Data);
                 break;
                 
             default:

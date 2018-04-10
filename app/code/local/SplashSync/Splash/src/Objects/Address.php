@@ -36,6 +36,7 @@ class Address extends AbstractObject
     use ObjectsTrait;
     
     // Core / Common Traits
+    use \Splash\Local\Objects\Core\CRUDTrait;
     use \Splash\Local\Objects\Core\DataAccessTrait;
     use \Splash\Local\Objects\Core\SplashIdTrait;
     use \Splash\Local\Objects\Core\DatesTrait;

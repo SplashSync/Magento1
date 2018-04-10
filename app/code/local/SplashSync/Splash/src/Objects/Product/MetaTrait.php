@@ -90,8 +90,8 @@ trait MetaTrait
                     $this->Out[$FieldName] = false;
                     break;
                 }
-                $To         = Mage::getModel("core/date")->timestamp($this->Object->getData("special_to_date"));
-                if ($Current->getTimestamp() < $To) {
+                $toTimestamp    = Mage::getModel("core/date")->timestamp($this->Object->getData("special_to_date"));
+                if ($Current->getTimestamp() < $toTimestamp) {
                     $this->Out[$FieldName] = false;
                     break;
                 }

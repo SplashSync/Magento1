@@ -166,10 +166,7 @@ trait MainTrait
             case 'postcode':
             case 'city':
             case 'country_id':
-                if ($this->Object->getData($FieldName) != $Data) {
-                    $this->Object->setData($FieldName, $Data);
-                    $this->update = true;
-                }
+                $this->setData($FieldName, $Data);
                 break;
 
             //====================================================================//
@@ -182,9 +179,9 @@ trait MainTrait
                         ->loadByCode($Data, $CountryId)->getRegionId();
                 if (( $RegionId ) && $this->Object->getData($FieldName)  != $RegionId) {
                     $this->Object->setData($FieldName, $RegionId);
-                    $this->update = true;
+                    $this->needUpdate();
                 }
-                unset($this->In[$FieldName]);
+                break;
             default:
                 return;
         }

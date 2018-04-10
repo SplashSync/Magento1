@@ -14,12 +14,12 @@
         @see https://phpmd.org/rules/codesize.html
      -->
     <rule ref="rulesets/codesize.xml"/>
-
+    
     <!--
         Include Controversial rules
         @see https://phpmd.org/rules/controversial.html
      -->
-    <rule ref="rulesets/controversial.xml"/>
+    <!--<rule ref="rulesets/controversial.xml"/>-->
 
     <!--
         Include Design rules
@@ -45,6 +45,7 @@
         <properties>
             <property name="minimum" value="3"/>
             <property name="exceptions" value="id"/>
+            <property name="exceptions" value="Id"/>
         </properties>
     </rule>
     <rule ref="rulesets/naming.xml/LongVariable">

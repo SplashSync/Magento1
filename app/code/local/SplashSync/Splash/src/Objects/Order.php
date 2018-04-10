@@ -40,6 +40,7 @@ class Order extends AbstractObject
     use ListsTrait;
 
      // Core / Common Traits
+    use \Splash\Local\Objects\Core\CRUDTrait;
     use \Splash\Local\Objects\Core\DataAccessTrait;
     
     // Order Traits

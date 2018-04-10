@@ -131,13 +131,31 @@ trait CRUDTrait
         //====================================================================//
         // Update order Totals
         $this->_UpdateTotals();
+        
         //====================================================================//
-        // Do Generic Magento Object Save & Verify Update was Ok
-        $Save = Splash::Local()->ObjectSave($this->Object, $Needed, "Customer Order");
-        if ($Save !== false) {
-            Splash::Object("Order")->Lock($Save);
+        // Verify Update Is requiered
+        if ($Needed == false) {
+            Splash::Log()->Deb("MsgLocalNoUpdateReq", __CLASS__, __FUNCTION__);
+            return $this->Object->getEntityId();
         }
-        return $Save;
+        
+        //====================================================================//
+        // If Id Given = > Update Object
+        //====================================================================//
+        try {
+            $this->Object->save();
+        } catch (Mage_Catalog_Exception $ex) {
+            Splash::Log()->Deb($ex->getTraceAsString());
+            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
+        }        
+        
+        if ($this->Object->_hasDataChanges) {
+            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to Update Order (" . $this->Object->getEntityId() . ").");
+        }
+        Splash::Object("Order")->Lock($this->Object->getEntityId());
+        Splash::Log()->Deb("MsgLocalTpl", __CLASS__, __FUNCTION__, "Order Updated");
+        
+        return $this->Object->getEntityId();        
     }
         
     /**

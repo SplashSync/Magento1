@@ -43,6 +43,7 @@ class Invoice extends AbstractObject
     use SimpleFieldsTrait;
 
     // Core / Common Traits
+    use \Splash\Local\Objects\Core\CRUDTrait;
     use \Splash\Local\Objects\Core\DataAccessTrait;
 
 

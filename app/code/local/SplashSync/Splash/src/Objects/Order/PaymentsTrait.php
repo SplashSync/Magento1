@@ -289,6 +289,31 @@ trait PaymentsTrait
         
         //====================================================================//
         // Update Transaction Data
+        $this->setTransactionDate($Transaction, $PaymentData);
+        
+        //====================================================================//
+        // Update Transaction Amount
+        $this->setTransactionAmount($Transaction, $PaymentData);
+        
+        //====================================================================//
+        // Save Changes
+        if ($this->TxnUpdate) {
+            $Transaction->save();
+            $this->TxnUpdate = false;
+            $this->needUpdate();
+        }
+    }
+    
+    /**
+     *  @abstract     Update Transaction Date
+     *
+     *  @param        mixed     $Transaction            Transaction Object
+     *  @param        mixed     $PaymentData            Transaction Data Array
+     *
+     *  @return       void
+     */
+    private function setTransactionDate($Transaction, $PaymentData)
+    {
         if (array_key_exists("date", $PaymentData)) {
             //====================================================================//
             // Verify Date Changed
@@ -298,9 +323,18 @@ trait PaymentsTrait
                 $this->TxnUpdate    =   true;
             }
         }
-        
-        //====================================================================//
-        // Update Transaction Amount
+    }
+    
+    /**
+     *  @abstract     Update Transaction Amount
+     *
+     *  @param        mixed     $Transaction            Transaction Object
+     *  @param        mixed     $PaymentData            Transaction Data Array
+     *
+     *  @return       void
+     */
+    private function setTransactionAmount($Transaction, $PaymentData)
+    {
         if (array_key_exists("amount", $PaymentData)) {
             //====================================================================//
             // Verify Amount Changed
@@ -314,13 +348,5 @@ trait PaymentsTrait
                 $this->TxnUpdate    =   true;
             }
         }
-        
-        //====================================================================//
-        // Save Changes
-        if ($this->TxnUpdate) {
-            $Transaction->save();
-            $this->TxnUpdate = false;
-            $this->needUpdate();
-        }
-    }
+    }    
 }

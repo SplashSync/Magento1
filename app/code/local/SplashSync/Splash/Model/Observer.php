@@ -123,7 +123,7 @@ class SplashSync_Splash_Model_Observer
         $result = Splash::Commit($_Type, $_Id, $_Action, $_User, $_Comment);
         //====================================================================//
         // Post Splash Messages
-        $this->_importMessages(Splash::Log());
+        $this->_importLog(Splash::Log());
         return $result;
     }
     
@@ -199,35 +199,33 @@ class SplashSync_Splash_Model_Observer
         $this->_CommitChanges($_Type, SPL_A_DELETE, $Object->getEntityId(), $_Comment);
     }
     
-    protected function _importMessages($Log)
+    protected function _importLog($Log)
     {
         //====================================================================//
         // Import Errors
         if (isset($Log->err) && !empty($Log->err)) {
-            foreach ($Log->err as $Message) {
-                Mage::getSingleton('adminhtml/session')->addError($Message);
-            }
+            $this->_importMessages($Log->err, "addError");
         }
         //====================================================================//
         // Import Warnings
         if (isset($Log->war) && !empty($Log->war)) {
-            foreach ($Log->war as $Message) {
-                Mage::getSingleton('adminhtml/session')->addWarning($Message);
-            }
+            $this->_importMessages($Log->war, "addWarning");
         }
         //====================================================================//
         // Import Messages
         if (isset($Log->msg) && !empty($Log->msg)) {
-            foreach ($Log->msg as $Message) {
-                Mage::getSingleton('adminhtml/session')->addSuccess($Message);
-            }
+            $this->_importMessages($Log->msg, "addSuccess");
         }
         //====================================================================//
         // Import Debug
         if (isset($Log->deb) && !empty($Log->deb)) {
-            foreach ($Log->deb as $Message) {
-                Mage::getSingleton('adminhtml/session')->addSuccess($Message);
-            }
+            $this->_importMessages($Log->deb, "addSuccess");
         }
     }
+    private function _importMessages($MessagesArray, $Method)
+    {
+        foreach ($MessagesArray as $Message) {
+            Mage::getSingleton('adminhtml/session')->$Method($Message);
+        }
+    }    
 }

@@ -25,18 +25,6 @@ use Mage;
 
 class Local
 {
-    //====================================================================//
-    // Class Constructor
-    //====================================================================//
-        
-    /**
-     *      @abstract       Class Constructor (Used only if localy necessary)
-     *      @return         int                     0 if KO, >0 if OK
-     */
-    public function __construct()
-    {
-        return true;
-    }
 
 //====================================================================//
 // *******************************************************************//
@@ -112,10 +100,6 @@ class Local
             Mage::app();
 //            Mage::app()->setCurrentStore(\Mage_Core_Model_App::ADMIN_STORE_ID);
         }
-        //====================================================================//
-        // Load Recurent Use Parameters
-        $this->multilang    =   Mage::getStoreConfig('splashsync_splash_options/langs/multilang');
-        $this->default_lang =   Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');
         
         //====================================================================//
         //  Load Local Translation File
@@ -419,93 +403,6 @@ class Local
         }
         return Splash::Log()->Err("ErrUnableToLoginUser");
     }
-    
-    /**
-    *   @abstract   Generic Delete of requested Object
-    *   @param      string      $Type           Object Magento Type
-    *   @param      int         $Id             Object Id.  If NULL, Object needs to be created.
-    *   @return     int                         0 if KO, >0 if OK
-    */
-    public function ObjectDelete($Type, $Id = null)
-    {
-        //====================================================================//
-        // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
-        //====================================================================//
-        // Safety Checks
-        if (empty($Id)) {
-            return Splash::Log()->Err("ErrSchNoObjectId", __CLASS__."::".__FUNCTION__);
-        }
-        //====================================================================//
-        // Initialize Remote Admin user ...
-        if (!Splash::Local()->LoadLocalUser()) {
-            return true;
-        }
-        //====================================================================//
-        // Load Object From DataBase
-        //====================================================================//
-        $Object = Mage::getModel($Type)->load($Id);
-        if ($Object->getEntityId() != $Id) {
-            return Splash::Log()->War("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to load (" . $Id . ").");
-        }
-        //====================================================================//
-        // Delete Object From DataBase
-        //====================================================================//
-        $Object->delete();
-        return true;
-    }
-    
-    /**
-     *   @abstract   Generic Save of requested Object
-     *   @param      mixed      $Object          Magento Object
-     *   @param      bool       $Updated         Object Updated Flag.  If False, no action but dispatch a Debug & Trace Message.
-     *   @param      string     $Name            Object Name for Messaging.
-     *   @return     int                         Magento Object Id
-     */
-    public function ObjectSave($Object, $Updated = true, $Name = "Object")
-    {
-        //====================================================================//
-        // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
-        //====================================================================//
-        // Verify Update Is requiered
-        if ($Updated == false) {
-            Splash::Log()->Deb("MsgLocalNoUpdateReq", __CLASS__, __FUNCTION__);
-            return $Object->getEntityId();
-        }
-        //====================================================================//
-        // If Id Given = > Update Object
-        //====================================================================//
-        $Object->save();
-        if ($Object->_hasDataChanges) {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to update (" . $Object->getEntityId() . ").");
-        }
-        Splash::Log()->Deb("MsgLocalTpl", __CLASS__, __FUNCTION__, $Name . " Updated");
-        return $Object->getEntityId();
-    }
-    
-    /**
-     *   @abstract   Generic - Compute Numeric Values Changes for a Given Object
-     *   @param      mixed      $Object          Magento Object
-     *   @return     array                       Result Array
-     */
-    public function ObjectChanges($Object)
-    {
-        //====================================================================//
-        // Read Original Object Datas
-        $Changes = $Object->getOrigData();
-        //====================================================================//
-        // Compute Data Changes
-        array_walk_recursive($Object->getData(), function ($item, $key) use (&$Changes) {
-            if (isset($Changes[$key]) && is_numeric($item) && is_numeric($Changes[$key])) {
-                $Changes[$key] = $item - $Changes[$key];
-            } else {
-                $Changes[$key] = null;
-            }
-        });
-
-        return $Changes;
-    }
         
 //====================================================================//
 //  Magento Dedicated Parameter SelfTests
@@ -541,65 +438,6 @@ class Local
 //  Magento Getters & Setters
 //====================================================================//
     
-    /**
-     *      @abstract       Read Multilangual Fields of an Object
-     *      @param          object      $Object     Pointer to Prestashop Object
-     *      @param          array       $key        Id of a Multilangual Contents
-     *      @return         int                     0 if KO, 1 if OK
-     */
-    public function getMultilang(&$Object = null, $key = null)
-    {
-        if (empty($this->multilang) && !empty($this->default_lang)) {
-            return array(
-                Mage::getStoreConfig('splashsync_splash_options/langs/default_lang') => $Object->getData($key)
-            );
-        }
-
-        Splash::Log()->www("Object", $Object->getData());
-    }
-
-    /**
-     *      @abstract       Update Multilangual Fields of an Object
-     *
-     *      @param          object      $Object     Pointer to Prestashop Object
-     *      @param          array       $key        Id of a Multilangual Contents
-     *      @param          array       $Data       New Multilangual Contents
-     *      @param          int         $MaxLength  Maximum Contents Lenght
-     *
-     *      @return         bool                     0 if no update needed, 1 if update needed
-     */
-    public function setMultilang($Object = null, $key = null, $Data = null, $MaxLength = null)
-    {
-        //====================================================================//
-        // Check Received Data Are Valid
-        if (!is_array($Data) && !is_a($Data, "ArrayObject")) {
-            return false;
-        }
-        
-        $UpdateRequired = false;
-        
-        if (empty($this->multilang) && !empty($this->default_lang)) {
-            //====================================================================//
-            // Compare Data
-            if (!array_key_exists($this->default_lang, $Data)
-                ||  ( $Object->getData($key) === $Data[$this->default_lang]) ) {
-                return $UpdateRequired;
-            }
-            //====================================================================//
-            // Verify Data Lenght
-            if ($MaxLength &&  ( strlen($Data[$this->default_lang]) > $MaxLength)) {
-                Splash::Log()->War("MsgLocalTpl", __CLASS__, __FUNCTION__, "Text is too long for field " . $key . ", modification skipped.");
-                return $UpdateRequired;
-            }
-            //====================================================================//
-            // Update Data
-            $Object->setData($key, $Data[$this->default_lang]);
-            $UpdateRequired = true;
-        }
-        
-        return $UpdateRequired;
-    }
-
     private function getExtensionVersion()
     {
         if (!isset(Mage::getConfig()->getNode()->modules->SplashSync_Splash->version)) {

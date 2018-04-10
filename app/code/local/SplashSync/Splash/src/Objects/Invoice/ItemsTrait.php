@@ -34,8 +34,6 @@ trait ItemsTrait
     */
     private function buildProductsLineFields()
     {
-        
-        $ListId =   "items";
         $ListName = "" ;
         
         //====================================================================//
@@ -166,7 +164,7 @@ trait ItemsTrait
         // Do Fill List with Data
         self::Lists()->Insert($this->Out, "items", $FieldName, count($this->Products), $Value);
         
-        $NoUse = $Key;
+        unset($this->In[$Key]);
     }
     
     /**
@@ -192,7 +190,9 @@ trait ItemsTrait
             // Do Fill List with Data
             self::Lists()->Insert($this->Out, "items", $FieldName, $Index, $this->getProductsLineValue($Product, $FieldId));
         }
-        unset($this->In[$Key]);
+        if ( isset($this->In[$Key]) ) {
+            unset($this->In[$Key]);
+        }
     }
     
     private function getProductsLineValue($Product, $FieldId)
@@ -207,10 +207,7 @@ trait ItemsTrait
                 return $Product->getData($FieldId);
                 
             case 'discount_percent':
-                if ($Product->getPriceInclTax() && $Product->getQty()) {
-                    return (double) 100 * $Product->getDiscountAmount() / ($Product->getPriceInclTax() * $Product->getQty());
-                }
-                return 0;
+                return $this->getItemsDiscount($Product);
                 
             case 'qty':
                 return (int) ( $Product->getHasChildren() ? 0 : $Product->getData($FieldId) );
@@ -224,22 +221,39 @@ trait ItemsTrait
             // Invoice Line Unit Price
             case 'unit_price':
                 //====================================================================//
-                // Read Current Currency Code
-                $CurrencyCode   =   $this->Object->getOrderCurrencyCode();
-                //====================================================================//
                 // Build Price Array
-                return self::Prices()->Encode(
-                    (double)    $Product->getPrice(),
-                    (double)    $Product->getOrderItem()->getTaxPercent(),
-                    null,
-                    $CurrencyCode,
-                    Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
-                    Mage::app()->getLocale()->currency($CurrencyCode)->getName()
-                );
+                return $this->getItemsPrice($Product);
                 
             default:
                 return Null;
         }
         return Null;
+    }  
+    
+    private function getItemsDiscount($Product)
+    {
+        if (!empty($Product->getData('discount_percent'))) {
+            return $Product->getData('discount_percent');
+        } elseif ($Product->getPriceInclTax() && $Product->getQty()) {
+            return (double) 100 * $Product->getDiscountAmount() / ($Product->getPriceInclTax() * $Product->getQty());
+        }
+        return 0;
+    }
+    
+    private function getItemsPrice($Product)
+    {
+        //====================================================================//
+        // Read Current Currency Code
+        $CurrencyCode   =   $this->Object->getOrderCurrencyCode();
+        //====================================================================//
+        // Build Price Array
+        return self::Prices()->Encode(
+            (double)    $Product->getPrice(),
+            (double)    $Product->getOrderItem()->getTaxPercent(),
+            null,
+            $CurrencyCode,
+            Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
+            Mage::app()->getLocale()->currency($CurrencyCode)->getName()
+        );
     }    
 }

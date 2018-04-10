@@ -121,21 +121,14 @@ trait MetaTrait
                 break;
                 
             case 'isValidated':
-                $this->Out[$FieldName]  = $this->getIsValidated();
+                $this->Out[$FieldName]  = $this->isValidated();
                 break;
             
             case 'isClosed':
-                $this->Out[$FieldName]  = $this->getIsClosed();
+                $this->Out[$FieldName]  = $this->isClosed();
                 break;
             case 'isPaid':
-                if ($this->Object->getState() === MageOrder::STATE_PROCESSING
-                    ||  $this->Object->getState() === MageOrder::STATE_COMPLETE
-                    ||  $this->Object->getState() === MageOrder::STATE_CLOSED
-                        ) {
-                    $this->Out[$FieldName]  = true;
-                } else {
-                    $this->Out[$FieldName]  = false;
-                }
+                $this->Out[$FieldName]  = $this->isPaid();
                 break;
                 
             //====================================================================//
@@ -158,7 +151,7 @@ trait MetaTrait
      *
      *  @return       bool
      */
-    private function getIsValidated()
+    private function isValidated()
     {
         if ($this->Object->getState() === MageOrder::STATE_NEW
             ||  $this->Object->getState() === MageOrder::STATE_PROCESSING
@@ -177,7 +170,7 @@ trait MetaTrait
      *
      *  @return       bool
      */
-    private function getIsClosed()
+    private function isClosed()
     {
         if ($this->Object->getState() === MageOrder::STATE_COMPLETE
             ||  $this->Object->getState() === MageOrder::STATE_CLOSED
@@ -186,5 +179,21 @@ trait MetaTrait
         }
         return false;                
     }
+    
+    /**
+     *  @abstract     Read Paid Flag
+     *
+     *  @return       bool
+     */
+    private function isPaid()
+    {
+        if ($this->Object->getState() === MageOrder::STATE_PROCESSING
+            ||  $this->Object->getState() === MageOrder::STATE_COMPLETE
+            ||  $this->Object->getState() === MageOrder::STATE_CLOSED
+                ) {
+            return true;
+        }
+        return false;                
+    }    
         
 }

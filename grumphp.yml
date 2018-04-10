@@ -24,8 +24,8 @@ parameters:
             triggered_by: [php, js, twig]
         jsonlint:
             detect_key_conflicts: true
-#        phpmd:
-#            ruleset: ["build/phpmd.xml"]
+        phpmd:
+            ruleset: ["build/phpmd.xml"]
         securitychecker: ~
 #        phpcpd:
 #            directory: 'app/code/local/SplashSync/Splash/src'
