@@ -30,6 +30,7 @@ class SplashSync_Splash_Model_Observer
         "customer/address",
         "catalog/product",
         "sales/order",
+        "sales/order_invoice"
     );
 
     /*
@@ -40,6 +41,7 @@ class SplashSync_Splash_Model_Observer
         "customer/address"      => "Address",
         "catalog/product"       => "Product",
         "sales/order"           => "Order",
+        "sales/order_invoice"   => "Invoice"
     );
     
     /*
@@ -50,6 +52,7 @@ class SplashSync_Splash_Model_Observer
         "customer/address"      => "Customer Address",
         "catalog/product"       => "Product",
         "sales/order"           => "Customer Order",
+        "sales/order_invoice"   => "Customer Invoice"
     );
     
     /*
