@@ -254,12 +254,12 @@ trait ImagesTrait
             //====================================================================//
             // If CheckSum are Different => Continue
             if ($InImage["md5"] !== $CheckSum) {
-                return;
+                continue;
             }
             //====================================================================//
             // If Positions are Different => Continue
             if ($this->ImgPosition !== $Image['position']) {
-                return;
+                continue;
             }
 
             $ImageFound = $Image;
