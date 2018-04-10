@@ -26,7 +26,7 @@
     },
     
     "require-dev": {
-        "phpunit/phpunit":                  "*",
+        "phpunit/phpunit":                  ">5.4",
         "composer/composer":                "^1.5",
         "j13k/yaml-lint":                   "^1.1",
         "jakub-onderka/php-parallel-lint":  "^1.0",
@@ -37,7 +37,7 @@
         "sebastian/phpcpd":                 "^4.0",
         "seld/jsonlint":                    "^1.7",
         "sensiolabs/security-checker":      "^4.1",
-        "squizlabs/php_codesniffer":        "^3.2"        
+        "squizlabs/php_codesniffer":        "^3.2"
     },
     
     "autoload-dev": {

@@ -2,17 +2,18 @@ parameters:
     git_dir: .
     bin_dir: app/code/local/SplashSync/Splash/vendor/bin
     ascii:
-        failed: ~
-        succeeded: ~
+        failed: grumphp-grumpy.txt
+        succeeded: grumphp-happy.txt
     tasks:
         composer:
             file: "./composer.json"
         phplint:
             exclude: ['app/code/local/SplashSync/Splash/vendor']
             triggered_by: ['php']
-#        phpcs:
-#            standard: "PSR2"
-#            warning_severity: 0
+        phpcs:
+            standard: "build/phpcs.xml"
+            triggered_by: [php, phtml]
+            warning_severity: 5            
         git_blacklist:
             keywords:
                 - "var_dump"
@@ -24,7 +25,7 @@ parameters:
         jsonlint:
             detect_key_conflicts: true
 #        phpmd:
-#            ruleset: ["./phpmd.xml"]
+#            ruleset: ["build/phpmd.xml"]
         securitychecker: ~
 #        phpcpd:
 #            directory: 'app/code/local/SplashSync/Splash/src'
