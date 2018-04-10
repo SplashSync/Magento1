@@ -64,4 +64,35 @@ trait CRUDTrait
         $Object->delete();
         return true;
     }
+    
+    /**
+     * @abstract    Update Request Object
+     *
+     * @param       array   $Needed         Is This Update Needed
+     *
+     * @return      string      Object Id
+     */
+    public function CoreUpdate($Needed)
+    {
+        //====================================================================//
+        // Stack Trace
+        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        if (!$Needed) {
+            return $this->Object->getEntityId();
+        }
+        //====================================================================//
+        // Update Object
+        try {
+            $this->Object->save();
+        } catch (Mage_Customer_Exception $ex) {
+            Splash::Log()->Deb($ex->getTraceAsString());
+            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
+        }
+        //====================================================================//
+        // Ensure All changes have been saved
+        if ($this->Object->_hasDataChanges) {
+            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to update (" . $this->Object->getEntityId() . ").");
+        }
+        return $this->Object->getEntityId();
+    }    
 }

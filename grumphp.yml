@@ -27,9 +27,9 @@ parameters:
         phpmd:
             ruleset: ["build/phpmd.xml"]
         securitychecker: ~
-#        phpcpd:
-#            directory: 'app/code/local/SplashSync/Splash/src'
-#            exclude: ['vendor']
+        phpcpd:
+            directory: 'app/code/local/SplashSync/Splash/src'
+            exclude: ['vendor']
         xmllint: ~
         yamllint: ~
 #        phpstan:

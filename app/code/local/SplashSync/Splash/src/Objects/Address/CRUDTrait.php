@@ -101,26 +101,7 @@ trait CRUDTrait
      */
     public function Update($Needed)
     {
-        //====================================================================//
-        // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
-        if (!$Needed) {
-            return $this->Object->getEntityId();
-        }
-        //====================================================================//
-        // Update Object
-        try {
-            $this->Object->save();
-        } catch (Mage_Customer_Exception $ex) {
-            Splash::Log()->Deb($ex->getTraceAsString());
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
-        }
-        //====================================================================//
-        // Ensure All changes have been saved
-        if ($this->Object->_hasDataChanges) {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to update (" . $this->Object->getEntityId() . ").");
-        }
-        return $this->Object->getEntityId();
+        return $this->CoreUpdate($Needed);
     }
         
     /**
@@ -137,6 +118,6 @@ trait CRUDTrait
         Splash::Log()->Trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Execute Generic Magento Delete Function ...
-        return Splash::Local()->ObjectDelete('customer/address', $Id);
+        return $this->CoreDelete('customer/address', $Id);
     }
 }

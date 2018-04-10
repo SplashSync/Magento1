@@ -172,6 +172,6 @@ trait CRUDTrait
         Splash::Log()->Trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Execute Generic Magento Delete Function ...
-        return Splash::Local()->ObjectDelete('sales/order', $Id);
+        return $this->CoreDelete('sales/order', $Id);
     }
 }
