@@ -230,16 +230,9 @@ trait ItemsTrait
         return Null;
     }  
     
-    private function getItemsDiscount($Product)
-    {
-        if (!empty($Product->getData('discount_percent'))) {
-            return $Product->getData('discount_percent');
-        } elseif ($Product->getPriceInclTax() && $Product->getQty()) {
-            return (double) 100 * $Product->getDiscountAmount() / ($Product->getPriceInclTax() * $Product->getQty());
-        }
-        return 0;
-    }
-    
+    /**
+     *  @abstract     Read Invoice Product Price
+     */    
     private function getItemsPrice($Product)
     {
         //====================================================================//
@@ -255,5 +248,15 @@ trait ItemsTrait
             Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
             Mage::app()->getLocale()->currency($CurrencyCode)->getName()
         );
+    }    
+    
+    private function getItemsDiscount($Product)
+    {
+        if (!empty($Product->getData('discount_percent'))) {
+            return $Product->getData('discount_percent');
+        } elseif ($Product->getPriceInclTax() && $Product->getQty()) {
+            return (double) 100 * $Product->getDiscountAmount() / ($Product->getPriceInclTax() * $Product->getQty());
+        }
+        return 0;
     }    
 }

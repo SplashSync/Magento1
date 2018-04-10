@@ -180,6 +180,9 @@ trait ItemsTrait
         return 0;
     }
     
+    /**
+     *  @abstract     Read Order Product Price
+     */        
     private function getItemsPrice($Product)
     {
         //====================================================================//
