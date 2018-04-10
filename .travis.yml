@@ -26,7 +26,7 @@ matrix:
     
 install:
     # Run Composer
-    - composer update --no-dev --ignore-platform-reqs
+    - composer update
 #    - composer update --no-dev --ignore-platform-reqs
     
     # Configure Php ...
