@@ -2,7 +2,7 @@
 # Main Configuration
 ###########################################################
 site_name: Magneto 1 Splash Bundle 
-site_dir: "../../../../../docs"
+site_dir: "../../../../../../docs"
 theme: readthedocs
 
 repo_url: https://github.com/SplashSync/Magento1
