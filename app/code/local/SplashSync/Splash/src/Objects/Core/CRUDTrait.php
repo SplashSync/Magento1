@@ -40,11 +40,11 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Safety Checks
         if (empty($Id)) {
-            return Splash::Log()->Err("ErrSchNoObjectId", __CLASS__."::".__FUNCTION__);
+            return Splash::log()->err("ErrSchNoObjectId", __CLASS__."::".__FUNCTION__);
         }
         //====================================================================//
         // Initialize Remote Admin user ...
@@ -56,7 +56,7 @@ trait CRUDTrait
         //====================================================================//
         $Object = Mage::getModel($Type)->load($Id);
         if ($Object->getEntityId() != $Id) {
-            return Splash::Log()->War("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to load (" . $Id . ").");
+            return Splash::log()->war("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to load (" . $Id . ").");
         }
         //====================================================================//
         // Delete Object From DataBase
@@ -76,7 +76,7 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         if (!$Needed) {
             return $this->Object->getEntityId();
         }
@@ -85,13 +85,13 @@ trait CRUDTrait
         try {
             $this->Object->save();
         } catch (Mage_Customer_Exception $ex) {
-            Splash::Log()->Deb($ex->getTraceAsString());
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
+            Splash::log()->deb($ex->getTraceAsString());
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
         }
         //====================================================================//
         // Ensure All changes have been saved
         if ($this->Object->_hasDataChanges) {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to update (" . $this->Object->getEntityId() . ").");
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to update (" . $this->Object->getEntityId() . ").");
         }
         return $this->Object->getEntityId();
     }    

@@ -139,7 +139,7 @@ class Demo extends WidgetBase
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Load Default Language
         Splash::Local()->LoadDefaultLanguage();

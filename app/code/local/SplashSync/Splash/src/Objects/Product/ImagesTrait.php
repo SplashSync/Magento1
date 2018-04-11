@@ -46,7 +46,7 @@ trait ImagesTrait
 //                ->Identifier("cover_image")
 //                ->Name($this->spl->l("Cover"))
 //                ->MicroData("http://schema.org/Product","coverImage")
-//                ->NotTested();
+//                ->isNotTested();
         
         //====================================================================//
         // Product Images List
@@ -305,11 +305,11 @@ trait ImagesTrait
                 $this->Object->addImageToMediaGallery($Path . $Filename, array('image'), true, false);
                 $this->update = true;
             } catch (Exception $e) {
-                Splash::Log()->War("ErrLocalTpl", __CLASS__, __FUNCTION__, "Image Path (" . $Path . $Filename);
-                return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to add image (" . $e->getMessage() . ").");
+                Splash::log()->war("ErrLocalTpl", __CLASS__, __FUNCTION__, "Image Path (" . $Path . $Filename);
+                return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to add image (" . $e->getMessage() . ").");
             } catch (Mage_Core_Exception $e) {
-                Splash::Log()->War("ErrLocalTpl", __CLASS__, __FUNCTION__, "Image Path (" . $Path . $Filename);
-                return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to add image (" . $e->getMessage() . ").");
+                Splash::log()->war("ErrLocalTpl", __CLASS__, __FUNCTION__, "Image Path (" . $Path . $Filename);
+                return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to add image (" . $e->getMessage() . ").");
             }
         }
         return true;

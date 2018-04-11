@@ -48,7 +48,7 @@ trait MultilangTrait
             );
         }
 
-        Splash::Log()->www("Object", $Object->getData());
+        Splash::log()->www("Object", $Object->getData());
     }
 
     /**
@@ -86,7 +86,7 @@ trait MultilangTrait
             //====================================================================//
             // Verify Data Lenght
             if ($MaxLength &&  ( strlen($Data[$this->default_lang]) > $MaxLength)) {
-                Splash::Log()->War("MsgLocalTpl", __CLASS__, __FUNCTION__, "Text is too long for field " . $key . ", modification skipped.");
+                Splash::log()->war("MsgLocalTpl", __CLASS__, __FUNCTION__, "Text is too long for field " . $key . ", modification skipped.");
                 return $UpdateRequired;
             }
             //====================================================================//

@@ -48,15 +48,15 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Safety Checks
         if (empty($Id)) {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Missing Id.");
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Missing Id.");
         }
         $Invoice = Mage::getModel('sales/order_invoice')->load($Id);
         if ($Invoice->getEntityId() != $Id) {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Customer Invoice (" . $Id . ").");
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Customer Invoice (" . $Id . ").");
         }
         //====================================================================//
         // Load Linked Objects
@@ -78,7 +78,7 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Execute Generic Magento Delete Function ...
         return $this->CoreDelete('sales/order_invoice', $Id);

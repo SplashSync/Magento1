@@ -70,7 +70,7 @@ trait MainTrait
                 ->Identifier("region")
                 ->Name("State")
                 ->Group($AddressGroup)
-                ->ReadOnly();
+                ->isReadOnly();
         
         //====================================================================//
         // State code
@@ -79,7 +79,7 @@ trait MainTrait
                 ->Name("StateCode")
                 ->MicroData("http://schema.org/PostalAddress", "addressRegion")
                 ->Group($AddressGroup)
-                ->NotTested();
+                ->isNotTested();
         
         //====================================================================//
         // Country Name
@@ -87,7 +87,7 @@ trait MainTrait
                 ->Identifier("country")
                 ->Name("Country")
                 ->Group($AddressGroup)
-                ->ReadOnly();
+                ->isReadOnly();
 //                ->isListed();
         
         //====================================================================//

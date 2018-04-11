@@ -182,7 +182,7 @@ trait AddressTrait
             ->setFax($CustomerAddress->getFax())
             ->save();
         $this->update = true;
-//        Splash::Log()->www("Address After", $Address->getData());
+//        Splash::log()->www("Address After", $Address->getData());
         //====================================================================//
         // Update Order Address Collection
         if ($Type === "billing") {

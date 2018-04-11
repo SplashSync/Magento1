@@ -67,7 +67,7 @@ trait ItemsTrait
                 ->Name($ListName . "Product ID")
                 ->MicroData("http://schema.org/Product", "productID")
                 ->Association("qty_ordered@lines", "unit_price@lines")
-                ->NotTested()
+                ->isNotTested()
                 ;
 
         //====================================================================//
@@ -113,7 +113,7 @@ trait ItemsTrait
     private function getItemsFields($Key, $FieldName)
     {
         // Check if List field & Init List Array
-        $FieldId = self::Lists()->InitOutput($this->Out, "lines", $FieldName);
+        $FieldId = self::lists()->InitOutput($this->Out, "lines", $FieldName);
         if (!$FieldId) {
             return;
         }
@@ -129,7 +129,7 @@ trait ItemsTrait
         foreach ($Products as $Index => $Product) {
             //====================================================================//
             // Do Fill List with Data
-            self::Lists()->Insert($this->Out, "lines", $FieldName, $Index, $this->getItemsValues($Product, $FieldId));
+            self::lists()->Insert($this->Out, "lines", $FieldName, $Index, $this->getItemsValues($Product, $FieldId));
         }
         unset($this->In[$Key]);
     }
@@ -216,7 +216,7 @@ trait ItemsTrait
             return true;
         }
         if (!$this->isSplash()) {
-            Splash::Log()->Deb("You Cannot Edit Orders Created on Magento");
+            Splash::log()->deb("You Cannot Edit Orders Created on Magento");
             unset($this->In[$FieldName]);
             return true;
         }
@@ -248,7 +248,7 @@ trait ItemsTrait
             // Save Changes
             if ($this->OrderItemUpdate) {
                 $this->OrderItem->save();
-                Splash::Log()->Deb("Order Item Saved");
+                Splash::log()->deb("Order Item Saved");
                 $this->OrderItemUpdate = false;
                 $this->update = true;
             }
@@ -302,7 +302,7 @@ trait ItemsTrait
                         ->setName($Product->getName())
                         ->setSku($Product->getSku());
                 $this->OrderItemUpdate = true;
-                Splash::Log()->Deb("Product Order Item Updated");
+                Splash::log()->deb("Product Order Item Updated");
             }
         //====================================================================//
         // Update Line Without Product Id
@@ -326,7 +326,7 @@ trait ItemsTrait
                         ->setProductType(null)
                         ->setName($OrderLineData["name"]);
                 $this->OrderItemUpdate = true;
-                Splash::Log()->Deb("Custom Order Item Updated");
+                Splash::log()->deb("Custom Order Item Updated");
             }
         }
     }
@@ -482,7 +482,7 @@ trait ItemsTrait
             //====================================================================//
             // Add Item to Order
             $this->Object->addItem($this->OrderItem);
-            Splash::Log()->Deb("New Order Item Created");
+            Splash::log()->deb("New Order Item Created");
         }
     }
     

@@ -50,7 +50,7 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Decode Product Id
         $this->ProductId        = self::getId($Id);
@@ -58,7 +58,7 @@ trait CRUDTrait
         //====================================================================//
         // Safety Checks
         if (empty($Id)  || empty($this->ProductId)) {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Missing Id.");
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Missing Id.");
         }
         //====================================================================//
         // If $id Given => Load Product Object From DataBase
@@ -68,7 +68,7 @@ trait CRUDTrait
             // Init Object
             $Product = Mage::getModel('catalog/product')->load($this->ProductId);
             if ($Product->getEntityId() != $this->ProductId) {
-                return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to fetch Product (" . $this->ProductId . ")");
+                return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to fetch Product (" . $this->ProductId . ")");
             }
         }
         return $Product;
@@ -85,7 +85,7 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Check Required Fields
         if (!$this->verifyRequiredFields()) {
@@ -112,8 +112,8 @@ trait CRUDTrait
         try {
             $Product->save();
         } catch (Mage_Catalog_Exception $ex) {
-            Splash::Log()->Deb($ex->getTraceAsString());
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
+            Splash::log()->deb($ex->getTraceAsString());
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
         }
         $this->ProductId        = $Product->getEntityId();
         
@@ -143,14 +143,14 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Decode Product Id
         if (!empty($Id)) {
             $this->ProductId    = $this->getId($Id);
             $this->AttributeId  = $this->getAttribute($Id);
         } else {
-            return Splash::Log()->Err("ErrSchWrongObjectId", __FUNCTION__);
+            return Splash::log()->err("ErrSchWrongObjectId", __FUNCTION__);
         }
         //====================================================================//
         // Execute Generic Magento Delete Function ...

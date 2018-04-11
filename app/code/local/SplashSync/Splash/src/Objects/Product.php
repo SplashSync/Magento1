@@ -123,7 +123,7 @@ class Product extends AbstractObject
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         /* Get customer model, run a query */
         $Collection = Mage::getModel('catalog/product')
                   ->getCollection()
@@ -172,7 +172,7 @@ class Product extends AbstractObject
         // Prepare List result meta infos
         $Data["meta"]["current"]    =   count($Data);  // Store Current Number of results
         $Data["meta"]["total"]      =   $total;  // Store Total Number of results
-        Splash::Log()->Deb("MsgLocalTpl", __CLASS__, __FUNCTION__, (count($Data)-1)." Products Found.");
+        Splash::log()->deb("MsgLocalTpl", __CLASS__, __FUNCTION__, (count($Data)-1)." Products Found.");
         return $Data;
     }
 }

@@ -44,15 +44,15 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Safety Checks
         if (empty($Id)) {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Missing Id.");
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Missing Id.");
         }
         $Order = Mage::getModel('sales/order')->load($Id);
         if ($Order->getEntityId() != $Id) {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Customer Order (" . $Id . ").");
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Customer Order (" . $Id . ").");
         }
         //====================================================================//
         // Load Linked Objects
@@ -72,7 +72,7 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Check Required Fields
         if (!$this->verifyRequiredFields()) {
@@ -104,8 +104,8 @@ trait CRUDTrait
         try {
             $Order->save();
         } catch (Mage_Catalog_Exception $ex) {
-            Splash::Log()->Deb($ex->getTraceAsString());
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
+            Splash::log()->deb($ex->getTraceAsString());
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
         }
         //====================================================================//
         // Load Linked Objects
@@ -124,7 +124,7 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         if (!$Needed) {
             return $this->Object->getEntityId();
         }
@@ -135,7 +135,7 @@ trait CRUDTrait
         //====================================================================//
         // Verify Update Is requiered
         if ($Needed == false) {
-            Splash::Log()->Deb("MsgLocalNoUpdateReq", __CLASS__, __FUNCTION__);
+            Splash::log()->deb("MsgLocalNoUpdateReq", __CLASS__, __FUNCTION__);
             return $this->Object->getEntityId();
         }
         
@@ -145,15 +145,15 @@ trait CRUDTrait
         try {
             $this->Object->save();
         } catch (Mage_Catalog_Exception $ex) {
-            Splash::Log()->Deb($ex->getTraceAsString());
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
+            Splash::log()->deb($ex->getTraceAsString());
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
         }        
         
         if ($this->Object->_hasDataChanges) {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to Update Order (" . $this->Object->getEntityId() . ").");
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to Update Order (" . $this->Object->getEntityId() . ").");
         }
         Splash::Object("Order")->Lock($this->Object->getEntityId());
-        Splash::Log()->Deb("MsgLocalTpl", __CLASS__, __FUNCTION__, "Order Updated");
+        Splash::log()->deb("MsgLocalTpl", __CLASS__, __FUNCTION__, "Order Updated");
         
         return $this->Object->getEntityId();        
     }
@@ -169,7 +169,7 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Execute Generic Magento Delete Function ...
         return $this->CoreDelete('sales/order', $Id);

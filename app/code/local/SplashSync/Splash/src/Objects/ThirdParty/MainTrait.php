@@ -43,7 +43,7 @@ trait MainTrait
                 ->Identifier("gender_name")
                 ->Name("Social title")
                 ->MicroData("http://schema.org/Person", "honorificPrefix")
-                ->ReadOnly();
+                ->isReadOnly();
 
         //====================================================================//
         // Gender Type
@@ -55,7 +55,7 @@ trait MainTrait
                 ->Description($desc)
                 ->AddChoice(0, "Male")
                 ->AddChoice(1, "Femele")
-                ->NotTested();
+                ->isNotTested();
         
         //====================================================================//
         // Date Of Birth
@@ -70,7 +70,7 @@ trait MainTrait
                 ->Identifier("company")
                 ->Name("Company")
                 ->MicroData("http://schema.org/Organization", "legalName")
-                ->ReadOnly();
+                ->isReadOnly();
         
         //====================================================================//
         // Prefix
@@ -100,7 +100,7 @@ trait MainTrait
 //                ->InList("contacts")
 //                ->Name($this->spl->l("Address"))
 //                ->MicroData("http://schema.org/Organization","address")
-//                ->ReadOnly();
+//                ->isReadOnly();
     }
     
     

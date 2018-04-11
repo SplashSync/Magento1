@@ -37,7 +37,7 @@ trait CoreTrait
         $this->FieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("sku")
                 ->Name('Reference - SKU')
-                ->IsListed()
+                ->isListed()
                 ->MicroData("http://schema.org/Product", "model")
                 ->isRequired();
         
@@ -48,7 +48,7 @@ trait CoreTrait
                 ->Name('Type Identifier')
                 ->Description('Product Type Identifier')
                 ->MicroData("http://schema.org/Product", "type")
-                ->ReadOnly();
+                ->isReadOnly();
     }
 
     

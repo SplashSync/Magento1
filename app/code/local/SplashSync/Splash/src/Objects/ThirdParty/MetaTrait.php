@@ -47,7 +47,7 @@ trait MetaTrait
                 ->Name("Is Enabled")
                 ->Group("Meta")
                 ->MicroData("http://schema.org/Organization", "active")
-                ->IsListed()->ReadOnly();
+                ->isListed()->isReadOnly();
         
         //====================================================================//
         // Newsletter

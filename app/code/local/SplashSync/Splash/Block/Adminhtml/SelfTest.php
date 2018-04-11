@@ -46,7 +46,7 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
         
         //====================================================================//
         // Post Splash Messages
-        $this->Messages = Splash::Log();
+        $this->Messages = Splash::log();
 
         $this->setData(array(
                 'results'   => $this->Results,
@@ -61,7 +61,7 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
         //====================================================================//
         // List Objects
         //====================================================================//
-        $ObjectsList    = count(Splash::Objects()) . ' (';
+        $ObjectsList    = count(Splash::objects()) . ' (';
         foreach (Splash::Objects() as $value) {
             $ObjectsList    .= $value . ", ";
         }
@@ -71,7 +71,7 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
             "id"    =>  count($this->Results) + 1,
             "name"  =>  'Server SelfTest',
             "desc"  =>  'Verify configuration & functionnality of this server.',
-            "result"=>  Splash::SelfTest()?"Pass":"Fail",
+            "result"=>  Splash::selfTest()?"Pass":"Fail",
         );
     }
     
@@ -80,7 +80,7 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
         //====================================================================//
         // List Objects
         //====================================================================//
-        $ObjectsList    = count(Splash::Objects()) . ' (';
+        $ObjectsList    = count(Splash::objects()) . ' (';
         foreach (Splash::Objects() as $value) {
             $ObjectsList    .= $value . ", ";
         }
@@ -116,7 +116,7 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
             "id"    =>  count($this->Results) + 1,
             "name"  =>  'Connect Test',
             "desc"  =>  'Test to Connect to Splash Server.',
-            "result"=>  Splash::Connect(false)?"Pass":"Fail",
+            "result"=>  Splash::connect(false)?"Pass":"Fail",
         );
     }
 }

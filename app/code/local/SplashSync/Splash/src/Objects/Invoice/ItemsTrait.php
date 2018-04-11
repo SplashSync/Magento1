@@ -105,7 +105,7 @@ trait ItemsTrait
     {
         //====================================================================//
         // Check if List field & Init List Array
-        $FieldId = self::Lists()->InitOutput($this->Out, "items", $FieldName);
+        $FieldId = self::lists()->InitOutput($this->Out, "items", $FieldName);
         if (!$FieldId) {
             return;
         }
@@ -162,7 +162,7 @@ trait ItemsTrait
         }
         //====================================================================//
         // Do Fill List with Data
-        self::Lists()->Insert($this->Out, "items", $FieldName, count($this->Products), $Value);
+        self::lists()->Insert($this->Out, "items", $FieldName, count($this->Products), $Value);
         
         unset($this->In[$Key]);
     }
@@ -179,7 +179,7 @@ trait ItemsTrait
     {
         //====================================================================//
         // Check if List field & Init List Array
-        $FieldId = self::Lists()->InitOutput($this->Out, "items", $FieldName);
+        $FieldId = self::lists()->InitOutput($this->Out, "items", $FieldName);
         if (!$FieldId) {
             return;
         }
@@ -188,7 +188,7 @@ trait ItemsTrait
         foreach ($this->Products as $Index => $Product) {
             //====================================================================//
             // Do Fill List with Data
-            self::Lists()->Insert($this->Out, "items", $FieldName, $Index, $this->getProductsLineValue($Product, $FieldId));
+            self::lists()->Insert($this->Out, "items", $FieldName, $Index, $this->getProductsLineValue($Product, $FieldId));
         }
         if ( isset($this->In[$Key]) ) {
             unset($this->In[$Key]);

@@ -45,7 +45,7 @@ trait DescTrait
                 ->Identifier("name")
                 ->Name("Product Name without Options")
                 ->Group("Description")
-                ->IsListed()
+                ->isListed()
                 ->MicroData("http://schema.org/Product", "name")
                 ->isRequired();
 

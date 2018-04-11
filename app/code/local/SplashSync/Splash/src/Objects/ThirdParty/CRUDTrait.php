@@ -42,12 +42,12 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Init Object
         $Customer   =   Mage::getModel('customer/customer')->load($Id);
         if ($Customer->getEntityId() != $Id) {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Customer (" . $Id . ").");
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Customer (" . $Id . ").");
         }
         return $Customer;
     }
@@ -63,17 +63,17 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Check Required Fields
         if (empty($this->In["firstname"])) {
-            return Splash::Log()->Err("ErrLocalFieldMissing", __CLASS__, __FUNCTION__, "firstname");
+            return Splash::log()->err("ErrLocalFieldMissing", __CLASS__, __FUNCTION__, "firstname");
         }
         if (empty($this->In["lastname"])) {
-            return Splash::Log()->Err("ErrLocalFieldMissing", __CLASS__, __FUNCTION__, "lastname");
+            return Splash::log()->err("ErrLocalFieldMissing", __CLASS__, __FUNCTION__, "lastname");
         }
         if (empty($this->In["email"])) {
-            return Splash::Log()->Err("ErrLocalFieldMissing", __CLASS__, __FUNCTION__, "email");
+            return Splash::log()->err("ErrLocalFieldMissing", __CLASS__, __FUNCTION__, "email");
         }
         //====================================================================//
         // If No Origin Given => Select Default WebSite
@@ -99,8 +99,8 @@ trait CRUDTrait
         try {
             $Customer->save();
         } catch (Mage_Customer_Exception $ex) {
-            Splash::Log()->Deb($ex->getTraceAsString());
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
+            Splash::log()->deb($ex->getTraceAsString());
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
         }
         return $Customer;
     }
@@ -128,7 +128,7 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Execute Generic Magento Delete Function ...
         return $this->CoreDelete('customer/customer', $Id);

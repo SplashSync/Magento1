@@ -49,7 +49,7 @@ trait MetaTrait
                 ->MicroData("http://schema.org/OrderStatus", "OrderCancelled")
                 ->Association("isCanceled", "isValidated", "isClosed")
                 ->Group("Meta")
-                ->ReadOnly();
+                ->isReadOnly();
         
         //====================================================================//
         // Is Validated
@@ -59,7 +59,7 @@ trait MetaTrait
                 ->MicroData("http://schema.org/OrderStatus", "OrderProcessing")
                 ->Association("isCanceled", "isValidated", "isClosed")
                 ->Group("Meta")
-                ->ReadOnly();
+                ->isReadOnly();
         
         //====================================================================//
         // Is Closed
@@ -69,7 +69,7 @@ trait MetaTrait
                 ->MicroData("http://schema.org/OrderStatus", "OrderDelivered")
                 ->Association("isCanceled", "isValidated", "isClosed")
                 ->Group("Meta")
-                ->ReadOnly();
+                ->isReadOnly();
 
         //====================================================================//
         // Is Paid
@@ -78,7 +78,7 @@ trait MetaTrait
                 ->Name("Order" . " : " . "Paid")
                 ->MicroData("http://schema.org/OrderStatus", "OrderPaid")
                 ->Group("Meta")
-                ->ReadOnly();
+                ->isReadOnly();
 
         //====================================================================//
         // TRACEABILITY INFORMATIONS
@@ -91,7 +91,7 @@ trait MetaTrait
                 ->Name("Last update")
                 ->MicroData("http://schema.org/DataFeedItem", "dateModified")
                 ->Group("Meta")
-                ->ReadOnly();
+                ->isReadOnly();
     }
     
     /**

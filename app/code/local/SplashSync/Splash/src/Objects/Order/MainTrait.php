@@ -58,7 +58,7 @@ trait MainTrait
                 ->Identifier("customer_email")
                 ->Name("Customer Email")
                 ->MicroData("http://schema.org/ContactPoint", "email")
-                ->readOnly();
+                ->isReadOnly();
         
         //====================================================================//
         // ORDER STATUS
@@ -92,7 +92,7 @@ trait MainTrait
                 ->Identifier("grand_total_excl_tax")
                 ->Name("Total (tax excl.)" . " (" . Mage::app()->getStore()->getCurrentCurrencyCode() . ")")
                 ->MicroData("http://schema.org/Invoice", "totalPaymentDue")
-                ->ReadOnly();
+                ->isReadOnly();
         
         //====================================================================//
         // Order Total Price TTC
@@ -101,7 +101,7 @@ trait MainTrait
                 ->Name("Total (tax incl.)" . " (" . Mage::app()->getStore()->getCurrentCurrencyCode() . ")")
                 ->MicroData("http://schema.org/Invoice", "totalPaymentDueTaxIncluded")
                 ->isListed()
-                ->ReadOnly();
+                ->isReadOnly();
         
         //====================================================================//
         // ORDER Currency Data
@@ -286,7 +286,7 @@ trait MainTrait
     {
         
         if (!$this->isSplash()) {
-            Splash::Log()->War("You Cannot Change Status of Orders Created on Magento");
+            Splash::log()->war("You Cannot Change Status of Orders Created on Magento");
             return true;
         }
 
@@ -303,7 +303,7 @@ trait MainTrait
             // EXECUTE SYSTEM ACTIONS if Necessary
             $this->doOrderStatusUpdate($Status);
         } catch (Mage_Core_Exception $exc) {
-            Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, $exc->getMessage());
+            Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $exc->getMessage());
         }
             
 //            //====================================================================//

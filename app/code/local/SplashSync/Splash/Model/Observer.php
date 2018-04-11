@@ -123,7 +123,7 @@ class SplashSync_Splash_Model_Observer
         $result = Splash::Commit($_Type, $_Id, $_Action, $_User, $_Comment);
         //====================================================================//
         // Post Splash Messages
-        $this->_importLog(Splash::Log());
+        $this->_importLog(Splash::log());
         return $result;
     }
     

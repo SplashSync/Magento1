@@ -54,7 +54,7 @@ trait StocksTrait
                 ->Name('Out of stock')
                 ->Group("Stocks")
                 ->MicroData("http://schema.org/ItemAvailability", "OutOfStock")
-                ->ReadOnly();
+                ->isReadOnly();
                 
         //====================================================================//
         // Minimum Order Quantity
@@ -162,7 +162,7 @@ trait StocksTrait
         //====================================================================//
         // Verify Item Saved
         if ($StockItem->_hasDataChanges) {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to Update Stocks (" . $this->Object->getEntityId() . ").");
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to Update Stocks (" . $this->Object->getEntityId() . ").");
         }
     }
 }

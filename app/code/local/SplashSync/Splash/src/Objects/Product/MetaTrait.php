@@ -51,7 +51,7 @@ trait MetaTrait
                 ->Identifier("available_for_order")
                 ->Name("Available for order")
                 ->Group("Meta")
-                ->ReadOnly();
+                ->isReadOnly();
         
         //====================================================================//
         // On Sale
@@ -60,7 +60,7 @@ trait MetaTrait
                 ->Name("On Sale")
                 ->Group("Meta")
                 ->MicroData("http://schema.org/Product", "onsale")
-                ->ReadOnly();
+                ->isReadOnly();
     }
 
     /**

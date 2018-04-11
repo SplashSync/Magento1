@@ -179,13 +179,13 @@ trait CoreTrait
         //====================================================================//
         // Verify Object Type
         if (self::Objects()->Type($Data) !== "ThirdParty") {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Wrong Object Type (" . self::Objects()->Type($Data) . ").");
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Wrong Object Type (" . self::Objects()->Type($Data) . ").");
         }
         //====================================================================//
         // Verify Object Exists
         $Customer = Mage::getModel('customer/customer')->load($Id);
         if ($Customer->getEntityId() != $Id) {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Address Customer(" . $Id . ").");
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Address Customer(" . $Id . ").");
         }
         //====================================================================//
         // Update Link

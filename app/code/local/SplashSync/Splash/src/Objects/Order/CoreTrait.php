@@ -49,7 +49,7 @@ trait CoreTrait
                 ->Identifier("increment_id")
                 ->Name('Reference')
                 ->MicroData("http://schema.org/Order", "orderNumber")
-                ->IsListed();
+                ->isListed();
 
         //====================================================================//
         // Order Date
@@ -57,7 +57,7 @@ trait CoreTrait
                 ->Identifier("created_at")
                 ->Name("Date")
                 ->MicroData("http://schema.org/Order", "orderDate")
-                ->IsListed();
+                ->isListed();
     }
 
         /**

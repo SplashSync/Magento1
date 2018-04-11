@@ -49,7 +49,7 @@ trait TrackingTrait
                 ->Identifier("title")
                 ->Name("Shipping Method")
                 ->MicroData("http://schema.org/ParcelDelivery", "provider")
-                ->ReadOnly();
+                ->isReadOnly();
 
         //====================================================================//
         // Order Shipping Method
@@ -57,7 +57,7 @@ trait TrackingTrait
                 ->Identifier("carrier_code")
                 ->Name("Carrier Code")
                 ->MicroData("http://schema.org/ParcelDelivery", "identifier")
-                ->ReadOnly();
+                ->isReadOnly();
         
         //====================================================================//
         // Order Tracking Number
@@ -65,7 +65,7 @@ trait TrackingTrait
                 ->Identifier("track_number")
                 ->Name("Tracking Number")
                 ->MicroData("http://schema.org/ParcelDelivery", "trackingNumber")
-                ->ReadOnly();
+                ->isReadOnly();
         
         //====================================================================//
         // Order Tracking Url
@@ -74,7 +74,7 @@ trait TrackingTrait
 //                ->InList("tracking")
 //                ->Name("Tracking Url")
 //                ->MicroData("http://schema.org/ParcelDelivery","trackingurl")
-//                ->ReadOnly();
+//                ->isReadOnly();
     }
     
     /**
@@ -90,7 +90,7 @@ trait TrackingTrait
                 ->InList("tracking")
                 ->Name("Shipping Method")
                 ->MicroData("http://schema.org/ParcelDelivery", "provider")
-                ->ReadOnly();
+                ->isReadOnly();
 
         //====================================================================//
         // Order Shipping Method
@@ -99,7 +99,7 @@ trait TrackingTrait
                 ->InList("tracking")
                 ->Name("Carrier Code")
                 ->MicroData("http://schema.org/ParcelDelivery", "identifier")
-                ->ReadOnly();
+                ->isReadOnly();
         
         //====================================================================//
         // Order Tracking Number
@@ -108,7 +108,7 @@ trait TrackingTrait
                 ->InList("tracking")
                 ->Name("Tracking Number")
                 ->MicroData("http://schema.org/ParcelDelivery", "trackingNumber")
-                ->ReadOnly();
+                ->isReadOnly();
         
         //====================================================================//
         // Order Tracking Url
@@ -117,7 +117,7 @@ trait TrackingTrait
 //                ->InList("tracking")
 //                ->Name("Tracking Url")
 //                ->MicroData("http://schema.org/ParcelDelivery","trackingurl")
-//                ->ReadOnly();
+//                ->isReadOnly();
     }
     
     

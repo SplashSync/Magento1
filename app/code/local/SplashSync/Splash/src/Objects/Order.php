@@ -124,7 +124,7 @@ class Order extends AbstractObject
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         /* Get Object Model Collection */
         $Collection = Mage::getModel('sales/order')
                   ->getCollection()
@@ -167,7 +167,7 @@ class Order extends AbstractObject
         // Prepare List result meta infos
         $Data["meta"]["current"]    =   count($Data);  // Store Current Number of results
         $Data["meta"]["total"]      =   $total;  // Store Total Number of results
-        Splash::Log()->Deb("MsgLocalTpl", __CLASS__, __FUNCTION__, (count($Data)-1)." Orders Found.");
+        Splash::log()->deb("MsgLocalTpl", __CLASS__, __FUNCTION__, (count($Data)-1)." Orders Found.");
         return $Data;
     }
 }

@@ -141,7 +141,7 @@ class Local
             return false;
         }
         
-        return Splash::Log()->Msg("Self Test Passed");
+        return Splash::log()->msg("Self Test Passed");
     }
     
     private static function SelfTestCoreParameters()
@@ -149,25 +149,25 @@ class Local
         //====================================================================//
         //  Verify - Server Identifier Given
         if (empty(Mage::getStoreConfig('splashsync_splash_options/core/id'))) {
-            return Splash::Log()->Err("ErrSelfTestNoWsId");
+            return Splash::log()->err("ErrSelfTestNoWsId");
         }
                 
         //====================================================================//
         //  Verify - Server Encrypt Key Given
         if (empty(Mage::getStoreConfig('splashsync_splash_options/core/key'))) {
-            return Splash::Log()->Err("ErrSelfTestNoWsKey");
+            return Splash::log()->err("ErrSelfTestNoWsKey");
         }
         
         //====================================================================//
         //  Verify - Default Language is Given
         if (empty(Mage::getStoreConfig('splashsync_splash_options/core/lang'))) {
-            return Splash::Log()->Err("ErrSelfTestDfLang");
+            return Splash::log()->err("ErrSelfTestDfLang");
         }
 
         //====================================================================//
         //  Verify - User Selected
         if (empty(Mage::getStoreConfig('splashsync_splash_options/user/login')) || empty(Mage::getStoreConfig('splashsync_splash_options/user/pwd'))) {
-            return Splash::Log()->Err("ErrSelfTestNoUser");
+            return Splash::log()->err("ErrSelfTestNoUser");
         }
 
         //====================================================================//
@@ -187,32 +187,32 @@ class Local
         //  Verify - PRODUCT DEFAULT ATTRIBUTE SET
         $AttributeSetId =   Mage::getStoreConfig('splashsync_splash_options/products/attribute_set');
         if (empty($AttributeSetId)) {
-            return Splash::Log()->Err("No Default Product Attribute Set Selected");
+            return Splash::log()->err("No Default Product Attribute Set Selected");
         }
         $AttributeSet    =   Mage::getModel('eav/entity_attribute_set')->load($AttributeSetId);
         if (!$AttributeSet->getAttributeSetId()) {
-            return Splash::Log()->Err("Wrong Product Attribute Set Identifier");
+            return Splash::log()->err("Wrong Product Attribute Set Identifier");
         }
         //====================================================================//
         //  Verify - PRODUCT DEFAULT STOCK
         $StockId    =   Mage::getStoreConfig('splashsync_splash_options/products/default_stock');
         if (empty($StockId)) {
-            return Splash::Log()->Err("No Default Product Warehouse Selected");
+            return Splash::log()->err("No Default Product Warehouse Selected");
         }
         $Stock    =   Mage::getModel('cataloginventory/stock')->load($StockId);
         if (!$Stock->getStockId()) {
-            return Splash::Log()->Err("Wrong Product Warehouse Selected");
+            return Splash::log()->err("Wrong Product Warehouse Selected");
         }
         
         //====================================================================//
         //  Verify - Product Prices Include Tax Warning
         if (Mage::getStoreConfig('tax/calculation/price_includes_tax')) {
-            Splash::Log()->War("You selected to store Products Prices Including Tax. It is highly recommanded to store Product Price without Tax to work with Splash.");
+            Splash::log()->war("You selected to store Products Prices Including Tax. It is highly recommanded to store Product Price without Tax to work with Splash.");
         }
         //====================================================================//
         //  Verify - Shipping Prices Include Tax Warning
         if (Mage::getStoreConfig('tax/calculation/shipping_includes_tax')) {
-            Splash::Log()->War("You selected to store Shipping Prices Including Tax. It is highly recommanded to store Shipping Price without Tax to work with Splash.");
+            Splash::log()->war("You selected to store Shipping Prices Including Tax. It is highly recommanded to store Shipping Price without Tax to work with Splash.");
         }
         
         return true;
@@ -392,7 +392,7 @@ class Local
         //====================================================================//
         // Safety Check
         if (empty($Login) || empty($Pwd)) {
-            return Splash::Log()->Err("ErrSelfTestNoUser");
+            return Splash::log()->err("ErrSelfTestNoUser");
         }
         
         //====================================================================//
@@ -401,7 +401,7 @@ class Local
             Mage::register('isSecureArea', true);
             return true;
         }
-        return Splash::Log()->Err("ErrUnableToLoginUser");
+        return Splash::log()->err("ErrUnableToLoginUser");
     }
         
 //====================================================================//
@@ -417,7 +417,7 @@ class Local
         //  Verify - SINGLE LANGUAGE MODE
         if (empty(Mage::getStoreConfig('splashsync_splash_options/langs/multilang'))) {
             if (empty(Mage::getStoreConfig('splashsync_splash_options/langs/default_lang'))) {
-                return Splash::Log()->Err("In single Language mode, You must select a default Language for Multilang Fields");
+                return Splash::log()->err("In single Language mode, You must select a default Language for Multilang Fields");
             }
             return true;
         }
@@ -427,7 +427,7 @@ class Local
         foreach (Mage::app()->getWebsites() as $Website) {
             foreach ($Website->getStores() as $Store) {
                 if (empty($Store->getConfig('splashsync_splash_options/langs/store_lang'))) {
-                    return Splash::Log()->Err("Multi-Language mode, You must select a Language for Store: " . $Store->getName());
+                    return Splash::log()->err("Multi-Language mode, You must select a Language for Store: " . $Store->getName());
                 }
             }
         }

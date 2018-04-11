@@ -42,12 +42,12 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Init Object
         $Customer   =   Mage::getModel('customer/address')->load($Id);
         if ($Customer->getEntityId() != $Id) {
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Address (" . $Id . ").");
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Address (" . $Id . ").");
         }
         return $Customer;
     }
@@ -63,7 +63,7 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Check Required Fields
         if (!$this->verifyRequiredFields()) {
@@ -86,8 +86,8 @@ trait CRUDTrait
         try {
             $Address->save();
         } catch (Mage_Customer_Exception $ex) {
-            Splash::Log()->Deb($ex->getTraceAsString());
-            return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
+            Splash::log()->deb($ex->getTraceAsString());
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
         }
         return $Address;
     }
@@ -115,7 +115,7 @@ trait CRUDTrait
     {
         //====================================================================//
         // Stack Trace
-        Splash::Log()->Trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace(__CLASS__, __FUNCTION__);
         //====================================================================//
         // Execute Generic Magento Delete Function ...
         return $this->CoreDelete('customer/address', $Id);

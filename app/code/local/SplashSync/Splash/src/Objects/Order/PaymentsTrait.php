@@ -80,8 +80,8 @@ trait PaymentsTrait
                 ->InList("payments")
                 ->Name($ListName .  Mage::helper('sales')->__('Payment Method'))
                 ->MicroData("http://schema.org/Invoice", "PaymentMethod")
-                ->ReadOnly()
-                ->NotTested();
+                ->isReadOnly()
+                ->isNotTested();
 
         //====================================================================//
         // Payment Line Date
@@ -229,7 +229,7 @@ trait PaymentsTrait
             return true;
         }
         if (!$this->isSplash()) {
-            Splash::Log()->Deb("You Cannot Edit Invoices Created on Magento");
+            Splash::log()->deb("You Cannot Edit Invoices Created on Magento");
             unset($this->In[$FieldName]);
             return true;
         }
@@ -282,7 +282,7 @@ trait PaymentsTrait
             $this->Payment->setTransactionId($PaymentData["number"]);
             $Transaction = $this->Payment->addTransaction(Transaction::TYPE_PAYMENT, null, true);
             if (!$Transaction) {
-                return Splash::Log()->Err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Failed to add new transaction.");
+                return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Failed to add new transaction.");
             }
             $Transaction->save();
         }

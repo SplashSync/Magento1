@@ -41,7 +41,7 @@ trait DatesTrait
                 ->Name("Registration")
                 ->Group("Meta")
                 ->MicroData("http://schema.org/DataFeedItem", "dateCreated")
-                ->ReadOnly();
+                ->isReadOnly();
         
         //====================================================================//
         // Last Change Date
@@ -50,7 +50,7 @@ trait DatesTrait
                 ->Name("Last update")
                 ->Group("Meta")
                 ->MicroData("http://schema.org/DataFeedItem", "dateModified")
-                ->ReadOnly();
+                ->isReadOnly();
     }
     
     /**

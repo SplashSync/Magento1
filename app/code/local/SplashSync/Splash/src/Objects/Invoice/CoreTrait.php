@@ -39,7 +39,7 @@ trait CoreTrait
                 ->Identifier("customer_id")
                 ->Name('Customer')
                 ->MicroData("http://schema.org/Invoice", "customer")
-                ->ReadOnly();
+                ->isReadOnly();
 
         //====================================================================//
         // Customer Name
@@ -48,7 +48,7 @@ trait CoreTrait
                 ->Name('Customer Name')
                 ->MicroData("http://schema.org/Invoice", "customer")
                 ->isListed()
-                ->ReadOnly();
+                ->isReadOnly();
 
         
         //====================================================================//
@@ -65,7 +65,7 @@ trait CoreTrait
                 ->Identifier("increment_id")
                 ->Name('Number')
                 ->MicroData("http://schema.org/Invoice", "confirmationNumber")
-                ->IsListed();
+                ->isListed();
 
         //====================================================================//
         // Order Reference
@@ -73,7 +73,7 @@ trait CoreTrait
                 ->Identifier("reference")
                 ->Name('Reference')
                 ->MicroData("http://schema.org/Order", "orderNumber")
-                ->ReadOnly();
+                ->isReadOnly();
 
         //====================================================================//
         // Order Date
@@ -82,7 +82,7 @@ trait CoreTrait
                 ->Name("Date")
                 ->MicroData("http://schema.org/Order", "orderDate")
                 ->isRequired()
-                ->IsListed();
+                ->isListed();
     }
     
     /**
