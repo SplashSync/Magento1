@@ -155,14 +155,14 @@
 <p>Si ce n'est pas le cas, suivez ces deux étapes:
 * Effacez le cache de Magento dans <strong>System &gt;&gt; Gestion du cache &gt;&gt; Configuration</strong></p>
 <p align="center">
-    <img src="https://raw.githubusercontent.com/wiki/SplashSync/Magento1/Img/screenshot_10.png">
+    <img src="https://splashsync.github.io/Magento1/img/screenshot_10.png">
 </p>
 
 <ul>
 <li>Vérifiez que le fichier de déclaration du module est présent sur votre serveur</li>
 </ul>
 <p align="center">
-    <img src="https://raw.githubusercontent.com/wiki/SplashSync/Magento1/Img/screenshot_1.png">
+    <img src="https://splashsync.github.io/Magento1/img/screenshot_1.png">
 </p>
 
 <p>Si le message "404 Error" s'affiche lorsque vous accédez à la page de configuration du module, vous devez vous <strong>Déconnecter &amp; Reconnecter</strong> afin de mettre à jour la configuration vos droits (ACL).</p>
@@ -170,27 +170,27 @@
 <p>La configuration du module est accéssible dans <strong>System &gt;&gt; Configuration</strong> then <strong>Services &gt;&gt; Splash Sync Connector</strong>. </p>
 <h3 id="connecter-votre-compte-splash">Connecter votre compte Splash</h3>
 <p>D'abord, vous devez créer des clés d'accès pour votre module sur notre site. Pour ce faire, sur votre compte Splash, allez sur <strong> Serveurs </strong> &gt;&gt; <strong> Ajoutez un serveur </strong> et notez vos clés d'identification et de cryptage qui vous seront données.</p>
-<p><img alt="" src="https://raw.githubusercontent.com/wiki/SplashSync/Magento1/Img/screenshot_2.png" /></p>
+<p><img alt="" src="https://splashsync.github.io/Magento1/img/screenshot_2.png" /></p>
 <p>Ensuite, entrez les clés de la configuration du module (attention à ne pas oublier de caractère).</p>
-<p><img alt="" src="https://raw.githubusercontent.com/wiki/SplashSync/Magento1/Img/screenshot_3.png" /></p>
+<p><img alt="" src="https://splashsync.github.io/Magento1/img/screenshot_3.png" /></p>
 <h5 id="langue-par-defaut">Langue par défaut</h5>
 <p>Sélectionnez la langue par défaut à utiliser pour la communication avec les serveurs de Splash.</p>
 <h3 id="configurer-les-parametres-par-defaut">Configurer les paramètres par défaut</h3>
 <p>Pour fonctionner correctement, le module a besoin de quelques paramètres. </p>
 <h5 id="utilisateur-par-defaut">Utilisateur par défaut</h5>
 <p>Entrez le Login et Mot de passe de l'utilisateur qui sera utilisé pour toutes les actions exécutées par le Module Splash.</p>
-<p><img alt="" src="https://raw.githubusercontent.com/wiki/SplashSync/Magento1/Img/screenshot_4.png" /></p>
+<p><img alt="" src="https://splashsync.github.io/Magento1/img/screenshot_4.png" /></p>
 <p>Nous recommandons fortement la création d'un utilisateur <strong>dédié</strong> pour Splash.</p>
 <p>Soyez conscient que le module Splash prends en compte la configuration des droits des utilisateurs, cet utilisateur doit donc disposer des droit appropriés pour interagir avec Magento.</p>
 <h5 id="traduction-des-donnees">Traduction des données</h5>
 <p>Avec Splash, il est possible de synchroniser des champs multilingues. Cette fonction est principalement utilisée pour la synchronisation du catalogue de produits.</p>
 <p>Si votre site n'utilise qu'une seule langue, laissez ce paramètre sur <strong>Non</strong> et sélectionnez votre langue. </p>
-<p><img alt="" src="https://raw.githubusercontent.com/wiki/SplashSync/Magento1/Img/screenshot_5.png" /></p>
+<p><img alt="" src="https://splashsync.github.io/Magento1/img/screenshot_5.png" /></p>
 <p>Si vous disposez d'un site multilingue, sélectionnez <strong>Oui</strong> et une option sera affichée sur chaque vue pour sélectionner la langue associée.</p>
-<p><img alt="" src="https://raw.githubusercontent.com/wiki/SplashSync/Magento1/Img/screenshot_6.png" /></p>
+<p><img alt="" src="https://splashsync.github.io/Magento1/img/screenshot_6.png" /></p>
 <h5 id="synchronisation-des-clients">Synchronisation des Clients</h5>
 <p>Si vous décidez d'importer des clients d'un autre site, vous devez définir ici le Website que Splash devra utiliser sur Magento pour créer les nouveaux clients. </p>
-<p><img alt="" src="https://raw.githubusercontent.com/wiki/SplashSync/Magento1/Img/screenshot_7.png" /></p>
+<p><img alt="" src="https://splashsync.github.io/Magento1/img/screenshot_7.png" /></p>
 <p>Si vous avez plusieurs sites, il est également possible de rediriger les nouveau clienst vers plusieurs WebSites, ce choix se fait sur la configuration de chaque site. </p>
 <p>Le numéro du serveur est celui présent dans la colonne <strong>#</strong> de votre liste de serveurs.</p>
 <h5 id="synchronisation-des-produits">Synchronisation des Produits</h5>
@@ -199,14 +199,14 @@
 <li>Default Attribute set</li>
 <li>Default Warehouse</li>
 </ul>
-<p><img alt="" src="https://raw.githubusercontent.com/wiki/SplashSync/Magento1/Img/screenshot_8.png" /></p>
+<p><img alt="" src="https://splashsync.github.io/Magento1/img/screenshot_8.png" /></p>
 <h3 id="verifiez-les-resultats-des-self-tests">Vérifiez les résultats des Self-Tests</h3>
 <p>Une fois que votre module est prêt, ou chaque fois que vous mettez à jour vos paramètres, vous devez vérifier votre configuration.</p>
 <p>Pour ce faire, allez sur la page du module: <strong>System &gt;&gt; Web Services &gt;&gt; SOAP - Splash Sync</strong></p>
 <p>Chaque fois que vous mettez à jour votre configuration, le module vérifiera vos paramètres et vous assurera que la communication avec Splash fonctionne bien.</p>
 <p>Assurez-vous que tous les tests sont passés... c'est critique! Vérifiez également le reste de votre configuration, principalement le mappage des langues et des sites Web.</p>
 <p><strong>Note</strong> Si votre serveur n'était pas encore connecté, cela se fera lors du chargement de cette page.</p>
-<p><img alt="" src="https://raw.githubusercontent.com/wiki/SplashSync/Magento1/Img/screenshot_9.png" /></p>
+<p><img alt="" src="https://splashsync.github.io/Magento1/img/screenshot_9.png" /></p>
               
             </div>
           </div>

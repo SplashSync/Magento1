@@ -2,7 +2,7 @@
     "name": "splas/magento1",
     "description": "Splash Module for Magento 1",
 
-    "license": "GPL",
+    "license": "MIT",
 
     "minimum-stability": "dev",
     "prefer-stable": true,
