@@ -96,7 +96,7 @@ trait CRUDTrait
         //====================================================================//
         // Ensure Current Store is Admin Store
         if (!Mage::app()->getStore()->isAdmin()) {
-            Mage::app()->setCurrentStore(\Mage_Core_Model_App::ADMIN_STORE_ID);
+            Mage::app()->setCurrentStore(\Mage_Core_Model_App::DISTRO_STORE_CODE);
         }
         //====================================================================//
         // Init Product Class

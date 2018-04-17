@@ -39,7 +39,7 @@ class L02OrderTrackingTest extends ObjectsCase
         }
     }
 
-    private function verifyNumbers(int $objectId)
+    private function verifyNumbers(string $objectId)
     {
         //====================================================================//
         //   Get Readable Object Fields List

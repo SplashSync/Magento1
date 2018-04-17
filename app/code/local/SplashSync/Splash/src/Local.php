@@ -103,7 +103,7 @@ class Local
             require_once(dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))).'/app/Mage.php');
             // Initialize Magento ...
             Mage::app();
-//            Mage::app()->setCurrentStore(\Mage_Core_Model_App::ADMIN_STORE_ID);
+//            Mage::app()->setCurrentStore(\Mage_Core_Model_App::DISTRO_STORE_CODE);
         }
         
         //====================================================================//

@@ -40,7 +40,9 @@
     },
     
     "autoload-dev": {
-        "psr-4": { "Splash\\Tests\\": "Tests/" }
+        "psr-4": { 
+            "Splash\\Tests\\":  "app/code/local/SplashSync/Splash/Tests/"
+        }
     }
     
 }
