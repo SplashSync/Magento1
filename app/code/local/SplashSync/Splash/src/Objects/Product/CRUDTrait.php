@@ -23,6 +23,7 @@ use Splash\Core\SplashCore      as Splash;
 
 // Magento Namespaces
 use Mage;
+use Mage_Core_Model_App;
 use Mage_Catalog_Model_Product_Status;
 use Mage_Catalog_Model_Product_Type;
 use Mage_Catalog_Exception;
@@ -96,7 +97,7 @@ trait CRUDTrait
         //====================================================================//
         // Ensure Current Store is Admin Store
         if (!Mage::app()->getStore()->isAdmin()) {
-            Mage::app()->setCurrentStore(\Mage_Core_Model_App::DISTRO_STORE_CODE);
+            Mage::app()->setCurrentStore((string) Mage_Core_Model_App::ADMIN_STORE_ID);
         }
         //====================================================================//
         // Init Product Class
