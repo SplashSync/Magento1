@@ -38,7 +38,7 @@ trait MainTrait
         
         //====================================================================//
         // Addess
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("street")
                 ->Name("Address")
                 ->MicroData("http://schema.org/PostalAddress", "streetAddress")
@@ -47,7 +47,7 @@ trait MainTrait
         
         //====================================================================//
         // Zip Code
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("postcode")
                 ->Name("Zip/Postal Code")
                 ->MicroData("http://schema.org/PostalAddress", "postalCode")
@@ -56,7 +56,7 @@ trait MainTrait
         
         //====================================================================//
         // City Name
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("city")
                 ->Name("City")
                 ->MicroData("http://schema.org/PostalAddress", "addressLocality")
@@ -66,7 +66,7 @@ trait MainTrait
         
         //====================================================================//
         // State Name
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("region")
                 ->Name("State")
                 ->Group($AddressGroup)
@@ -74,7 +74,7 @@ trait MainTrait
         
         //====================================================================//
         // State code
-        $this->FieldsFactory()->Create(SPL_T_STATE)
+        $this->fieldsFactory()->Create(SPL_T_STATE)
                 ->Identifier("region_id")
                 ->Name("StateCode")
                 ->MicroData("http://schema.org/PostalAddress", "addressRegion")
@@ -83,7 +83,7 @@ trait MainTrait
         
         //====================================================================//
         // Country Name
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("country")
                 ->Name("Country")
                 ->Group($AddressGroup)
@@ -92,7 +92,7 @@ trait MainTrait
         
         //====================================================================//
         // Country ISO Code
-        $this->FieldsFactory()->Create(SPL_T_COUNTRY)
+        $this->fieldsFactory()->Create(SPL_T_COUNTRY)
                 ->Identifier("country_id")
                 ->Name("CountryCode")
                 ->MicroData("http://schema.org/PostalAddress", "addressCountry")

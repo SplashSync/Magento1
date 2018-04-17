@@ -34,7 +34,7 @@ trait CoreTrait
     {
         //====================================================================//
         // Reference
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("sku")
                 ->Name('Reference - SKU')
                 ->isListed()
@@ -43,7 +43,7 @@ trait CoreTrait
         
         //====================================================================//
         // Product Type Id
-        $this->FieldsFactory()->Create(SPL_T_INT)
+        $this->fieldsFactory()->Create(SPL_T_INT)
                 ->Identifier("type_id")
                 ->Name('Type Identifier')
                 ->Description('Product Type Identifier')

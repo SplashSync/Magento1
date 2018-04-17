@@ -38,7 +38,7 @@ trait ItemsTrait
         
         //====================================================================//
         // Order Line Label
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("sku")
                 ->InList("items")
                 ->Name($ListName . Mage::helper('sales')->__('Sku'))
@@ -47,7 +47,7 @@ trait ItemsTrait
         
         //====================================================================//
         // Order Line Description
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("name")
                 ->InList("items")
                 ->Name($ListName . Mage::helper('sales')->__('Description Message'))
@@ -56,7 +56,7 @@ trait ItemsTrait
 
         //====================================================================//
         // Order Line Product Identifier
-        $this->FieldsFactory()->Create(self::Objects()->Encode("Product", SPL_T_ID))
+        $this->fieldsFactory()->Create(self::objects()->Encode("Product", SPL_T_ID))
                 ->Identifier("product_id")
                 ->InList("items")
                 ->Name($ListName . Mage::helper('sales')->__('Product'))
@@ -65,7 +65,7 @@ trait ItemsTrait
 
         //====================================================================//
         // Order Line Quantity
-        $this->FieldsFactory()->Create(SPL_T_INT)
+        $this->fieldsFactory()->Create(SPL_T_INT)
                 ->Identifier("qty")
                 ->InList("items")
                 ->Name($ListName . Mage::helper('sales')->__('Qty Invoiced'))
@@ -74,7 +74,7 @@ trait ItemsTrait
 
         //====================================================================//
         // Order Line Discount
-        $this->FieldsFactory()->Create(SPL_T_DOUBLE)
+        $this->fieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("discount_percent")
                 ->InList("items")
                 ->Name($ListName . Mage::helper('sales')->__('Discount (%s)'))
@@ -83,7 +83,7 @@ trait ItemsTrait
 
         //====================================================================//
         // Order Line Unit Price
-        $this->FieldsFactory()->Create(SPL_T_PRICE)
+        $this->fieldsFactory()->Create(SPL_T_PRICE)
                 ->Identifier("unit_price")
                 ->InList("items")
                 ->Name($ListName . Mage::helper('sales')->__('Price'))
@@ -148,7 +148,7 @@ trait ItemsTrait
                 } else {
                     $ShipTaxPercent =  0;
                 }
-                    $Value = self::Prices()->Encode(
+                    $Value = self::prices()->encode(
                         (double)    $ShipAmount,
                         (double)    $ShipTaxPercent,
                         null,
@@ -215,7 +215,7 @@ trait ItemsTrait
             //====================================================================//
             // Invoice Line Product Id
             case 'product_id':
-                return self::Objects()->Encode("Product", $Product->getData($FieldId));
+                return self::objects()->Encode("Product", $Product->getData($FieldId));
                 
             //====================================================================//
             // Invoice Line Unit Price
@@ -240,7 +240,7 @@ trait ItemsTrait
         $CurrencyCode   =   $this->Object->getOrderCurrencyCode();
         //====================================================================//
         // Build Price Array
-        return self::Prices()->Encode(
+        return self::prices()->encode(
             (double)    $Product->getPrice(),
             (double)    $Product->getOrderItem()->getTaxPercent(),
             null,

@@ -19,6 +19,8 @@
 
 namespace Splash\Local\Objects\Address;
 
+use Splash\Core\SplashCore      as Splash;
+
 // Magento Namespaces
 use Mage;
 
@@ -35,7 +37,7 @@ trait CoreTrait
     {
         //====================================================================//
         // Customer
-        $this->FieldsFactory()->Create(self::Objects()->Encode("ThirdParty", SPL_T_ID))
+        $this->fieldsFactory()->Create(self::objects()->Encode("ThirdParty", SPL_T_ID))
                 ->Identifier("parent_id")
                 ->Name("Customer")
                 ->MicroData("http://schema.org/Organization", "ID")
@@ -43,7 +45,7 @@ trait CoreTrait
         
         //====================================================================//
         // Company
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("company")
                 ->Name("Company")
                 ->MicroData("http://schema.org/Organization", "legalName")
@@ -51,7 +53,7 @@ trait CoreTrait
         
         //====================================================================//
         // Firstname
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("firstname")
                 ->Name("First name")
                 ->MicroData("http://schema.org/Person", "familyName")
@@ -61,7 +63,7 @@ trait CoreTrait
         
         //====================================================================//
         // Lastname
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("lastname")
                 ->Name("Last name")
                 ->MicroData("http://schema.org/Person", "givenName")
@@ -71,21 +73,21 @@ trait CoreTrait
         
         //====================================================================//
         // Prefix
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("prefix")
                 ->Name("Prefix name")
                 ->MicroData("http://schema.org/Person", "honorificPrefix");
         
         //====================================================================//
         // MiddleName
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("middlename")
                 ->Name("Middlename")
                 ->MicroData("http://schema.org/Person", "additionalName");
         
         //====================================================================//
         // Suffix
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("suffix")
                 ->Name("Suffix name")
                 ->MicroData("http://schema.org/Person", "honorificSuffix");
@@ -119,7 +121,7 @@ trait CoreTrait
             //====================================================================//
             // Customer Object Id Readings
             case 'parent_id':
-                $this->Out[$FieldName] = self::Objects()->Encode("ThirdParty", $this->Object->getParentId());
+                $this->Out[$FieldName] = self::objects()->encode("ThirdParty", $this->Object->getParentId());
                 break;
             
             default:
@@ -170,7 +172,7 @@ trait CoreTrait
     {
         //====================================================================//
         // Decode Customer Id
-        $Id = self::Objects()->Id($Data);
+        $Id = self::objects()->Id($Data);
         //====================================================================//
         // Check For Change
         if ($Id == $this->Object->getParentId()) {
@@ -178,8 +180,8 @@ trait CoreTrait
         }
         //====================================================================//
         // Verify Object Type
-        if (self::Objects()->Type($Data) !== "ThirdParty") {
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Wrong Object Type (" . self::Objects()->Type($Data) . ").");
+        if (self::objects()->Type($Data) !== "ThirdParty") {
+            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Wrong Object Type (" . self::objects()->Type($Data) . ").");
         }
         //====================================================================//
         // Verify Object Exists

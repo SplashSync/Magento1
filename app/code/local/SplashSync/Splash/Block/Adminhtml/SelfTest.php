@@ -22,7 +22,8 @@ use Splash\Client\Splash;
 
 class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Template
 {
-    public $Results =   array();
+    public $Results     =   array();
+    public $Messages    =   null;
     
     public function __construct()
     {
@@ -50,7 +51,7 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
 
         $this->setData(array(
                 'results'   => $this->Results,
-                'messages'  => $this->Messages->GetRawLog()
+                'messages'  => $this->Messages->getRawLog()
                 ));
         
         return parent::_beforeToHtml();
@@ -62,7 +63,7 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
         // List Objects
         //====================================================================//
         $ObjectsList    = count(Splash::objects()) . ' (';
-        foreach (Splash::Objects() as $value) {
+        foreach (Splash::objects() as $value) {
             $ObjectsList    .= $value . ", ";
         }
         $ObjectsList    .= ")";
@@ -81,7 +82,7 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
         // List Objects
         //====================================================================//
         $ObjectsList    = count(Splash::objects()) . ' (';
-        foreach (Splash::Objects() as $value) {
+        foreach (Splash::objects() as $value) {
             $ObjectsList    .= $value . ", ";
         }
         $ObjectsList    .= ")";
@@ -103,7 +104,7 @@ class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Templat
             "id"    =>  count($this->Results) + 1,
             "name"  =>  'Ping Test',
             "desc"  =>  'Test to Ping Splash Server.',
-            "result"=>  Splash::Ping(false)?"Pass":"Fail",
+            "result"=>  Splash::ping(false)?"Pass":"Fail",
         );
     }
 

@@ -41,7 +41,7 @@ trait DescTrait
 
         //====================================================================//
         // Name without Options
-        $this->FieldsFactory()->Create(SPL_T_MVARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_MVARCHAR)
                 ->Identifier("name")
                 ->Name("Product Name without Options")
                 ->Group("Description")
@@ -51,7 +51,7 @@ trait DescTrait
 
         //====================================================================//
         // Long Description
-        $this->FieldsFactory()->Create(SPL_T_MTEXT)
+        $this->fieldsFactory()->Create(SPL_T_MTEXT)
                 ->Identifier("description")
                 ->Name("Description")
                 ->Group("Description")
@@ -59,7 +59,7 @@ trait DescTrait
         
         //====================================================================//
         // Short Description
-        $this->FieldsFactory()->Create(SPL_T_MVARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_MVARCHAR)
                 ->Identifier("short_description")
                 ->Name("Short Description")
                 ->Group("Description")
@@ -67,7 +67,7 @@ trait DescTrait
 
         //====================================================================//
         // Meta Description
-        $this->FieldsFactory()->Create(SPL_T_MVARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_MVARCHAR)
                 ->Identifier("meta_description")
                 ->Name("SEO" . " " . "Meta description")
                 ->Group("SEO")
@@ -75,7 +75,7 @@ trait DescTrait
 
         //====================================================================//
         // Meta Title
-        $this->FieldsFactory()->Create(SPL_T_MVARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_MVARCHAR)
                 ->Identifier("meta_title")
                 ->Name("SEO" . " " . "Meta title")
                 ->Group("SEO")
@@ -83,7 +83,7 @@ trait DescTrait
         
         //====================================================================//
         // Url Path
-        $this->FieldsFactory()->Create(SPL_T_MVARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_MVARCHAR)
                 ->Identifier("url_key")
                 ->Name("SEO" . " " . "Friendly URL")
                 ->Group("SEO")

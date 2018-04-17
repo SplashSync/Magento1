@@ -19,6 +19,8 @@
 
 namespace Splash\Local\Objects\Product;
 
+use Splash\Core\SplashCore      as Splash;
+
 use Mage;
 
 /**
@@ -40,7 +42,7 @@ trait StocksTrait
         
         //====================================================================//
         // Stock Reel
-        $this->FieldsFactory()->Create(SPL_T_INT)
+        $this->fieldsFactory()->Create(SPL_T_INT)
                 ->Identifier("qty")
                 ->Name("Stock")
                 ->Group("Stocks")
@@ -49,7 +51,7 @@ trait StocksTrait
 
         //====================================================================//
         // Out of Stock Flag
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
+        $this->fieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("outofstock")
                 ->Name('Out of stock')
                 ->Group("Stocks")
@@ -58,7 +60,7 @@ trait StocksTrait
                 
         //====================================================================//
         // Minimum Order Quantity
-        $this->FieldsFactory()->Create(SPL_T_INT)
+        $this->fieldsFactory()->Create(SPL_T_INT)
                 ->Identifier("min_sale_qty")
                 ->Name('Min. Order Quantity')
                 ->Group("Stocks")

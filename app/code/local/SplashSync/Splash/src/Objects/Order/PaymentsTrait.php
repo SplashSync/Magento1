@@ -37,9 +37,10 @@ trait PaymentsTrait
     // General Class Variables
     //====================================================================//
 
-    protected $Payment        = null;
-    protected $Transactions   = null;
-    
+    protected   $Payment        = null;
+    protected   $Transactions   = null;
+    private     $TxnUpdate      = false; 
+
     public static $PAYMENT_METHODS            =   array(
         "CreditCard"                => array(
             "ccsave", "authorizenet", "authorizenet_directpost","verisign"
@@ -75,7 +76,7 @@ trait PaymentsTrait
         
         //====================================================================//
         // Payment Line Payment Method
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("mode")
                 ->InList("payments")
                 ->Name($ListName .  Mage::helper('sales')->__('Payment Method'))
@@ -85,7 +86,7 @@ trait PaymentsTrait
 
         //====================================================================//
         // Payment Line Date
-        $this->FieldsFactory()->Create(SPL_T_DATE)
+        $this->fieldsFactory()->Create(SPL_T_DATE)
                 ->Identifier("date")
                 ->InList("payments")
                 ->Name($ListName .  Mage::helper('sales')->__('Date'))
@@ -95,7 +96,7 @@ trait PaymentsTrait
 
         //====================================================================//
         // Payment Line Payment Identifier
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("number")
                 ->InList("payments")
                 ->Name($ListName .  Mage::helper('sales')->__('Transaction ID'))
@@ -105,7 +106,7 @@ trait PaymentsTrait
 
         //====================================================================//
         // Payment Line Amount
-        $this->FieldsFactory()->Create(SPL_T_DOUBLE)
+        $this->fieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("amount")
                 ->InList("payments")
                 ->Name($ListName .  Mage::helper('sales')->__("Amount"))
@@ -173,7 +174,7 @@ trait PaymentsTrait
         $Index  =   0;
         //====================================================================//
         // Decode Field Name
-        $ListFieldName = $this->Lists()->InitOutput($this->Out, "payments", $FieldName);
+        $ListFieldName = self::lists()->InitOutput($this->Out, "payments", $FieldName);
         
         //====================================================================//
         // Fill List with Data
@@ -207,7 +208,7 @@ trait PaymentsTrait
             }
             //====================================================================//
             // Do Fill List with Data
-            $this->Lists()->Insert($this->Out, "payments", $FieldName, $Index, $Value);
+            self::lists()->Insert($this->Out, "payments", $FieldName, $Index, $Value);
             $Index++;
         }
         unset($this->In[$Key]);
@@ -276,6 +277,7 @@ trait PaymentsTrait
         
         //====================================================================//
         // Init Transaction Informations
+        $this->TxnUpdate    =   false; 
         $Transaction = $this->Payment->getTransaction($PaymentData["number"]);
 
         if (!$Transaction) {

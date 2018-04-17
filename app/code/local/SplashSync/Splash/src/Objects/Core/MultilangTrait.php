@@ -29,6 +29,9 @@ use Mage;
  */
 trait MultilangTrait
 {
+    private $multilang;
+    private $default_lang;
+        
     /**
      *      @abstract       Read Multilangual Fields of an Object
      *      @param          object      $Object     Pointer to Prestashop Object

@@ -81,7 +81,7 @@ trait PricesTrait
 
         //====================================================================//
         // Build Price Array
-        return self::Prices()->Encode(
+        return self::prices()->encode(
             $PriceHT,
             $Tax,
             $PriceTTC,
@@ -107,18 +107,18 @@ trait PricesTrait
         
         //====================================================================//
         // Compare Prices
-        if (self::Prices()->Compare($CurrentPrice, $SplashPrice)) {
+        if (self::prices()->Compare($CurrentPrice, $SplashPrice)) {
             return;
         }
         
         //====================================================================//
         // Update Product Price if Required
         if ($this->isVatIncluded()) {
-            $OldPrice   = (double)  self::Prices()->TaxIncluded($CurrentPrice);
-            $NewPrice   = (double)  self::Prices()->TaxIncluded($SplashPrice);
+            $OldPrice   = (double)  self::prices()->TaxIncluded($CurrentPrice);
+            $NewPrice   = (double)  self::prices()->TaxIncluded($SplashPrice);
         } else {
-            $OldPrice   = (double)  self::Prices()->TaxExcluded($CurrentPrice);
-            $NewPrice   = (double)  self::Prices()->TaxExcluded($SplashPrice);
+            $OldPrice   = (double)  self::prices()->TaxExcluded($CurrentPrice);
+            $NewPrice   = (double)  self::prices()->TaxExcluded($SplashPrice);
         }
         if (abs($OldPrice - $NewPrice) > 1E-6) {
             $this->Object->setPrice($NewPrice);
@@ -127,8 +127,8 @@ trait PricesTrait
 
         //====================================================================//
         // Update Product Tax Class if Required
-        $OldTaxId     = $this->identifyPriceTaxClass(self::Prices()->TaxPercent($CurrentPrice));
-        $NewTaxId     = $this->identifyPriceTaxClass(self::Prices()->TaxPercent($SplashPrice));
+        $OldTaxId     = $this->identifyPriceTaxClass(self::prices()->TaxPercent($CurrentPrice));
+        $NewTaxId     = $this->identifyPriceTaxClass(self::prices()->TaxPercent($SplashPrice));
         if ($OldTaxId != $NewTaxId) {
             $this->Object->setTaxClassId($NewTaxId);
             $this->needUpdate();

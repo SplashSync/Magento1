@@ -20,12 +20,17 @@
 
 namespace Splash\Local;
 
+use ArrayObject;
+
 use Splash\Core\SplashCore      as Splash;
+
 use Mage;
 
 class Local
 {
 
+    public $_Action = null;
+    
 //====================================================================//
 // *******************************************************************//
 //  MANDATORY CORE MODULE LOCAL FUNCTIONS
@@ -103,7 +108,7 @@ class Local
         
         //====================================================================//
         //  Load Local Translation File
-        Splash::Translator()->Load("main@local");
+        Splash::translator()->load("main@local");
         
         return true;
     }
@@ -127,7 +132,7 @@ class Local
 
         //====================================================================//
         //  Load Local Translation File
-        Splash::Translator()->Load("main@local");
+        Splash::translator()->load("main@local");
         
         //====================================================================//
         //  Verify - Core Parameters
@@ -221,9 +226,9 @@ class Local
     /**
      *  @abstract   Update Server Informations with local Data
      *
-     *  @param     arrayobject  $Informations   Informations Inputs
+     *  @param     ArrayObject  $Informations   Informations Inputs
      *
-     *  @return     arrayobject
+     *  @return     ArrayObject
      */
     public function Informations($Informations)
     {
@@ -249,9 +254,9 @@ class Local
         
         //====================================================================//
         // Server Logo & Images
-        $Response->icoraw           = Splash::File()->ReadFileContents(Mage::getBaseDir()  . "/favicon.ico");
+        $Response->icoraw           = Splash::file()->readFileContents(Mage::getBaseDir()  . "/favicon.ico");
         $Response->logourl          = Mage::getStoreConfig('web/secure/base_url') . "skin/frontend/default/default/images/logo_print.gif";
-        $Response->logoraw          = Splash::File()->ReadFileContents(Mage::getBaseDir("skin") . "/frontend/default/default/images/logo_print.gif");
+        $Response->logoraw          = Splash::file()->readFileContents(Mage::getBaseDir("skin") . "/frontend/default/default/images/logo_print.gif");
         
         //====================================================================//
         // Server Informations
@@ -349,16 +354,16 @@ class Local
     {
         switch ($Name) {
             case "ProductVATIncluded":
-                Splash::Local()->LoadLocalUser();
+                Splash::local()->LoadLocalUser();
                 Mage::getConfig()->saveConfig('tax/calculation/price_includes_tax', '1');
                 Mage::getConfig()->cleanCache();
-                return;
+                return array();
                 
             case "ProductVATExcluded":
-                Splash::Local()->LoadLocalUser();
+                Splash::local()->LoadLocalUser();
                 Mage::getConfig()->saveConfig('tax/calculation/price_includes_tax', '0');
                 Mage::getConfig()->cleanCache();
-                return;
+                return array();
             
             case "List":
                 return array( "ProductVATIncluded" , "ProductVATExcluded" );
@@ -372,8 +377,9 @@ class Local
 //====================================================================//
     
     /**
-     *      @abstract       Initiate Local Request User if not already defined
-     *      @return         int                     0 if KO, >0 if OK
+     * @abstract    Initiate Local Request User if not already defined
+     * 
+     * @return      bool
      */
     public function LoadLocalUser()
     {

@@ -37,7 +37,7 @@ trait CoreTrait
         
         //====================================================================//
         // Customer Object
-        $this->FieldsFactory()->Create(self::Objects()->Encode("ThirdParty", SPL_T_ID))
+        $this->fieldsFactory()->Create(self::objects()->Encode("ThirdParty", SPL_T_ID))
                 ->Identifier("customer_id")
                 ->Name('Customer')
                 ->MicroData("http://schema.org/Organization", "ID")
@@ -45,7 +45,7 @@ trait CoreTrait
         
         //====================================================================//
         // Reference
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("increment_id")
                 ->Name('Reference')
                 ->MicroData("http://schema.org/Order", "orderNumber")
@@ -53,7 +53,7 @@ trait CoreTrait
 
         //====================================================================//
         // Order Date
-        $this->FieldsFactory()->Create(SPL_T_DATE)
+        $this->fieldsFactory()->Create(SPL_T_DATE)
                 ->Identifier("created_at")
                 ->Name("Date")
                 ->MicroData("http://schema.org/Order", "orderDate")
@@ -81,7 +81,7 @@ trait CoreTrait
             //====================================================================//
             // Customer Object Id Readings
             case 'customer_id':
-                $this->Out[$FieldName] = self::Objects()->Encode("ThirdParty", $this->Object->getData($FieldName));
+                $this->Out[$FieldName] = self::objects()->Encode("ThirdParty", $this->Object->getData($FieldName));
                 break;
             //====================================================================//
             // Order Official Date
@@ -127,7 +127,7 @@ trait CoreTrait
             //====================================================================//
             // Order Company Id
             case 'customer_id':
-                $CustomerId = self::Objects()->Id($Data);
+                $CustomerId = self::objects()->Id($Data);
                 if ($this->Object->getCustomerId() != $CustomerId) {
                     //====================================================================//
                     // Load Customer Object

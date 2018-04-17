@@ -38,7 +38,7 @@ trait MetaTrait
         
         //====================================================================//
         // Active => Product Is Enables & Visible
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
+        $this->fieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("status")
                 ->Group("Meta")
                 ->Name("Enabled")
@@ -47,7 +47,7 @@ trait MetaTrait
         
         //====================================================================//
         // Active => Product Is available_for_order
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
+        $this->fieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("available_for_order")
                 ->Name("Available for order")
                 ->Group("Meta")
@@ -55,7 +55,7 @@ trait MetaTrait
         
         //====================================================================//
         // On Sale
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
+        $this->fieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("on_special")
                 ->Name("On Sale")
                 ->Group("Meta")

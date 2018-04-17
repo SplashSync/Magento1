@@ -41,7 +41,7 @@ trait MainTrait
         
         //====================================================================//
         // Invoice Total Price HT
-        $this->FieldsFactory()->Create(SPL_T_DOUBLE)
+        $this->fieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("grand_total_excl_tax")
                 ->Name("Total (tax excl.)" . " (" . Mage::app()->getStore()->getCurrentCurrencyCode() . ")")
                 ->MicroData("http://schema.org/Invoice", "totalPaymentDue")
@@ -49,7 +49,7 @@ trait MainTrait
         
         //====================================================================//
         // Invoice Total Price TTC
-        $this->FieldsFactory()->Create(SPL_T_DOUBLE)
+        $this->fieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("grand_total")
                 ->Name("Total (tax incl.)" . " (" . Mage::app()->getStore()->getCurrentCurrencyCode() . ")")
                 ->MicroData("http://schema.org/Invoice", "totalPaymentDueTaxIncluded")
@@ -62,7 +62,7 @@ trait MainTrait
         
         //====================================================================//
         // Order Current Status
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("state")
                 ->Name("Status")
                 ->MicroData("http://schema.org/Invoice", "paymentStatus")
@@ -77,7 +77,7 @@ trait MainTrait
                 )
                 ->isNotTested();
         
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("state_name")
                 ->Name("Status Name")
                 ->MicroData("http://schema.org/Invoice", "paymentStatusName")
@@ -91,7 +91,7 @@ trait MainTrait
         // Is Canceled
         // => There is no Diffrence Between a Draft & Canceled Order on Prestashop.
         //      Any Non Validated Order is considered as Canceled
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
+        $this->fieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("isCanceled")
                 ->Name(Mage::helper('sales')->__('Invoice') . " : " . Mage::helper('sales')->__('Canceled'))
                 ->MicroData("http://schema.org/PaymentStatusType", "PaymentDeclined")
@@ -101,7 +101,7 @@ trait MainTrait
         
         //====================================================================//
         // Is Validated
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
+        $this->fieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("isValidated")
                 ->Name(Mage::helper('sales')->__('Invoice') . " : " . "Valid")
                 ->MicroData("http://schema.org/PaymentStatusType", "PaymentDue")
@@ -111,7 +111,7 @@ trait MainTrait
 
         //====================================================================//
         // Is Paid
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
+        $this->fieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("isPaid")
                 ->Name(Mage::helper('sales')->__('Invoice') . " : " . Mage::helper('sales')->__('Paid'))
                 ->MicroData("http://schema.org/PaymentStatusType", "PaymentComplete")
@@ -165,10 +165,10 @@ trait MainTrait
                 $this->Out[$FieldName]  = (bool) $this->Object->isCanceled();
                 break;
             case 'isValidated':
-                $this->Out[$FieldName]  = (bool) !$this->Object->isCanceled();
+                $this->Out[$FieldName]  = !$this->Object->isCanceled();
                 break;
             case 'isPaid':
-                $this->Out[$FieldName]  = (bool) ($this->Object->getState() == MageInvoice::STATE_PAID)?true:false;
+                $this->Out[$FieldName]  = ($this->Object->getState() == MageInvoice::STATE_PAID) ? true : false;
                 break;
         
             default:
@@ -190,32 +190,5 @@ trait MainTrait
             return "PaymentComplete";
         }
         return "PaymentDue";
-    }
-        
-
-    /**
-     *  @abstract     Write Given Fields
-     *
-     *  @param        string    $FieldName              Field Identifier / Name
-     *  @param        mixed     $Data                   Field Data
-     *
-     *  @return         none
-     */
-    private function setMainFields($FieldName, $Data)
-    {
-        //====================================================================//
-        // WRITE Field
-        switch ($FieldName) {
-            //====================================================================//
-            // INVOICE STATUS
-            //====================================================================//
-            case 'state':
-                $this->setInvoiceStatus($Data);
-                break;
-                
-            default:
-                return;
-        }
-        unset($this->In[$FieldName]);
     }
 }

@@ -25,6 +25,7 @@ use Splash\Core\SplashCore      as Splash;
 use Mage;
 use Mage_Catalog_Model_Product_Status;
 use Mage_Catalog_Model_Product_Type;
+use Mage_Catalog_Exception;
 
 /**
  * @abstract    Magento 1 Customers CRUD Functions
@@ -51,6 +52,7 @@ trait CRUDTrait
         //====================================================================//
         // Stack Trace
         Splash::log()->trace(__CLASS__, __FUNCTION__);
+        $Product = False;        
         //====================================================================//
         // Decode Product Id
         $this->ProductId        = self::getId($Id);
@@ -92,7 +94,7 @@ trait CRUDTrait
             return false;
         }
         //====================================================================//
-        // Ensure Cureent Store is Admin Store
+        // Ensure Current Store is Admin Store
         if (!Mage::app()->getStore()->isAdmin()) {
             Mage::app()->setCurrentStore(\Mage_Core_Model_App::ADMIN_STORE_ID);
         }
@@ -163,10 +165,12 @@ trait CRUDTrait
 // *******************************************************************//
 
     /**
-     *      @abstract       Convert id_product & id_product_attribute pair
-     *      @param          int(10)       $ProductId               Product Identifier
-     *      @param          int(10)       $AttributeId     Product Combinaison Identifier
-     *      @return         int(32)       $UnikId                   0 if KO, >0 if OK
+     * @abstract       Convert id_product & id_product_attribute pair
+     * 
+     * @param   int     $ProductId          Product Identifier (Int10)
+     * @param   int     $AttributeId        Product Combinaison Identifier (Int10)
+     * 
+     * @return  int     0 if KO, >0 if OK (Int32)
      */
     public function getUnikId($ProductId = null, $AttributeId = 0)
     {
@@ -177,9 +181,11 @@ trait CRUDTrait
     }
     
     /**
-     *      @abstract       Revert UnikId to decode id_product
-     *      @param          int(32)       $UnikId                   Product UnikId
-     *      @return         int(10)       $id_product               0 if KO, >0 if OK
+     * @abstract       Revert UnikId to decode id_product
+     * 
+     * @param   int     $UnikId         Product UnikId (Int32)
+     * 
+     * @return  int     0 if KO, >0 if OK (Int10)
      */
     static public function getId($UnikId)
     {
@@ -187,9 +193,11 @@ trait CRUDTrait
     }
     
     /**
-     *      @abstract       Revert UnikId to decode id_product_attribute
-     *      @param          int(32)       $UnikId                   Product UnikId
-     *      @return         int(10)       $id_product_attribute     0 if KO, >0 if OK
+     * @abstract       Revert UnikId to decode id_product_attribute
+     * 
+     * @param   int     $UnikId         Product UnikId (Int32)
+     * 
+     * @return  int     0 if KO, >0 if OK (Int10)
      */
     static public function getAttribute($UnikId)
     {

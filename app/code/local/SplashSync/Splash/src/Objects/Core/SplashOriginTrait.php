@@ -38,7 +38,7 @@ trait SplashOriginTrait
     {
         //====================================================================//
         // Splash Object SOrigin Node Id
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("splash_origin")
                 ->Name("Splash Origin Node")
                 ->Group("Meta")

@@ -35,6 +35,7 @@ class SplashSync_Splash_Model_System_Config_Source_Product_Attributeset
 {
     public function toOptionArray()
     {
+        $EntityTypeId = null;        
         //====================================================================//
         // Get Products Entity Type Id
         foreach (Mage::getResourceModel('eav/entity_type_collection')->load() as $EntityType) {

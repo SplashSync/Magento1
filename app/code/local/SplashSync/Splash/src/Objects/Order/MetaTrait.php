@@ -43,7 +43,7 @@ trait MetaTrait
         // Is Canceled
         // => There is no Diffrence Between a Draft & Canceled Order on Prestashop.
         //      Any Non Validated Order is considered as Canceled
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
+        $this->fieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("isCanceled")
                 ->Name("Order" . " : " . "Canceled")
                 ->MicroData("http://schema.org/OrderStatus", "OrderCancelled")
@@ -53,7 +53,7 @@ trait MetaTrait
         
         //====================================================================//
         // Is Validated
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
+        $this->fieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("isValidated")
                 ->Name("Order" . " : " . "Valid")
                 ->MicroData("http://schema.org/OrderStatus", "OrderProcessing")
@@ -63,7 +63,7 @@ trait MetaTrait
         
         //====================================================================//
         // Is Closed
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
+        $this->fieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("isClosed")
                 ->Name("Order" . " : " . "Closed")
                 ->MicroData("http://schema.org/OrderStatus", "OrderDelivered")
@@ -73,7 +73,7 @@ trait MetaTrait
 
         //====================================================================//
         // Is Paid
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
+        $this->fieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("isPaid")
                 ->Name("Order" . " : " . "Paid")
                 ->MicroData("http://schema.org/OrderStatus", "OrderPaid")
@@ -86,7 +86,7 @@ trait MetaTrait
         
         //====================================================================//
         // TMS - Last Change Date
-        $this->FieldsFactory()->Create(SPL_T_DATETIME)
+        $this->fieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("updated_at")
                 ->Name("Last update")
                 ->MicroData("http://schema.org/DataFeedItem", "dateModified")

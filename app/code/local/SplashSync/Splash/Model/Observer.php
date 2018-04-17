@@ -64,7 +64,7 @@ class SplashSync_Splash_Model_Observer
         // Load Splash Module
         //====================================================================//
         require_once(dirname(dirname(__FILE__)) . '/vendor/autoload.php');
-        Splash::Core();
+        Splash::core();
     }
     
     /*
@@ -115,12 +115,12 @@ class SplashSync_Splash_Model_Observer
         $this->_SplashInit();
         //====================================================================//
         // Prevent Repeated Commit if Needed
-        if (($_Action == SPL_A_UPDATE) && Splash::Object($_Type)->isLocked()) {
+        if (($_Action == SPL_A_UPDATE) && Splash::object($_Type)->isLocked()) {
             return true;
         }
         //====================================================================//
         // Commit Action on remotes nodes (Master & Slaves)
-        $result = Splash::Commit($_Type, $_Id, $_Action, $_User, $_Comment);
+        $result = Splash::commit($_Type, $_Id, $_Action, $_User, $_Comment);
         //====================================================================//
         // Post Splash Messages
         $this->_importLog(Splash::log());
@@ -144,9 +144,9 @@ class SplashSync_Splash_Model_Observer
         //====================================================================//
         // Verify if Object is New & Store Entity Id
         if ($Object->isObjectNew()) {
-            Splash::Local()->_Action    = SPL_A_CREATE;
+            Splash::local()->_Action    = SPL_A_CREATE;
         } else {
-            Splash::Local()->_Action    = SPL_A_UPDATE;
+            Splash::local()->_Action    = SPL_A_UPDATE;
         }
 
         return true;
@@ -172,7 +172,7 @@ class SplashSync_Splash_Model_Observer
         $_Comment   =   $this->ResourceNames[$Object->getResourceName()];
         //====================================================================//
         // Do Generic Change Commit
-        $this->_CommitChanges($_Type, Splash::Local()->_Action, $Object->getEntityId(), $_Comment);
+        $this->_CommitChanges($_Type, Splash::local()->_Action, $Object->getEntityId(), $_Comment);
         return true;
     }
     

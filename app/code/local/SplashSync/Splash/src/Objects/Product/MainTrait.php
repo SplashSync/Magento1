@@ -42,7 +42,7 @@ trait MainTrait
 
         //====================================================================//
         // Weight
-        $this->FieldsFactory()->Create(SPL_T_DOUBLE)
+        $this->fieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("weight")
                 ->Name("Weight")
                 ->MicroData("http://schema.org/Product", "weight");
@@ -53,7 +53,7 @@ trait MainTrait
         
         //====================================================================//
         // Product Selling Price
-        $this->FieldsFactory()->Create(SPL_T_PRICE)
+        $this->fieldsFactory()->Create(SPL_T_PRICE)
                 ->Identifier("price")
                 ->Name("Selling Price HT" . " (" . Mage::app()->getStore()->getCurrentCurrencyCode() . ")")
                 ->MicroData("http://schema.org/Product", "price")
@@ -61,7 +61,7 @@ trait MainTrait
         
         //====================================================================//
         // WholeSale Price
-//        $this->FieldsFactory()->Create(SPL_T_PRICE)
+//        $this->fieldsFactory()->Create(SPL_T_PRICE)
 //                ->Identifier("price-wholesale")
 //                ->Name($this->spl->l("Supplier Price") . " (" . $this->Currency->sign . ")")
 //                ->MicroData("http://schema.org/Product","wholesalePrice");

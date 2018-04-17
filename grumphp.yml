@@ -2,8 +2,8 @@ parameters:
     git_dir: .
     bin_dir: app/code/local/SplashSync/Splash/vendor/bin
     ascii:
-        failed: grumphp-grumpy.txt
-        succeeded: grumphp-happy.txt
+        failed:     "./app/code/local/SplashSync/Splash/vendor/splash/phpcore/Resources/ascii/grumphp-grumpy.txt"
+        succeeded:  "./app/code/local/SplashSync/Splash/vendor/splash/phpcore/Resources/ascii/grumphp-happy.txt"
     tasks:
         composer:
             file: "./composer.json"
@@ -32,5 +32,29 @@ parameters:
             exclude: ['vendor']
         xmllint: ~
         yamllint: ~
-#        phpstan:
-#            configuration: phpstan.neon
+        phpstan:
+            level: 5
+            configuration: build/phpstan.neon
+            ignore_patterns:
+                - install-0.1.0.php
+                - IndexController.php 
+                - Stock.php
+                - Attributeset.php  
+                - Observer.php 
+                
+    testsuites:
+        travis:
+            tasks:
+                - composer
+                - phplint
+                - phpcs 
+                - git_blacklist
+                - jsonlint
+                - phpmd
+                - phpcpd
+                - xmllint
+                - yamllint
+                
+        phpstan:
+            tasks: 
+                - phpstan 

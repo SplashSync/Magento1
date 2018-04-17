@@ -30,7 +30,7 @@ trait MetaTrait
 {
     
 
-        /**
+    /**
     *   @abstract     Build Customers Unused Fields using FieldFactory
     */
     private function buildMetaFields()
@@ -42,7 +42,7 @@ trait MetaTrait
 
         //====================================================================//
         // Active
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
+        $this->fieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("is_active")
                 ->Name("Is Enabled")
                 ->Group("Meta")
@@ -51,7 +51,7 @@ trait MetaTrait
         
         //====================================================================//
         // Newsletter
-        $this->FieldsFactory()->Create(SPL_T_BOOL)
+        $this->fieldsFactory()->Create(SPL_T_BOOL)
                 ->Identifier("newsletter")
                 ->Name("Newletter")
                 ->Group("Meta")
@@ -105,7 +105,7 @@ trait MetaTrait
             case 'is_active':
                 if ($this->Object->getData($FieldName) != $Data) {
                     $this->Object->setData($FieldName, $Data);
-                    $this->update = true;
+                    $this->needUpdate();
                 }
                 break;
             case 'newsletter':
@@ -127,7 +127,7 @@ trait MetaTrait
                 $subscriber->setStoreId(Mage::app()->getStore()->getId());
                 $subscriber->setCustomerId($this->Object->getId());
                 $subscriber->save();
-                $this->update = true;
+                $this->needUpdate();
                 break;
             default:
                 return;

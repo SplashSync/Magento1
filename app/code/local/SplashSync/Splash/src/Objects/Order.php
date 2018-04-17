@@ -110,7 +110,7 @@ class Order extends AbstractObject
     
     /**
     *   @abstract     Return List Of Customer with required filters
-    *   @param        array   $filter          Filters for Customers List.
+    *   @param        string  $filter          Filters for Customers List.
     *   @param        array   $params              Search parameters for result List.
     *                         $params["max"]       Maximum Number of results
     *                         $params["offset"]    List Start Offset
@@ -170,4 +170,14 @@ class Order extends AbstractObject
         Splash::log()->deb("MsgLocalTpl", __CLASS__, __FUNCTION__, (count($Data)-1)." Orders Found.");
         return $Data;
     }
+    
+    /**
+     *   @abstract   Check if this Order was Created by Splash
+     *
+     *   @return     bool
+     */
+    protected function isSplash()
+    {
+        return ( $this->Object->getExtOrderId() === self::SPLASH_LABEL )? true:false;
+    }    
 }

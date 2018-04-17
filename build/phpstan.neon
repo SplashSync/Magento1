@@ -1,0 +1,5 @@
+parameters:
+    bootstrap: "./build/phpstan.php"
+
+    universalObjectCratesClasses:
+            - ArrayObject

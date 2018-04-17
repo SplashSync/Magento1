@@ -36,7 +36,7 @@ trait DatesTrait
     {
         //====================================================================//
         // Creation Date
-        $this->FieldsFactory()->Create(SPL_T_DATETIME)
+        $this->fieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("created_at")
                 ->Name("Registration")
                 ->Group("Meta")
@@ -45,7 +45,7 @@ trait DatesTrait
         
         //====================================================================//
         // Last Change Date
-        $this->FieldsFactory()->Create(SPL_T_DATETIME)
+        $this->fieldsFactory()->Create(SPL_T_DATETIME)
                 ->Identifier("updated_at")
                 ->Name("Last update")
                 ->Group("Meta")

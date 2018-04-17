@@ -34,7 +34,7 @@ trait OptionsTrait
         
         //====================================================================//
         // Phone
-        $this->FieldsFactory()->Create(SPL_T_PHONE)
+        $this->fieldsFactory()->Create(SPL_T_PHONE)
                 ->Identifier("telephone")
                 ->Name("Phone")
                 ->Group($ContactGroup)
@@ -42,7 +42,7 @@ trait OptionsTrait
         
         //====================================================================//
         // Fax
-        $this->FieldsFactory()->Create(SPL_T_PHONE)
+        $this->fieldsFactory()->Create(SPL_T_PHONE)
                 ->Identifier("fax")
                 ->Name("Fax")
                 ->Group($ContactGroup)
@@ -50,7 +50,7 @@ trait OptionsTrait
 
         //====================================================================//
         // VAT ID
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("vat_id")
                 ->Name("VAT Number")
                 ->MicroData("http://schema.org/Organization", "vatID");

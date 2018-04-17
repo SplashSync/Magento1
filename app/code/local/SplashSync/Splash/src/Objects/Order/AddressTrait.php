@@ -36,7 +36,7 @@ trait AddressTrait
         
         //====================================================================//
         // Billing Address
-        $this->FieldsFactory()->Create(self::Objects()->Encode("Address", SPL_T_ID))
+        $this->fieldsFactory()->Create(self::objects()->encode("Address", SPL_T_ID))
                 ->Identifier("billing_address_id")
                 ->Name('Billing Address ID')
                 ->MicroData("http://schema.org/Order", "billingAddress")
@@ -44,7 +44,7 @@ trait AddressTrait
         
         //====================================================================//
         // Shipping Address
-        $this->FieldsFactory()->Create(self::Objects()->Encode("Address", SPL_T_ID))
+        $this->fieldsFactory()->Create(self::objects()->encode("Address", SPL_T_ID))
                 ->Identifier("shipping_address_id")
                 ->Name('Shipping Address ID')
                 ->MicroData("http://schema.org/Order", "orderDelivery");
@@ -74,7 +74,7 @@ trait AddressTrait
                     $Address    =  $this->Object->getShippingAddress();
                 }
                 if ($Address && $Address->getCustomerAddressId()) {
-                    $this->Out[$FieldName] = self::Objects()->Encode("Address", $Address->getCustomerAddressId());
+                    $this->Out[$FieldName] = self::objects()->Encode("Address", $Address->getCustomerAddressId());
                     break;
                 }
                 $this->Out[$FieldName] = null;
@@ -102,16 +102,16 @@ trait AddressTrait
             //====================================================================//
             // Billing/Shipping Address Writting
             case 'billing_address_id':
-                $this->setAddressContents('billing', self::Objects()->Id($Data));
+                $this->setAddressContents('billing', self::objects()->Id($Data));
                 break;
             case 'shipping_address_id':
                 //====================================================================//
                 // Retrieve Address Object Id
-                $AdressId = self::Objects()->Id($Data);
+                $AdressId = self::objects()->Id($Data);
                 //====================================================================//
                 // Setup Address Object & Set Order as "Non Virtual" => With Shipping
                 if ($AdressId > 0) {
-                    $this->setAddressContents('shipping', self::Objects()->Id($Data));
+                    $this->setAddressContents('shipping', self::objects()->Id($Data));
                     $this->Object->setIsVirtual(false);
                 //====================================================================//
                 // No Address Setup & Set Order as "Virtual" => No Shipping
@@ -181,8 +181,7 @@ trait AddressTrait
             ->setTelephone($CustomerAddress->getTelephone())
             ->setFax($CustomerAddress->getFax())
             ->save();
-        $this->update = true;
-//        Splash::log()->www("Address After", $Address->getData());
+            $this->needUpdate();
         //====================================================================//
         // Update Order Address Collection
         if ($Type === "billing") {

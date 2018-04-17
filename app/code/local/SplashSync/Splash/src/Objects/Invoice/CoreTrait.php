@@ -35,7 +35,7 @@ trait CoreTrait
         
         //====================================================================//
         // Customer Object
-        $this->FieldsFactory()->Create(self::Objects()->Encode("ThirdParty", SPL_T_ID))
+        $this->fieldsFactory()->Create(self::objects()->Encode("ThirdParty", SPL_T_ID))
                 ->Identifier("customer_id")
                 ->Name('Customer')
                 ->MicroData("http://schema.org/Invoice", "customer")
@@ -43,7 +43,7 @@ trait CoreTrait
 
         //====================================================================//
         // Customer Name
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("customer_name")
                 ->Name('Customer Name')
                 ->MicroData("http://schema.org/Invoice", "customer")
@@ -53,7 +53,7 @@ trait CoreTrait
         
         //====================================================================//
         // Order Object
-        $this->FieldsFactory()->Create(self::Objects()->Encode("Order", SPL_T_ID))
+        $this->fieldsFactory()->Create(self::objects()->Encode("Order", SPL_T_ID))
                 ->Identifier("order_id")
                 ->Name('Order')
                 ->MicroData("http://schema.org/Invoice", "referencesOrder")
@@ -61,7 +61,7 @@ trait CoreTrait
         
         //====================================================================//
         // Invoice Reference
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("increment_id")
                 ->Name('Number')
                 ->MicroData("http://schema.org/Invoice", "confirmationNumber")
@@ -69,7 +69,7 @@ trait CoreTrait
 
         //====================================================================//
         // Order Reference
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("reference")
                 ->Name('Reference')
                 ->MicroData("http://schema.org/Order", "orderNumber")
@@ -77,7 +77,7 @@ trait CoreTrait
 
         //====================================================================//
         // Order Date
-        $this->FieldsFactory()->Create(SPL_T_DATE)
+        $this->fieldsFactory()->Create(SPL_T_DATE)
                 ->Identifier("created_at")
                 ->Name("Date")
                 ->MicroData("http://schema.org/Order", "orderDate")
@@ -111,7 +111,7 @@ trait CoreTrait
             //====================================================================//
             // Customer Object Id Readings
             case 'customer_id':
-                $this->Out[$FieldName] = self::Objects()->Encode("ThirdParty", $this->Object->getOrder()->getData($FieldName));
+                $this->Out[$FieldName] = self::objects()->Encode("ThirdParty", $this->Object->getOrder()->getData($FieldName));
                 break;
             //====================================================================//
             // Customer Name
@@ -121,7 +121,7 @@ trait CoreTrait
             //====================================================================//
             // Object Object Id Readings
             case 'order_id':
-                $this->Out[$FieldName] = self::Objects()->Encode("Order", $this->Object->getData($FieldName));
+                $this->Out[$FieldName] = self::objects()->Encode("Order", $this->Object->getData($FieldName));
                 break;
             //====================================================================//
             // Order Official Date
@@ -156,7 +156,7 @@ trait CoreTrait
             case 'increment_id':
                 if ($this->Object->getData($FieldName) != $Data) {
                     $this->Object->setData($FieldName, $Data);
-                    $this->update = true;
+                    $this->needUpdate();
                 }
                 break;
             
@@ -166,14 +166,14 @@ trait CoreTrait
                 $CurrentDate = date(SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
                 if ($CurrentDate != $Data) {
                     $this->Object->setData($FieldName, $Data);
-                    $this->update = true;
+                    $this->needUpdate();
                 }
                 break;
                     
             //====================================================================//
             // Parent Order Id
             case 'order_id':
-                $OrderId = self::ObjectId_DecodeId($Data);
+                $OrderId = self::objects()->id($Data);
                 if ($this->Object->getOrder()->getId() == $OrderId) {
                     break;
                 }
@@ -186,7 +186,7 @@ trait CoreTrait
                 //====================================================================//
                 //Update Customer Id
                 $this->Object->setOrder($NewOrder);
-                $this->update = true;
+                $this->needUpdate();
                 break;
                 
             default:

@@ -39,7 +39,7 @@ trait MainTrait
     {
         //====================================================================//
         // Gender Name
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("gender_name")
                 ->Name("Social title")
                 ->MicroData("http://schema.org/Person", "honorificPrefix")
@@ -48,7 +48,7 @@ trait MainTrait
         //====================================================================//
         // Gender Type
         $desc = "Social title" . " ; 0 => Male // 1 => Female // 2 => Neutral";
-        $this->FieldsFactory()->Create(SPL_T_INT)
+        $this->fieldsFactory()->Create(SPL_T_INT)
                 ->Identifier("gender")
                 ->Name("Social title")
                 ->MicroData("http://schema.org/Person", "gender")
@@ -59,14 +59,14 @@ trait MainTrait
         
         //====================================================================//
         // Date Of Birth
-        $this->FieldsFactory()->Create(SPL_T_DATE)
+        $this->fieldsFactory()->Create(SPL_T_DATE)
                 ->Identifier("dob")
                 ->Name("Date of birth")
                 ->MicroData("http://schema.org/Person", "birthDate");
 
         //====================================================================//
         // Company
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("company")
                 ->Name("Company")
                 ->MicroData("http://schema.org/Organization", "legalName")
@@ -74,28 +74,28 @@ trait MainTrait
         
         //====================================================================//
         // Prefix
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("prefix")
                 ->Name("Prefix name")
                 ->MicroData("http://schema.org/Person", "honorificPrefix");
         
         //====================================================================//
         // MiddleName
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("middlename")
                 ->Name("Middlename")
                 ->MicroData("http://schema.org/Person", "additionalName");
         
         //====================================================================//
         // Suffix
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("suffix")
                 ->Name("Suffix name")
                 ->MicroData("http://schema.org/Person", "honorificSuffix");
         
 //        //====================================================================//
 //        // Address List
-//        $this->FieldsFactory()->Create(self::ObjectId_Encode( "Address" , SPL_T_ID))
+//        $this->fieldsFactory()->Create(self::ObjectId_Encode( "Address" , SPL_T_ID))
 //                ->Identifier("address")
 //                ->InList("contacts")
 //                ->Name($this->spl->l("Address"))
@@ -185,7 +185,7 @@ trait MainTrait
     private function getGenderName()
     {
         if (empty($this->Object->getData("gender"))) {
-            Splash::Trans("Empty");
+            Splash::trans("Empty");
         }
         if ($this->Object->getData("gender") == 2) {
             return "Femele";

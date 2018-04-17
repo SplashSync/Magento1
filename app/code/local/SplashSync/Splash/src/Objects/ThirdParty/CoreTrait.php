@@ -38,7 +38,7 @@ trait CoreTrait
     {
         //====================================================================//
         // Firstname
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("firstname")
                 ->Name("First name")
                 ->MicroData("http://schema.org/Person", "familyName")
@@ -48,7 +48,7 @@ trait CoreTrait
         
         //====================================================================//
         // Lastname
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("lastname")
                 ->Name("Last name")
                 ->MicroData("http://schema.org/Person", "givenName")
@@ -58,7 +58,7 @@ trait CoreTrait
 
         //====================================================================//
         // Email
-        $this->FieldsFactory()->Create(SPL_T_EMAIL)
+        $this->fieldsFactory()->Create(SPL_T_EMAIL)
                 ->Identifier("email")
                 ->Name("Email address")
                 ->MicroData("http://schema.org/ContactPoint", "email")

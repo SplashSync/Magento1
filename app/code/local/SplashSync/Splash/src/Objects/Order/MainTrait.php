@@ -54,7 +54,7 @@ trait MainTrait
         
         //====================================================================//
         // Email
-        $this->FieldsFactory()->Create(SPL_T_EMAIL)
+        $this->fieldsFactory()->Create(SPL_T_EMAIL)
                 ->Identifier("customer_email")
                 ->Name("Customer Email")
                 ->MicroData("http://schema.org/ContactPoint", "email")
@@ -74,7 +74,7 @@ trait MainTrait
         
         //====================================================================//
         // Order Current Status
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("state")
                 ->Name("Status")
                 ->MicroData("http://schema.org/Order", "orderStatus")
@@ -88,7 +88,7 @@ trait MainTrait
         
         //====================================================================//
         // Order Total Price HT
-        $this->FieldsFactory()->Create(SPL_T_DOUBLE)
+        $this->fieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("grand_total_excl_tax")
                 ->Name("Total (tax excl.)" . " (" . Mage::app()->getStore()->getCurrentCurrencyCode() . ")")
                 ->MicroData("http://schema.org/Invoice", "totalPaymentDue")
@@ -96,7 +96,7 @@ trait MainTrait
         
         //====================================================================//
         // Order Total Price TTC
-        $this->FieldsFactory()->Create(SPL_T_DOUBLE)
+        $this->fieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("grand_total")
                 ->Name("Total (tax incl.)" . " (" . Mage::app()->getStore()->getCurrentCurrencyCode() . ")")
                 ->MicroData("http://schema.org/Invoice", "totalPaymentDueTaxIncluded")
@@ -109,14 +109,14 @@ trait MainTrait
         
         //====================================================================//
         // Order Currency
-        $this->FieldsFactory()->Create(SPL_T_CURRENCY)
+        $this->fieldsFactory()->Create(SPL_T_CURRENCY)
                 ->Identifier("order_currency_code")
                 ->Name("Currency")
                 ->MicroData("https://schema.org/PriceSpecification", "priceCurrency");
 
         //====================================================================//
         // Order Currency
-        $this->FieldsFactory()->Create(SPL_T_DOUBLE)
+        $this->fieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("base_to_order_rate")
                 ->Name("Currency Rate")
                 ->MicroData("https://schema.org/PriceSpecification", "priceCurrencyRate");
@@ -262,17 +262,6 @@ trait MainTrait
                 return MageOrder::STATE_HOLDED;
         }
         return MageOrder::STATE_COMPLETE;
-    }
-        
-
-    /**
-     *   @abstract   Check if this Order was Created by Splash
-     *
-     *   @return     bool
-     */
-    private function isSplash()
-    {
-        return ( $this->Object->getExtOrderId() === self::SPLASH_LABEL )? true:false;
     }
 
     /**

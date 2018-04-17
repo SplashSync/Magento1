@@ -33,7 +33,7 @@ trait SplashIdTrait
     {
         //====================================================================//
         // Splash Unique Object Id
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("splash_id")
                 ->Name("Splash Id")
                 ->Group("Meta")

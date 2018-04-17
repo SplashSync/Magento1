@@ -40,14 +40,14 @@ class L01OrderBundleProductsTest extends ObjectsCase
         }
     }
 
-    private function verifyItems(int $objectId)
+    private function verifyItems(string $objectId)
     {
         //====================================================================//
         //   Get Readable Object Fields List
-        $Fields = $this->reduceFieldList(Splash::Object("Order")->Fields(), true, false);
+        $Fields = $this->reduceFieldList(Splash::object("Order")->fields(), true, false);
         //====================================================================//
         //   Read Order Data from Module
-        $Data   =   Splash::Object("Order")->get($objectId, $Fields);
+        $Data   =   Splash::object("Order")->get($objectId, $Fields);
         //====================================================================//
         //   Basic verifications
         $this->assertNotEmpty($Data);

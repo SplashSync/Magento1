@@ -109,21 +109,21 @@ class Demo extends WidgetBase
     {
         //====================================================================//
         // Reference
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->create(SPL_T_VARCHAR)
                 ->Identifier("text_input")
                 ->Name("Text Input")
                 ->Description("Widget Specific Custom text Input");
         
         //====================================================================//
         // Reference
-        $this->FieldsFactory()->Create(SPL_T_INT)
+        $this->fieldsFactory()->create(SPL_T_INT)
                 ->Identifier("integer_input")
                 ->Name("Numeric Input")
                 ->Description("Widget Specific Custom Numeric Input");
         
         //====================================================================//
         // Publish Fields
-        return $this->FieldsFactory()->Publish();
+        return $this->fieldsFactory()->publish();
     }
     
     /**
@@ -140,9 +140,6 @@ class Demo extends WidgetBase
         //====================================================================//
         // Stack Trace
         Splash::log()->trace(__CLASS__, __FUNCTION__);
-        //====================================================================//
-        // Load Default Language
-        Splash::Local()->LoadDefaultLanguage();
 
         //====================================================================//
         // Setup Widget Core Informations
@@ -168,11 +165,11 @@ class Demo extends WidgetBase
 
         //====================================================================//
         // Set Blocks to Widget
-        $this->setBlocks($this->BlocksFactory()->Render());
+        $this->setBlocks($this->blocksFactory()->render());
 
         //====================================================================//
         // Publish Widget
-        return $this->Render();
+        return $this->render();
     }
         
 
@@ -187,7 +184,7 @@ class Demo extends WidgetBase
     {
         //====================================================================//
         // Into Text Block
-        $this->BlocksFactory()->addTextBlock("This is a Demo Text Block!!" . "You can repeat me as much as you want!");
+        $this->blocksFactory()->addTextBlock("This is a Demo Text Block!!" . "You can repeat me as much as you want!");
     }
   
     /**
@@ -199,7 +196,7 @@ class Demo extends WidgetBase
         //====================================================================//
         // verify Inputs
         if (!is_array($Inputs) && !is_a($Inputs, "ArrayObject")) {
-            $this->BlocksFactory()->addNotificationsBlock(array("warning" => "Inputs is not an Array! Is " . get_class($Inputs)));
+            $this->blocksFactory()->addNotificationsBlock(array("warning" => "Inputs is not an Array! Is " . get_class($Inputs)));
         }
         
         //====================================================================//
@@ -210,7 +207,7 @@ class Demo extends WidgetBase
             $TableContents[]    =   array($key, $value);
         }
         
-        $this->BlocksFactory()->addTableBlock($TableContents, array("Width" => self::SIZE_M));
+        $this->blocksFactory()->addTableBlock($TableContents, array("Width" => self::SIZE_M));
     }
     
     /**
@@ -230,7 +227,7 @@ class Demo extends WidgetBase
         );
         
         
-        $this->BlocksFactory()->addNotificationsBlock($Notifications, array("Width" => self::SIZE_M));
+        $this->blocksFactory()->addNotificationsBlock($Notifications, array("Width" => self::SIZE_M));
     }
     
     //====================================================================//

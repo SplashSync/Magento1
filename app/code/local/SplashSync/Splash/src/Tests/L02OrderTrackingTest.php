@@ -13,7 +13,7 @@ use Mage;
  *
  * @author SplashSync <contact@splashsync.com>
  */
-class L01OrderTrackingTest extends ObjectsCase
+class L02OrderTrackingTest extends ObjectsCase
 {
     
     public function testOrdersTrackingNumbers()
@@ -43,10 +43,10 @@ class L01OrderTrackingTest extends ObjectsCase
     {
         //====================================================================//
         //   Get Readable Object Fields List
-        $Fields = $this->reduceFieldList(Splash::Object("Order")->Fields(), true, false);
+        $Fields = $this->reduceFieldList(Splash::object("Order")->fields(), true, false);
         //====================================================================//
         //   Read Order Data from Module
-        $Data   =   Splash::Object("Order")->get($objectId, $Fields);
+        $Data   =   Splash::object("Order")->get($objectId, $Fields);
         //====================================================================//
         //   Basic verifications
         $this->assertNotEmpty($Data);

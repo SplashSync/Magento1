@@ -98,7 +98,7 @@ class ThirdParty extends AbstractObject
     
     /**
     *   @abstract     Return List Of Objects with required filters
-    *   @param        array   $filter              Filters for Customers List.
+    *   @param        string  $filter              Filters for Customers List.
     *   @param        array   $params              Search parameters for result List.
     *                         $params["max"]       Maximum Number of results
     *                         $params["offset"]    List Start Offset

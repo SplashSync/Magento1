@@ -26,14 +26,14 @@ use Splash\Core\SplashCore      as Splash;
 use Mage;
 use Mage_Core_Exception;
 
+use Exception;
+
 /**
  * @abstract    Magento 1 Products Images Fields Access
  */
 trait ImagesTrait
 {
-    
-    
-    
+    private $ImgPosition = 0;
     
     /**
     *   @abstract     Build Fields using FieldFactory
@@ -42,7 +42,7 @@ trait ImagesTrait
     {
         //====================================================================//
         // Product Cover Image Position
-//        $this->FieldsFactory()->Create(SPL_T_INT)
+//        $this->fieldsFactory()->Create(SPL_T_INT)
 //                ->Identifier("cover_image")
 //                ->Name($this->spl->l("Cover"))
 //                ->MicroData("http://schema.org/Product","coverImage")
@@ -50,7 +50,7 @@ trait ImagesTrait
         
         //====================================================================//
         // Product Images List
-        $this->FieldsFactory()->Create(SPL_T_IMG)
+        $this->fieldsFactory()->Create(SPL_T_IMG)
                 ->Identifier("image")
                 ->InList("images")
                 ->Name("Images")
@@ -71,12 +71,14 @@ trait ImagesTrait
         //====================================================================//
         // READ Fields
         switch ($FieldName) {
+            
+//            case 'cover_image':
+//                $CoverImage             = Image::getCover((int) $this->ProductId);
+//                $this->Out[$FieldName]  = isset($CoverImage["position"])?$CoverImage["position"]:0;
+//                break;
+            
             case 'image@images':
                 $this->getImageGallery();
-                break;
-            case 'cover_image':
-                $CoverImage             = Image::getCover((int) $this->ProductId);
-                $this->Out[$FieldName]  = isset($CoverImage["position"])?$CoverImage["position"]:0;
                 break;
                 
             default:
@@ -102,10 +104,8 @@ trait ImagesTrait
         //====================================================================//
         // WRITE Field
         switch ($FieldName) {
-            case 'images':
-                $this->setImageGallery($Data);
-                break;
-            case 'cover_image':
+            
+//            case 'cover_image':
 //                //====================================================================//
 //                // Read Product Images List
 //                $ObjectImagesList   =   Image::getImages($this->LangId,$this->ProductId);
@@ -133,9 +133,12 @@ trait ImagesTrait
 //                        $ObjectImage->update();
 //                    }
 //                }
-                break;
+//                break;
 
-                
+            case 'images':
+                $this->setImageGallery($Data);
+                break;
+                            
             default:
                 return;
         }
@@ -172,7 +175,7 @@ trait ImagesTrait
             }
             //====================================================================//
             // Insert Image in Output List
-            $this->Out["images"][$key]["image"] = $this->Images()->Encode(
+            $this->Out["images"][$key]["image"] = self::images()->encode(
                 $Image["label"]?$Image["label"]:$this->Object->getSku(), // Image Legend/Label
                 basename($Image["file"]),                               // Image File Filename
                 dirname($Media->getMediaPath($Image['file'])) . DS,     // Image Server Path (Without Filename)
@@ -287,7 +290,7 @@ trait ImagesTrait
     {
         //====================================================================//
         // Read Image Raw Data From Splash Server
-        $NewImageFile    =   Splash::File()->GetFile($ImgArray["file"], $ImgArray["md5"]);
+        $NewImageFile    =   Splash::file()->getFile($ImgArray["file"], $ImgArray["md5"]);
         //====================================================================//
         // File Imported => Write it Here
         if ($NewImageFile == false) {
@@ -297,13 +300,13 @@ trait ImagesTrait
         // Write Image On Local Import Folder
         $Path       = Mage::getBaseDir('media') . DS . 'import' . DS ;
         $Filename  = isset($ImgArray["filename"]) ? $ImgArray["filename"] : ( $NewImageFile["name"] );
-        Splash::File()->WriteFile($Path, $Filename, $NewImageFile["md5"], $NewImageFile["raw"]);
+        Splash::file()->writeFile($Path, $Filename, $NewImageFile["md5"], $NewImageFile["raw"]);
         //====================================================================//
         // Create Image in Product Media Gallery
         if (file_exists($Path . $Filename)) {
             try {
                 $this->Object->addImageToMediaGallery($Path . $Filename, array('image'), true, false);
-                $this->update = true;
+                $this->needUpdate();
             } catch (Exception $e) {
                 Splash::log()->war("ErrLocalTpl", __CLASS__, __FUNCTION__, "Image Path (" . $Path . $Filename);
                 return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to add image (" . $e->getMessage() . ").");
@@ -335,7 +338,7 @@ trait ImagesTrait
             // Delete Image Object
             if ($ImageGallery->getBackend()->getImage($this->Object, $Image['file'])) {
                 $ImageGallery->getBackend()->removeImage($this->Object, $Image['file']);
-                $this->update = true;
+                $this->needUpdate();
             }
         }
         return true;

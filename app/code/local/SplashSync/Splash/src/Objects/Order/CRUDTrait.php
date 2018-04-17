@@ -24,6 +24,7 @@ use Splash\Core\SplashCore      as Splash;
 // Magento Namespaces
 use Mage;
 use Mage_Sales_Model_Order      as MageOrder;
+use Mage_Catalog_Exception;
 
 /**
  * @abstract    Magento 1 Customers CRUD Functions
@@ -152,7 +153,7 @@ trait CRUDTrait
         if ($this->Object->_hasDataChanges) {
             return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to Update Order (" . $this->Object->getEntityId() . ").");
         }
-        Splash::Object("Order")->Lock($this->Object->getEntityId());
+        Splash::object("Order")->lock($this->Object->getEntityId());
         Splash::log()->deb("MsgLocalTpl", __CLASS__, __FUNCTION__, "Order Updated");
         
         return $this->Object->getEntityId();        

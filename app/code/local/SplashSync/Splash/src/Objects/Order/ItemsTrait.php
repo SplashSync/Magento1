@@ -31,6 +31,10 @@ use Mage_Sales_Model_Order      as MageOrder;
  */
 trait ItemsTrait
 {
+    private $OrderItems         =   array();
+    private $OrderItem          =   null;
+    private $UpdateTotals       =   false;
+    private $OrderItemUpdate    =   false;
     
     /**
     *   @abstract     Build Address Fields using FieldFactory
@@ -42,7 +46,7 @@ trait ItemsTrait
         
         //====================================================================//
         // Order Line Label
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("sku")
                 ->InList("lines")
                 ->Name($ListName . "Label")
@@ -51,17 +55,17 @@ trait ItemsTrait
         
         //====================================================================//
         // Order Line Description
-        $this->FieldsFactory()->Create(SPL_T_VARCHAR)
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
                 ->Identifier("name")
                 ->InList("lines")
                 ->Name($ListName . "Description")
                 ->MicroData("http://schema.org/partOfInvoice", "description")
                 ->Association("name@lines", "qty_ordered@lines", "unit_price@lines");
-//            $this->FieldsFactory()->isRequired();
+//            $this->fieldsFactory()->isRequired();
 
         //====================================================================//
         // Order Line Product Identifier
-        $this->FieldsFactory()->Create(self::Objects()->Encode("Product", SPL_T_ID))
+        $this->fieldsFactory()->Create(self::objects()->Encode("Product", SPL_T_ID))
                 ->Identifier("product_id")
                 ->InList("lines")
                 ->Name($ListName . "Product ID")
@@ -72,19 +76,19 @@ trait ItemsTrait
 
         //====================================================================//
         // Order Line Quantity
-        $this->FieldsFactory()->Create(SPL_T_INT)
+        $this->fieldsFactory()->Create(SPL_T_INT)
                 ->Identifier("qty_ordered")
                 ->InList("lines")
                 ->Name($ListName . "Quantity")
                 ->MicroData("http://schema.org/QuantitativeValue", "value")
                 ->Association("name@lines", "qty_ordered@lines", "unit_price@lines");
 //        if ( SPLASH_DEBUG ) {
-            $this->FieldsFactory()->isRequired();
+            $this->fieldsFactory()->isRequired();
 //        }
         
         //====================================================================//
         // Order Line Discount
-        $this->FieldsFactory()->Create(SPL_T_DOUBLE)
+        $this->fieldsFactory()->Create(SPL_T_DOUBLE)
                 ->Identifier("discount_percent")
                 ->InList("lines")
                 ->Name($ListName . "Discount (%)")
@@ -93,7 +97,7 @@ trait ItemsTrait
 
         //====================================================================//
         // Order Line Unit Price
-        $this->FieldsFactory()->Create(SPL_T_PRICE)
+        $this->fieldsFactory()->Create(SPL_T_PRICE)
                 ->Identifier("unit_price")
                 ->InList("lines")
                 ->Name($ListName . "Price")
@@ -156,7 +160,7 @@ trait ItemsTrait
             //====================================================================//
             // Order Line Product Id
             case 'product_id':
-                return self::Objects()->Encode("Product", $Product->getData($FieldId));
+                return self::objects()->encode("Product", $Product->getData($FieldId));
                 
             //====================================================================//
             // Order Line Unit Price
@@ -190,7 +194,7 @@ trait ItemsTrait
         $CurrencyCode   =   $this->Object->getOrderCurrencyCode();
         //====================================================================//
         // Build Price Array
-        return self::Prices()->Encode(
+        return self::prices()->encode(
             (double)    $Product->getPrice(),
             (double)    $Product->getTaxPercent(),
             null,
@@ -250,7 +254,7 @@ trait ItemsTrait
                 $this->OrderItem->save();
                 Splash::log()->deb("Order Item Saved");
                 $this->OrderItemUpdate = false;
-                $this->update = true;
+                $this->needUpdate();
             }
         }
         //====================================================================//
@@ -259,7 +263,7 @@ trait ItemsTrait
             //====================================================================//
             // Perform Line Delete
             $OrderItem->delete();
-            $this->update = true;
+            $this->needUpdate();
         }
         unset($this->In[$FieldName]);
     }
@@ -276,7 +280,7 @@ trait ItemsTrait
         //====================================================================//
         // Detect & Verify Product Id
         if (array_key_exists("product_id", $OrderLineData)) {
-            $ProductId  = self::Objects()->Id($OrderLineData["product_id"]);
+            $ProductId  = self::objects()->Id($OrderLineData["product_id"]);
             $Product    = Mage::getModel('catalog/product')
                     ->load($ProductId);
             //====================================================================//
@@ -285,7 +289,8 @@ trait ItemsTrait
                 $Product = null;
             }
         } else {
-            $Product = null;
+            $Product    = null;
+            $ProductId  = null;
         }
         
         //====================================================================//
@@ -502,7 +507,7 @@ trait ItemsTrait
             // Verify Discount Changed
             if ($this->Object->getShippingDescription() !== $OrderLineData["name"]) {
                 $this->Object->setShippingDescription($OrderLineData["name"]);
-                $this->update = true;
+                $this->needUpdate();
             }
         }
         
@@ -516,16 +521,16 @@ trait ItemsTrait
                 $this->Object
                     ->setShippingAmount($OrderLinePrice["ht"])
                     ->setBaseShippingAmount($OrderLinePrice["ht"]);
-                $this->update           = true;
                 $this->UpdateTotals     = true;
+                $this->needUpdate();
             }
             //====================================================================//
             // Verify Tax Rate Changed
             $TaxAmount =  $OrderLinePrice["ttc"] - $OrderLinePrice['ht'];
             if ($this->OrderItem->getShippingTaxAmount() !== $TaxAmount) {
                 $this->OrderItem->setShippingTaxAmount($TaxAmount);
-                $this->update           = true;
                 $this->UpdateTotals     = true;
+                $this->needUpdate();
             }
         }
     }
@@ -587,6 +592,6 @@ trait ItemsTrait
         $this->Object->setGrandTotal($subtotal_incl_tax + $this->Object->getShippingAmount());
 
         $this->UpdateTotals     = false;
-        $this->update           = true;
+        $this->needUpdate();
     }
 }

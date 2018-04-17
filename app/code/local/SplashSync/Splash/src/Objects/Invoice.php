@@ -106,7 +106,7 @@ class Invoice extends AbstractObject
         
     /**
     *   @abstract     Return List Of Customer with required filters
-    *   @param        array   $filter               Filters for Object List.
+    *   @param        string  $filter               Filters for Object List.
     *   @param        array   $params               Search parameters for result List.
     *                         $params["max"]        Maximum Number of results
     *                         $params["offset"]     List Start Offset
@@ -165,4 +165,15 @@ class Invoice extends AbstractObject
         Splash::log()->deb("MsgLocalTpl", __CLASS__, __FUNCTION__, (count($Data)-1)." Invoices Found.");
         return $Data;
     }
+    
+    /**
+     *   @abstract   Check if this Invoice was Created by Splash
+     *
+     *   @return     bool
+     */
+    protected function isSplash()
+    {
+        // Splash Cannot Create Invoices
+        return false;
+    }       
 }

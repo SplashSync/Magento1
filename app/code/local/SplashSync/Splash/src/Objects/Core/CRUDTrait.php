@@ -23,6 +23,7 @@ use Splash\Core\SplashCore      as Splash;
 
 // Magento Namespaces
 use Mage;
+use Mage_Customer_Exception;
 
 /**
  * @abstract    Magento 1 Core CRUD Functions
@@ -48,7 +49,7 @@ trait CRUDTrait
         }
         //====================================================================//
         // Initialize Remote Admin user ...
-        if (!Splash::Local()->LoadLocalUser()) {
+        if (!Splash::local()->LoadLocalUser()) {
             return true;
         }
         //====================================================================//
