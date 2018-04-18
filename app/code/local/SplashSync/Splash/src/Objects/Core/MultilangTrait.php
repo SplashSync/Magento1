@@ -95,8 +95,8 @@ trait MultilangTrait
      */
     private function isDefaultStore($StoreId)
     {
-        $DefaultStoreId  = Mage::app()->getStore($StoreId)->getWebsite()->getDefaultStore()->getStoreId();
-        return (bool) ($StoreId == $DefaultStoreId);
+        $DefaultStoreId  = Mage::app()->getStore($StoreId)->getWebsite()->getDefaultStore()->getId();
+        return ($StoreId == $DefaultStoreId);
     }    
     
     /**
