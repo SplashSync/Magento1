@@ -76,21 +76,10 @@ trait CRUDTrait
             return Splash::log()->err("ErrLocalFieldMissing", __CLASS__, __FUNCTION__, "email");
         }
         //====================================================================//
-        // If No Origin Given => Select Default WebSite
-        if (empty($this->In["splash_origin"])) {
-            Mage::app()->setCurrentStore(Mage::getStoreConfig('splashsync_splash_options/thirdparty/store'));
-        //====================================================================//
-        // If Origin Given => Select Choosen Website
-        } else {
-            foreach (Mage::app()->getWebsites() as $website) {
-                if ($this->In["splash_origin"] == $website->getConfig('splashsync_splash_options/thirdparty/origin')) {
-                    Mage::app()->setCurrentStore($website->getDefaultStore()->getId());
-                }
-            }
-        }
-        //====================================================================//
         // Create Empty Customer
-        $Customer   =   Mage::getModel('customer/customer');
+        $Customer   =   Mage::getModel('customer/customer')
+                // Setup Customer in default store
+                ->setStore($this->getSplashOriginStore());
         $Customer->setData("firstname", $this->In["firstname"]);
         $Customer->setData("lastname", $this->In["lastname"]);
         $Customer->setData("email", $this->In["email"]);

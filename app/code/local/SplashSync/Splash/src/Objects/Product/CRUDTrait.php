@@ -95,13 +95,11 @@ trait CRUDTrait
             return false;
         }
         //====================================================================//
-        // Ensure Current Store is Admin Store
-        if (!Mage::app()->getStore()->isAdmin()) {
-            Mage::app()->setCurrentStore((string) Mage_Core_Model_App::ADMIN_STORE_ID);
-        }
-        //====================================================================//
         // Init Product Class
         $Product = Mage::getModel('catalog/product')
+                // Setup Product in default website
+                ->setWebsiteIds($this->getSplashOriginWebsiteIds())
+                // Setup Product Status
                 ->setStatus(Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
         //====================================================================//
         // Init Product Entity
@@ -119,7 +117,6 @@ trait CRUDTrait
             return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
         }
         $this->ProductId        = $Product->getEntityId();
-        
         return $Product;
     }
     

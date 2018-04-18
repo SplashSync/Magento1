@@ -134,6 +134,21 @@
                     <show_in_default>1</show_in_default>
  
                     <fields>
+                        <website>
+                            <label>Default WebSite </label>
+                            <comment>Default Store to use for Objects created from Outside. You can setup a Origin Server Id for each websites.</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_website</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                        </website>
+                        <origin>
+                            <label>Origin:</label>
+                            <comment>Id of Connected Server</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_website>1</show_in_website>
+                        </origin>
                         <expert translate="label">
                             <label>Expert Mode: </label>
                             <comment>In this mode, you can access more detailed module informations.</comment>
@@ -160,22 +175,6 @@
                     <show_in_website>1</show_in_website>
  
                     <fields>
-                        <store>
-                            <label>Default WebSite </label>
-                            <comment>Default Store to use for Customers created from another Server (If no Origin Server Id definded).</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_website</source_model>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                        </store>
-                        <origin>
-                            <label>Origin:</label>
-                            <comment>Id of Connected Node</comment>
-                            <frontend_type>text</frontend_type>
-                            <!--<depends><origin_enable>1</origin_enable></depends>-->
-                            <sort_order>20</sort_order>
-                            <show_in_website>1</show_in_website>
-                        </origin>
                     </fields>
                 </thirdparty> 
             </groups>

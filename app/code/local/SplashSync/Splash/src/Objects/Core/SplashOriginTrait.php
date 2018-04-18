@@ -23,6 +23,7 @@ use Splash\Core\SplashCore      as Splash;
 
 // Magento Namespaces
 use Mage;
+use Mage_Core_Model_Website;
 
 /**
  * @abstract    Magento 1 Object SplashOrigin Access
@@ -89,4 +90,47 @@ trait SplashOriginTrait
         }
         unset($this->In[$FieldName]);
     }
+    
+    /**
+     *  @abstract   Detect Creation Website with Origin Id Given by Splash
+     *
+     *  @return     Mage_Core_Model_Website
+     */
+    protected function getSplashOriginWebsite()
+    {
+        //====================================================================//
+        // If Origin Given => Select Choosen Website
+        if ( isset($this->In["splash_origin"]) && !empty($this->In["splash_origin"]) ) {
+            foreach (Mage::app()->getWebsites() as $website) {
+                if ($this->In["splash_origin"] == $website->getConfig('splashsync_splash_options/advanced/origin')) {
+                    return $website;
+                }
+            }
+        }
+        //====================================================================//
+        // If No Origin Given => Select Default WebSite      
+        return Mage::app()->getWebsite(
+            Mage::getStoreConfig('splashsync_splash_options/advanced/website')
+        );
+    }
+    
+    /**
+     *  @abstract     Detect Creation Websites Ids Array with Origin Id Given by Splash
+     *
+     *  @return         array
+     */
+    protected function getSplashOriginWebsiteIds()
+    {
+        return [$this->getSplashOriginWebsite()->getId()];
+    }    
+    
+    /**
+     *  @abstract   Detect Creation Store with Origin Id Given by Splash
+     *
+     *  @return     Mage_Core_Model_Store,
+     */
+    protected function getSplashOriginStore()
+    {
+        return $this->getSplashOriginWebsite()->getDefaultStore();
+    }    
 }

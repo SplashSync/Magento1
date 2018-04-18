@@ -28,6 +28,7 @@ $installer->startSetup();
 SplashInstaller::AddSplashId("customer");
 SplashInstaller::AddSplashId("customer_address");
 SplashInstaller::AddSplashOrigin("customer");
+SplashInstaller::AddSplashOrigin("catalog_product");
 
 //====================================================================//
 // Setup Product Additionnal Attributes

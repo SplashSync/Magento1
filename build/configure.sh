@@ -27,6 +27,7 @@ echo "Configure Store Main Options"
 echo "Configure Splash Module Options"
 
 ./n98-magerun.phar config:set splashsync_splash_options/advanced/expert             0 
+./n98-magerun.phar config:set splashsync_splash_options/advanced/website            1 
 
 ./n98-magerun.phar config:set splashsync_splash_options/core/id                     DoNotUseThisId 
 ./n98-magerun.phar config:set splashsync_splash_options/core/key                    DoNotUseThisKey 
@@ -36,7 +37,6 @@ echo "Configure Splash Module Options"
 
 ./n98-magerun.phar config:set splashsync_splash_options/products/attribute_set      4 
 ./n98-magerun.phar config:set splashsync_splash_options/products/default_stock      1 
-./n98-magerun.phar config:set splashsync_splash_options/thirdparty/store            1 
 
 ./n98-magerun.phar config:get splashsync_splash_options/* 
 

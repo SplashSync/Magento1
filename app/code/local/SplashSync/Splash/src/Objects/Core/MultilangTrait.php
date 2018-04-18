@@ -86,6 +86,17 @@ trait MultilangTrait
             }
         }  
         return $this->storesLangs[$StoreId];
+    }
+
+    /**
+     * @abstract       is Default Store
+     * @param          int      $StoreId     Magento Store Id
+     * @return         bool
+     */
+    private function isDefaultStore($StoreId)
+    {
+        $DefaultStoreId  = Mage::app()->getStore($StoreId)->getWebsite()->getDefaultStore()->getStoreId();
+        return (bool) ($StoreId == $DefaultStoreId);
     }    
     
     /**
@@ -126,7 +137,7 @@ trait MultilangTrait
         //====================================================================//
         // Load Object Resource
         $ResourceName   = $this->Object->getResourceName() . "_action";
-        $Resource       = Mage::getSingleton('catalog/product_action');
+        $Resource       = Mage::getSingleton($ResourceName);
         if ( !$Resource ) {
             return Splash::log()->war("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to load Object Resources (" . $ResourceName . ").");
         } 
@@ -134,9 +145,15 @@ trait MultilangTrait
         // Update Data
         $Resource->updateAttributes(
             array($this->Object->getEntityId()),
-            array($Key => $Data),
+            array($Key => $NewData),
             $StoreId
-        );        
+        );  
+        //====================================================================//
+        // Update Default Data
+        if ( $this->isDefaultStore($StoreId) ) {
+            $this->Object->setData($Key, $NewData);
+        }
+        
         return false;        
     } 
     
@@ -204,7 +221,6 @@ trait MultilangTrait
         if ( !$this->isMultilang() ) {
             return $this->setMonolangData($Key, $Data, $MaxLength);
         }        
-        
         //====================================================================//
         // Walk on Stores This Product is Available
         foreach ( $this->Object->getStoreIds() as $StoreId ) {
