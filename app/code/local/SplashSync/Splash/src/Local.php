@@ -302,7 +302,7 @@ class Local
         // Load Recurent Use Parameters
         $multilang    =   Mage::getStoreConfig('splashsync_splash_options/langs/multilang');
         $default_lang =   Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');
-        
+
         //====================================================================//
         // Init Parameters Array
         $Parameters       =     array();
@@ -315,8 +315,15 @@ class Local
         // Single Language Mode
         if (empty($multilang) && !empty($default_lang)) {
             $Parameters["Langs"][] = Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');
+        //====================================================================//
+        // Multi Language Mode
+        } elseif ( !empty($multilang) ) {
+            foreach (Mage::app()->getStores() as $Store) {
+                $IsoLang    =   Mage::getStoreConfig('splashsync_splash_options/langs/store_lang', $Store->getId());
+                $Parameters["Langs"][$Store->getId()] =     $IsoLang;
+            }        
         }
-        
+
         //====================================================================//
         // Setup Magento Prices Parameters
         //====================================================================//
@@ -362,17 +369,30 @@ class Local
             case "ProductVATIncluded":
                 Splash::local()->LoadLocalUser();
                 Mage::getConfig()->saveConfig('tax/calculation/price_includes_tax', '1');
+                Mage::getConfig()->saveConfig('splashsync_splash_options/langs/multilang', '0');
                 Mage::getConfig()->cleanCache();
                 return array();
                 
             case "ProductVATExcluded":
                 Splash::local()->LoadLocalUser();
                 Mage::getConfig()->saveConfig('tax/calculation/price_includes_tax', '0');
+                Mage::getConfig()->saveConfig('splashsync_splash_options/langs/multilang', '0');
                 Mage::getConfig()->cleanCache();
                 return array();
             
+            case "Multilang":
+                Splash::local()->LoadLocalUser();
+                Mage::getConfig()->saveConfig('tax/calculation/price_includes_tax', '0');
+                Mage::getConfig()->saveConfig('splashsync_splash_options/langs/multilang', '1');
+                Mage::getConfig()->cleanCache();
+                return array();
+                
             case "List":
-                return array( "ProductVATIncluded" , "ProductVATExcluded" );
+                return array( 
+                    "ProductVATIncluded" , 
+                    "ProductVATExcluded" ,
+                    "Multilang" 
+                    );
         }
     }
     

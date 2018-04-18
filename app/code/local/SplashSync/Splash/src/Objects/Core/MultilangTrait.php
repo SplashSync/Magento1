@@ -149,7 +149,7 @@ trait MultilangTrait
     {
         //====================================================================//
         // If Monolang Mode
-        if ( !$this->isMultilang() ) {
+        if ( !$this->isMultilang() ) {            
             return $this->getMonolangData($Key);
         }
         //====================================================================//
