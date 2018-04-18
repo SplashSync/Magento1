@@ -3,3 +3,7 @@ parameters:
 
     universalObjectCratesClasses:
             - ArrayObject
+
+    ignoreErrors:
+            - '#Call to an undefined method object::getAttributeRawValue().#'
+            - '#Call to an undefined method Mage_Core_Model_Abstract::updateAttributes().#'
