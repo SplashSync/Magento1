@@ -11,9 +11,9 @@ echo "Configure Languages Options"
 
 ./n98-magerun.phar config:set splashsync_splash_options/langs/multilang           0 
 ./n98-magerun.phar config:set splashsync_splash_options/langs/default_lang        "en_US" 
-./n98-magerun.phar config:set splashsync_splash_options/langs/store_lang          "en_US"  --scope-id=1  
-./n98-magerun.phar config:set splashsync_splash_options/langs/store_lang          "fr_FR"  --scope-id=2  
-./n98-magerun.phar config:set splashsync_splash_options/langs/store_lang          "de_DE"  --scope-id=3  
+./n98-magerun.phar config:set splashsync_splash_options/langs/store_lang          "en_US"  --scope='stores' --scope-id=1  
+./n98-magerun.phar config:set splashsync_splash_options/langs/store_lang          "fr_FR"  --scope='stores' --scope-id=2  
+./n98-magerun.phar config:set splashsync_splash_options/langs/store_lang          "de_DE"  --scope='stores' --scope-id=3  
 
 echo "Configure Store Main Options"
 
