@@ -23,7 +23,7 @@ use Splash\Core\SplashCore      as Splash;
 
 // Magento Namespaces
 use Mage;
-use Mage_Customer_Exception;
+use Mage_Core_Exception;
 
 /**
  * @abstract    Magento 1 Core CRUD Functions
@@ -85,7 +85,7 @@ trait CRUDTrait
         // Update Object
         try {
             $this->Object->save();
-        } catch (Mage_Customer_Exception $ex) {
+        } catch (Mage_Core_Exception $ex) {
             Splash::log()->deb($ex->getTraceAsString());
             return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
         }

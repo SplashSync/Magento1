@@ -36,6 +36,6 @@
 
     <php>
         <const  name="SPLASH_DEBUG" value="true" />
-        <server name="SERVER_NAME" value="http://127.0.0.1/Magento/Mage-1.9"/>
+        <server name="SERVER_NAME" value="http://127.0.0.1/Magento/Mage-Phpunit"/>
     </php>
 </phpunit>

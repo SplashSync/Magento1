@@ -117,7 +117,7 @@ trait DescTrait
             case 'meta_description':
             case 'meta_keywords':
             case 'url_key':
-                $this->Out[$FieldName] = $this->getMultilang($this->Object, $FieldName);
+                $this->Out[$FieldName] = $this->getMultilang($FieldName);
                 break;
                 
             default:
@@ -152,7 +152,7 @@ trait DescTrait
             case 'meta_description':
             case 'meta_keywords':
             case 'url_key':
-                if ($this->setMultilang($this->Object, $FieldName, $Data)) {
+                if ($this->setMultilang($FieldName, $Data)) {
                     $this->needUpdate();
                 }
                 break;

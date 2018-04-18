@@ -25,6 +25,7 @@ use ArrayObject;
 use Splash\Core\SplashCore      as Splash;
 
 use Mage;
+use Mage_Core_Model_App;
 
 class Local
 {
@@ -100,10 +101,15 @@ class Local
         //====================================================================//
         // Initialize Magento ...
         if (!defined("BP")) {
-            require_once(dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))).'/app/Mage.php');
+            //====================================================================//
             // Initialize Magento ...
+            require_once(dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))).'/app/Mage.php');
             Mage::app();
-//            Mage::app()->setCurrentStore(\Mage_Core_Model_App::DISTRO_STORE_CODE);
+            //====================================================================//
+            // When Library is called in server mode ONLY
+            if (SPLASH_SERVER_MODE) {
+                Mage::app()->setCurrentStore((string) Mage_Core_Model_App::ADMIN_STORE_ID);
+            }             
         }
         
         //====================================================================//

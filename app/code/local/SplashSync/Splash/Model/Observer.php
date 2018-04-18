@@ -61,10 +61,20 @@ class SplashSync_Splash_Model_Observer
     private function _SplashInit()
     {
         //====================================================================//
-        // Load Splash Module
+        // Splash Module Autoload Loacations
+        $autoloadLocations = array(
+            dirname(dirname(__FILE__)) . '/vendor/autoload.php',
+            BP . '/app/code/local/SplashSync/Splash/vendor/autoload.php',
+        );
         //====================================================================//
-        require_once(dirname(dirname(__FILE__)) . '/vendor/autoload.php');
-        Splash::core();
+        // Load Splash Module
+        foreach ($autoloadLocations as $autoload) {
+            if (is_file($autoload)) {
+                require_once($autoload);
+                Splash::Core();
+                return;
+            }
+        }
     }
     
     /*

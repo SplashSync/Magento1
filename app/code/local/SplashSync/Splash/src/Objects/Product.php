@@ -92,9 +92,9 @@ class Product extends AbstractObject
     /**
      *  Object Synchronistion Recommended Configuration
      */
-    protected static $ENABLE_PUSH_CREATED       =  false;        // Enable Creation Of New Local Objects when Not Existing
-    protected static $ENABLE_PUSH_UPDATED       =  false;        // Enable Update Of Existing Local Objects when Modified Remotly
-    protected static $ENABLE_PUSH_DELETED       =  false;        // Enable Delete Of Existing Local Objects when Deleted Remotly
+    protected static $ENABLE_PUSH_CREATED       =  false;       // Enable Creation Of New Local Objects when Not Existing
+    protected static $ENABLE_PUSH_UPDATED       =  true;        // Enable Update Of Existing Local Objects when Modified Remotly
+    protected static $ENABLE_PUSH_DELETED       =  true;        // Enable Delete Of Existing Local Objects when Deleted Remotly
 
     protected static $ENABLE_PULL_CREATED       =  true;         // Enable Import Of New Local Objects
     protected static $ENABLE_PULL_UPDATED       =  true;         // Enable Import of Updates of Local Objects when Modified Localy

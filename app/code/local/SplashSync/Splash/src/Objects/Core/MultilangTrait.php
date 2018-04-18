@@ -29,75 +29,251 @@ use Mage;
  */
 trait MultilangTrait
 {
-    private $multilang;
-    private $default_lang;
+    private $isMultilang    = null;
+    private $defaultLang    = null;
+    private $storesLangs    = array();
         
     /**
-     *      @abstract       Read Multilangual Fields of an Object
-     *      @param          object      $Object     Pointer to Prestashop Object
-     *      @param          array       $key        Id of a Multilangual Contents
-     *      @return         int                     0 if KO, 1 if OK
+     * @abstract       is Multilangual Mode
+     * @param          object      $Object     Pointer to Object
+     * @param          array       $key        Id of a Multilangual Contents
+     * @return         bool
      */
-    public function getMultilang(&$Object = null, $key = null)
+    private function isMultilang()
     {
         //====================================================================//
-        // Load Recurent Use Parameters
-        $this->multilang    =   Mage::getStoreConfig('splashsync_splash_options/langs/multilang');
-        $this->default_lang =   Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');        
+        // Load Configuration
+        if ( is_null($this->isMultilang) ) {
+            $this->isMultilang    =   Mage::getStoreConfig('splashsync_splash_options/langs/multilang');
+        } 
+        //====================================================================//
+        // Return Mode
+        return !empty($this->isMultilang);
+    }    
+    
+    /**
+     * @abstract       Get User Default language
+     * @return         string
+     */
+    private function getDefaultLanguage()
+    {
+        //====================================================================//
+        // Load Configuration
+        if ( is_null($this->defaultLang) ) {
+            $this->defaultLang =   Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');       
+            if ( empty($this->defaultLang) ) {
+                $this->defaultLang =   "en_US";
+            }
+        }  
+        return $this->defaultLang;
+    }
+    
+    /**
+     * @abstract       Get Store language
+     * 
+     * @param   int     $StoreId     Magento Store Id
+     * 
+     * @return         string
+     */
+    private function getStoreLanguage($StoreId)
+    {
+        //====================================================================//
+        // Load Configuration
+        if ( !isset($this->storesLangs[$StoreId]) ) {
+            $this->storesLangs[$StoreId] =   Mage::getStoreConfig('splashsync_splash_options/langs/store_lang', $StoreId);       
+            if ( empty($this->storesLangs[$StoreId]) ) {
+                $this->storesLangs[$StoreId] =   "en_US";
+            }
+        }  
+        return $this->storesLangs[$StoreId];
+    }    
+    
+    /**
+     * @abstract       Get Store Specific Data
+     * 
+     * @param   array       $Key            Id of a Multilangual Contents
+     * @param   int         $StoreId        Magento Store Id
+     * 
+     * @return         string
+     */
+    private function getMultilangData($Key, $StoreId)
+    {
+        return Mage::getResourceModel($this->Object->getResourceName())
+                    ->getAttributeRawValue($this->Object->getEntityId(), $Key, $StoreId);
         
-        if (empty($this->multilang) && !empty($this->default_lang)) {
-            return array(
-                Mage::getStoreConfig('splashsync_splash_options/langs/default_lang') => $Object->getData($key)
-            );
+    } 
+    
+    /**
+     * @abstract       Set Store Specific Data
+     * 
+     * @param   string      $Key            Id of a Multilangual Contents
+     * @param   int         $StoreId        Magento Store Id
+     * @param   string      $Data           New Multilangual Content
+     * @param   int         $MaxLength      Maximum Contents Lenght
+     * 
+     * @return         string
+     */
+    private function setMultilangData($Key, $StoreId, $Data = null, $MaxLength = null)
+    {        
+        //====================================================================//
+        // Extract Data & Verify Data Lenght
+        $NewData    =   $this->checkDataLength($Key, $Data, $MaxLength);                
+        //====================================================================//
+        // Compare Data
+        if ( $this->getMultilangData($Key, $StoreId) == $NewData ) {
+            return false;
         }
-
-        Splash::log()->www("Object", $Object->getData());
+        //====================================================================//
+        // Load Object Resource
+        $ResourceName   = $this->Object->getResourceName() . "_action";
+        $Resource       = Mage::getSingleton('catalog/product_action');
+        if ( !$Resource ) {
+            return Splash::log()->war("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to load Object Resources (" . $ResourceName . ").");
+        } 
+        //====================================================================//
+        // Update Data
+        $Resource->updateAttributes(
+            array($this->Object->getEntityId()),
+            array($Key => $Data),
+            $StoreId
+        );        
+        return false;        
+    } 
+    
+    /**
+     *      @abstract       Read Multilangual Fields of an Object
+     *      @param          array       $Key        Id of a Multilangual Contents
+     *      @return         int                     0 if KO, 1 if OK
+     */
+    public function getMultilang($Key = null)
+    {
+        //====================================================================//
+        // If Monolang Mode
+        if ( !$this->isMultilang() ) {
+            return $this->getMonolangData($Key);
+        }
+        //====================================================================//
+        // Walk on Stores This Product is Available
+        $Response   =   array();
+        foreach ( $this->Object->getStoreIds() as $StoreId ) {
+            //====================================================================//
+            // Load Store Language
+            $IsoLang   =  $this->getStoreLanguage($StoreId);
+            //====================================================================//
+            // Load Store Object Value
+            if ( !isset($Response[$IsoLang]) ) {
+                $Response[$IsoLang] = $this->getMultilangData($Key, $StoreId);
+            }
+        }
+        return $Response;
     }
 
     /**
-     *      @abstract       Update Multilangual Fields of an Object
-     *
-     *      @param          object      $Object     Pointer to Prestashop Object
-     *      @param          array       $key        Id of a Multilangual Contents
-     *      @param          array       $Data       New Multilangual Contents
-     *      @param          int         $MaxLength  Maximum Contents Lenght
-     *
-     *      @return         bool                     0 if no update needed, 1 if update needed
+     *  @abstract       Read Monolangual Fields of an Object
+     *  @param          object      $Object     Pointer to Object
+     *  @param          array       $key        Id of a Multilangual Contents
+     *  @return         array
      */
-    public function setMultilang($Object = null, $key = null, $Data = null, $MaxLength = null)
+    private function getMonolangData($key = null)
     {
         //====================================================================//
-        // Load Recurent Use Parameters
-        $this->multilang    =   Mage::getStoreConfig('splashsync_splash_options/langs/multilang');
-        $this->default_lang =   Mage::getStoreConfig('splashsync_splash_options/langs/default_lang');
-        
+        // Build Monolanguge Data Array
+        return array(
+            $this->getDefaultLanguage() => $this->Object->getData($key)
+        );
+    }
+    
+    /**
+     *  @abstract       Update Multilangual Fields of an Object
+     *
+     *  @param      string      $Key        Id of a Multilangual Contents
+     *  @param      array       $Data       New Multilangual Contents
+     *  @param      int         $MaxLength  Maximum Contents Lenght
+     *
+     *  @return     bool    Update needed
+     */
+    public function setMultilang($Key = null, $Data = null, $MaxLength = null)
+    {
         //====================================================================//
         // Check Received Data Are Valid
         if (!is_array($Data) && !is_a($Data, "ArrayObject")) {
             return false;
         }
+        //====================================================================//
+        // If Monolang Mode
+        if ( !$this->isMultilang() ) {
+            return $this->setMonolangData($Key, $Data, $MaxLength);
+        }        
         
-        $UpdateRequired = false;
-        
-        if (empty($this->multilang) && !empty($this->default_lang)) {
+        //====================================================================//
+        // Walk on Stores This Product is Available
+        foreach ( $this->Object->getStoreIds() as $StoreId ) {
             //====================================================================//
-            // Compare Data
-            if (!array_key_exists($this->default_lang, $Data)
-                ||  ( $Object->getData($key) === $Data[$this->default_lang]) ) {
-                return $UpdateRequired;
+            // Load Store Language
+            $IsoLang   =  $this->getStoreLanguage($StoreId);
+            //====================================================================//
+            // Check if this Language is Given
+            if ( isset($Data[$IsoLang]) ) {
+                $this->setMultilangData($Key, $StoreId, $Data[$IsoLang], $MaxLength);
             }
-            //====================================================================//
-            // Verify Data Lenght
-            if ($MaxLength &&  ( strlen($Data[$this->default_lang]) > $MaxLength)) {
-                Splash::log()->war("MsgLocalTpl", __CLASS__, __FUNCTION__, "Text is too long for field " . $key . ", modification skipped.");
-                return $UpdateRequired;
-            }
-            //====================================================================//
-            // Update Data
-            $Object->setData($key, $Data[$this->default_lang]);
-            $UpdateRequired = true;
         }
-        
-        return $UpdateRequired;
+        return false;
     }
+    
+    /**
+     *      @abstract       Update Monolangual Fields of an Object
+     *
+     *      @param          array       $Key        Id of a Multilangual Contents
+     *      @param          array       $Data       New Multilangual Contents
+     *      @param          int         $MaxLength  Maximum Contents Lenght
+     *
+     *      @return         bool                     0 if no update needed, 1 if update needed
+     */
+    private function setMonolangData($Key = null, $Data = null, $MaxLength = null)
+    {
+        //====================================================================//
+        // Check Default Language Data is Given
+        if (!array_key_exists($this->getDefaultLanguage(), $Data) ) {
+            return false;
+        }
+        //====================================================================//
+        // Extract Data & Verify Data Lenght
+        $NewData    =   $this->checkDataLength($Key, $Data[$this->getDefaultLanguage()], $MaxLength);        
+        //====================================================================//
+        // Compare Data
+        if ( $this->Object->getData($Key) == $NewData ) {
+            return false;
+        }
+        //====================================================================//
+        // Update Data
+        $this->Object->setData($Key, $NewData);
+
+        return true;
+    }    
+    
+    /**
+     * @abstract       Check String Length and Truncate if Needed
+     *
+     * @param   string      $Key            Id of a Contents 
+     * @param   string      $Data           New Contents
+     * @param   int         $MaxLength      Maximum Contents Lenght
+     *
+     * @return  string
+     */
+    private function checkDataLength($Key = null, $Data = null, $MaxLength = null)
+    {
+        //====================================================================//
+        // No Verify Required
+        if (!$MaxLength) {
+            return $Data;
+        }
+        //====================================================================//
+        // Verify Data Lenght
+        if ( strlen($Data) > $MaxLength) {
+            Splash::log()->war("MsgLocalTpl", __CLASS__, __FUNCTION__, "Text is too long for field " . $Key . ", modification skipped.");
+            return substr($Data, 0, $MaxLength);
+        }
+        return $Data;
+    }        
+    
 }
