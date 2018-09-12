@@ -28,6 +28,7 @@ trait ItemsTrait
 {
     
     protected static $SHIPPING_LABEL             =   "__Shipping__";
+    protected static $MONEYPOINTS_LABEL          =   "__Money_For_Points__";
     
     /**
     *   @abstract     Build Address Fields using FieldFactory
@@ -91,82 +92,6 @@ trait ItemsTrait
                 ->Association("name@items", "qty@items", "unit_price@items");
     }
 
-
-    
-    /**
-     *  @abstract     Read requested Field
-     *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
-     *
-     *  @return         none
-     */
-    private function getShippingLineFields($Key, $FieldName)
-    {
-        //====================================================================//
-        // Check if List field & Init List Array
-        $FieldId = self::lists()->InitOutput($this->Out, "items", $FieldName);
-        if (!$FieldId) {
-            return;
-        }
-        
-        //====================================================================//
-        // READ Fields
-        switch ($FieldId) {
-            //====================================================================//
-            // Order Line Direct Reading Data
-            case 'sku':
-                $Value = static::$SHIPPING_LABEL;
-                break;
-            //====================================================================//
-            // Order Line Direct Reading Data
-            case 'name':
-                $Value = $this->Object->getOrder()->getShippingDescription();
-                break;
-            case 'qty':
-                $Value = 1;
-                break;
-            case 'discount_percent':
-                $Value = 0;
-                break;
-            //====================================================================//
-            // Order Line Product Id
-            case 'product_id':
-                $Value = null;
-                break;
-            //====================================================================//
-            // Order Line Unit Price
-            case 'unit_price':
-                //====================================================================//
-                // Read Current Currency Code
-                $CurrencyCode   =   $this->Object->getOrderCurrencyCode();
-                $ShipAmount     =   $this->Object->getShippingAmount();
-                //====================================================================//
-                // Compute Shipping Tax Percent
-                if ($ShipAmount > 0) {
-                    $ShipTaxPercent =  100 * $this->Object->getShippingTaxAmount() / $ShipAmount;
-                } else {
-                    $ShipTaxPercent =  0;
-                }
-                    $Value = self::prices()->encode(
-                        (double)    $ShipAmount,
-                        (double)    $ShipTaxPercent,
-                        null,
-                        $CurrencyCode,
-                        Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
-                        Mage::app()->getLocale()->currency($CurrencyCode)->getName()
-                    );
-                break;
-            default:
-                return;
-        }
-        //====================================================================//
-        // Do Fill List with Data
-        self::lists()->Insert($this->Out, "items", $FieldName, count($this->Products), $Value);
-        
-        unset($this->In[$Key]);
-    }
-    
     /**
      *  @abstract     Read requested Field
      *
@@ -258,5 +183,153 @@ trait ItemsTrait
             return (double) 100 * $Product->getDiscountAmount() / ($Product->getPriceInclTax() * $Product->getQty());
         }
         return 0;
+    }
+    
+    /**
+     *  @abstract     Read requested Field
+     *
+     *  @param        string    $Key                    Input List Key
+     *  @param        string    $FieldName              Field Identifier / Name
+     *
+     *  @return         none
+     */
+    private function getShippingLineFields($Key, $FieldName)
+    {
+        //====================================================================//
+        // Check if List field & Init List Array
+        $FieldId = self::lists()->InitOutput($this->Out, "items", $FieldName);
+        if (!$FieldId) {
+            return;
+        }
+        
+        //====================================================================//
+        // READ Fields
+        switch ($FieldId) {
+            //====================================================================//
+            // Order Line Direct Reading Data
+            case 'sku':
+                $Value = static::$SHIPPING_LABEL;
+                break;
+            //====================================================================//
+            // Order Line Direct Reading Data
+            case 'name':
+                $Value = $this->Object->getOrder()->getShippingDescription();
+                break;
+            case 'qty':
+                $Value = 1;
+                break;
+            case 'discount_percent':
+                $Value = 0;
+                break;
+            //====================================================================//
+            // Order Line Product Id
+            case 'product_id':
+                $Value = null;
+                break;
+            //====================================================================//
+            // Order Line Unit Price
+            case 'unit_price':
+                //====================================================================//
+                // Read Current Currency Code
+                $CurrencyCode   =   $this->Object->getOrderCurrencyCode();
+                $ShipAmount     =   $this->Object->getShippingAmount();
+                //====================================================================//
+                // Compute Shipping Tax Percent
+                if ($ShipAmount > 0) {
+                    $ShipTaxPercent =  100 * $this->Object->getShippingTaxAmount() / $ShipAmount;
+                } else {
+                    $ShipTaxPercent =  0;
+                }
+                    $Value = self::prices()->encode(
+                        (double)    $ShipAmount,
+                        (double)    $ShipTaxPercent,
+                        null,
+                        $CurrencyCode,
+                        Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
+                        Mage::app()->getLocale()->currency($CurrencyCode)->getName()
+                    );
+                break;
+            default:
+                return;
+        }
+        //====================================================================//
+        // Do Fill List with Data
+        self::lists()->Insert($this->Out, "items", $FieldName, count($this->Products), $Value);
+        
+        unset($this->In[$Key]);
+    }
+    
+    /**
+     *  @abstract     Read requested Field
+     *
+     *  @param        string    $Key                    Input List Key
+     *  @param        string    $FieldName              Field Identifier / Name
+     *
+     *  @return         none
+     */
+    private function getMoneyPointsLineFields($Key, $FieldName)
+    {
+        //====================================================================//
+        // Check if List field & Init List Array
+        $FieldId = self::lists()->InitOutput($this->Out, "items", $FieldName);
+        if (!$FieldId) {
+            return;
+        }
+        //====================================================================//
+        // Check if Money Points where Used
+        if ( !$this->Object->hasMoneyForPoints() || empty($this->Object->getMoneyForPoints())) {
+            return;
+        } 
+        //====================================================================//
+        // Get Money Points Data
+        $Amount     =   $this->Object->getMoneyForPoints(); 
+        $PointsUsed =   $this->Object->getOrder()->getPointsBalanceChange();
+        //====================================================================//
+        // READ Fields
+        switch ($FieldId) {
+            //====================================================================//
+            // Order Line Direct Reading Data
+            case 'sku':
+                $Value = static::$MONEYPOINTS_LABEL;
+                break;
+            //====================================================================//
+            // Order Line Direct Reading Data
+            case 'name':
+                $Value = "Used " . $PointsUsed . " Money Points" ;
+                break;
+            case 'qty':
+                $Value = 1;
+                break;
+            case 'discount_percent':
+                $Value = 0;
+                break;
+            //====================================================================//
+            // Order Line Product Id
+            case 'product_id':
+                $Value = null;
+                break;
+            //====================================================================//
+            // Order Line Unit Price
+            case 'unit_price':
+                //====================================================================//
+                // Read Current Currency Code
+                $CurrencyCode   =   $this->Object->getOrderCurrencyCode();
+                //====================================================================//
+                // Encode Discount Price
+                $Value = self::prices()->encode(
+                    (double)    $Amount,
+                    (double)    0,
+                    null,
+                    $CurrencyCode,
+                    Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
+                    Mage::app()->getLocale()->currency($CurrencyCode)->getName()
+                );
+                break;
+            default:
+                return;
+        }
+        //====================================================================//
+        // Do Fill List with Data
+        self::lists()->Insert($this->Out, "items", $FieldName, count($this->Products) + 1, $Value);
     }    
 }
