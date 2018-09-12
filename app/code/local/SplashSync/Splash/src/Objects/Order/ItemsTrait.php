@@ -249,25 +249,7 @@ trait ItemsTrait
             //====================================================================//
             // Order Line Unit Price
             case 'unit_price':
-                //====================================================================//
-                // Read Current Currency Code
-                $CurrencyCode   =   $this->Object->getOrderCurrencyCode();
-                $ShipAmount     =   $this->Object->getShippingAmount();
-                //====================================================================//
-                // Compute Shipping Tax Percent
-                if ($ShipAmount > 0) {
-                    $ShipTaxPercent =  100 * $this->Object->getShippingTaxAmount() / $ShipAmount;
-                } else {
-                    $ShipTaxPercent =  0;
-                }
-                    $Data = self::prices()->encode(
-                        (double)    $ShipAmount,
-                        (double)    $ShipTaxPercent,
-                        null,
-                        $CurrencyCode,
-                        Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
-                        Mage::app()->getLocale()->currency($CurrencyCode)->getName()
-                    );
+                $Data = $this->getShippingPrice();
                 break;
             default:
                 return;
@@ -279,6 +261,33 @@ trait ItemsTrait
         unset($this->In[$Key]);
     }
     
+    /**
+     *  @abstract     Read requested Field
+     *  @return       array
+     */
+    private function getShippingPrice()
+    {
+        //====================================================================//
+        // Read Current Currency Code
+        $CurrencyCode   =   $this->Object->getOrderCurrencyCode();
+        $ShipAmount     =   $this->Object->getShippingAmount();
+        //====================================================================//
+        // Compute Shipping Tax Percent
+        if ($ShipAmount > 0) {
+            $ShipTaxPercent =  100 * $this->Object->getShippingTaxAmount() / $ShipAmount;
+        } else {
+            $ShipTaxPercent =  0;
+        }
+        return self::prices()->encode(
+            (double)    $ShipAmount,
+            (double)    $ShipTaxPercent,
+            null,
+            $CurrencyCode,
+            Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
+            Mage::app()->getLocale()->currency($CurrencyCode)->getName()
+        );
+    }
+        
     /**
      *  @abstract     Read requested Field
      *
