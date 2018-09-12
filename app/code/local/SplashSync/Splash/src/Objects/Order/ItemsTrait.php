@@ -218,7 +218,7 @@ trait ItemsTrait
         //====================================================================//
         // Check if List field & Init List Array
         $FieldId = self::lists()->InitOutput($this->Out, "lines", $FieldName);
-        if (!$FieldId) {
+        if (!$FieldId || !empty(Splash::input("SPLASH_TRAVIS")) ) {
             return;
         }
         
