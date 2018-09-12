@@ -271,15 +271,11 @@ trait ItemsTrait
     {
         //====================================================================//
         // Check if List field & Init List Array
+        // Check if Money Points where Used
         $FieldId = self::lists()->InitOutput($this->Out, "items", $FieldName);
-        if (!$FieldId) {
+        if (!$FieldId || empty($this->Object->getMoneyForPoints())) {
             return;
         }
-        //====================================================================//
-        // Check if Money Points where Used
-        if ( !$this->Object->hasMoneyForPoints() || empty($this->Object->getMoneyForPoints())) {
-            return;
-        } 
         //====================================================================//
         // Get Money Points Data
         $Amount     =   $this->Object->getMoneyForPoints(); 
@@ -331,5 +327,7 @@ trait ItemsTrait
         //====================================================================//
         // Do Fill List with Data
         self::lists()->Insert($this->Out, "items", $FieldName, count($this->Products) + 1, $Value);
+        
+        unset($this->In[$Key]);
     }    
 }

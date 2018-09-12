@@ -227,24 +227,24 @@ trait ItemsTrait
         switch ($FieldId) {
             //====================================================================//
             // Order Line Direct Reading Data
-            case 'sku':
-                $Value = static::$SHIPPING_LABEL;
+            case 'name':
+                $Data = $this->Object->getShippingDescription();
+                break;
+            case 'qty_ordered':
+                $Data = 1;
+                break;
+            case 'discount_percent':
+                $Data = 0;
                 break;
             //====================================================================//
             // Order Line Direct Reading Data
-            case 'name':
-                $Value = $this->Object->getShippingDescription();
-                break;
-            case 'qty_ordered':
-                $Value = 1;
-                break;
-            case 'discount_percent':
-                $Value = 0;
+            case 'sku':
+                $Data = static::$SHIPPING_LABEL;
                 break;
             //====================================================================//
             // Order Line Product Id
             case 'product_id':
-                $Value = null;
+                $Data = null;
                 break;
             //====================================================================//
             // Order Line Unit Price
@@ -260,7 +260,7 @@ trait ItemsTrait
                 } else {
                     $ShipTaxPercent =  0;
                 }
-                    $Value = self::prices()->encode(
+                    $Data = self::prices()->encode(
                         (double)    $ShipAmount,
                         (double)    $ShipTaxPercent,
                         null,
@@ -274,7 +274,7 @@ trait ItemsTrait
         }
         //====================================================================//
         // Do Fill List with Data
-        self::lists()->Insert($this->Out, "lines", $FieldName, count($this->Object->getAllItems()), $Value);
+        self::lists()->Insert($this->Out, "lines", $FieldName, count($this->Object->getAllItems()), $Data);
         
         unset($this->In[$Key]);
     }
@@ -291,15 +291,11 @@ trait ItemsTrait
     {
         //====================================================================//
         // Check if List field & Init List Array
+        // Check if Money Points where Used
         $FieldId = self::lists()->InitOutput($this->Out, "lines", $FieldName);
-        if (!$FieldId) {
+        if (!$FieldId || empty($this->Object->getMoneyForPoints())) {
             return;
         }
-        //====================================================================//
-        // Check if Money Points where Used
-        if ( !$this->Object->hasMoneyForPoints() || empty($this->Object->getMoneyForPoints())) {
-            return;
-        } 
         //====================================================================//
         // Get Money Points Data
         $Amount     =   $this->Object->getMoneyForPoints(); 
@@ -313,6 +309,11 @@ trait ItemsTrait
                 $Value = static::$MONEYPOINTS_LABEL;
                 break;
             //====================================================================//
+            // Order Line Product Id
+            case 'product_id':
+                $Value = null;
+                break;
+            //====================================================================//
             // Order Line Direct Reading Data
             case 'name':
                 $Value = "Used " . $PointsUsed . " Money Points" ;
@@ -322,11 +323,6 @@ trait ItemsTrait
                 break;
             case 'discount_percent':
                 $Value = 0;
-                break;
-            //====================================================================//
-            // Order Line Product Id
-            case 'product_id':
-                $Value = null;
                 break;
             //====================================================================//
             // Order Line Unit Price
@@ -351,6 +347,8 @@ trait ItemsTrait
         //====================================================================//
         // Do Fill List with Data
         self::lists()->Insert($this->Out, "lines", $FieldName, count($this->Object->getAllItems()) + 1, $Value);
+        
+        unset($this->In[$Key]);
     }   
     
     /**
