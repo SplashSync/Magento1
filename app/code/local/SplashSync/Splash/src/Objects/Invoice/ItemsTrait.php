@@ -20,6 +20,7 @@
 namespace Splash\Local\Objects\Invoice;
 
 use Splash\Core\SplashCore as Splash;
+use Splash\Local\Objects\Order;
 
 use Mage;
 
@@ -134,10 +135,12 @@ trait ItemsTrait
                 return $Product->getData($FieldId);
                 
             case 'discount_percent':
-                return $this->getItemsDiscount($Product);
+                return $this->isProductInBundlePriceMode($Product) 
+                    ? $this->getItemsDiscount($Product->getOrderItem()->getParentItem())
+                    : $this->getItemsDiscount($Product);
                 
             case 'qty':
-                return (int) ( $Product->getOrderItem()->getHasChildren() ? 0 : $Product->getData($FieldId) );
+                return (int) $Product->getData($FieldId);
                 
             //====================================================================//
             // Invoice Line Product Id
@@ -155,28 +158,71 @@ trait ItemsTrait
                 return Null;
         }
         return Null;
-    }  
+    } 
+    
+    /**
+     *  @abstract     Check If Item is a Bundle in Bundle Componants Price Mode 
+     *  @return       bool
+     */
+    private function isBundleInPriceMode($Product)
+    {
+        //====================================================================//
+        // If Bundle Prices Mode NOT Enabled
+        if( !Splash::Local()->isBundleComponantsPricesMode() ) {
+            return false;
+        }
+        //====================================================================//
+        // If Product has Childrens => is a Bundle
+        return (bool) $Product->getOrderItem()->getHasChildren();
+    }
+    
+    /**
+     *  @abstract     Check If Item is a Bundle in Bundle Componants Price Mode 
+     *  @return       bool
+     */
+    private function isProductInBundlePriceMode($Product)
+    {
+        //====================================================================//
+        // If Bundle Prices Mode NOT Enabled
+        if( !Splash::Local()->isBundleComponantsPricesMode() ) {
+            return false;
+        }
+        //====================================================================//
+        // If Product has Parent => is a Bundle Componant
+        if( !empty($Product->getOrderItem()->getParentItemId()) ) {
+            return true;
+        }
+        return false;
+    }
     
     /**
      *  @abstract     Read Invoice Product Price
      */    
     private function getItemsPrice($Product)
     {
-        
-//Splash::log()->www("Item", get_class($Product));                
-//Splash::log()->www("Invoice Item", $Product->getOrderItem()->getHasChildren());                
-//Splash::log()->www("Item", $Product->getData());                
-Splash::log()->www("Item", $Product->getParentItemId());                
-        
+        //====================================================================//
+        // Read Item Regular Price 
+        $HtPrice    =   (double) $Product->getPrice();
+        $TtcPrice   =   null;
+        $ItemTax    =   (double) $Product->getOrderItem()->getTaxPercent();
+        //====================================================================//
+        // Override Item Price for Bundle Products
+        if ($this->isBundleInPriceMode($Product)) {
+            $HtPrice  =   $ItemTax    =   0.0;
+        } elseif ($this->isProductInBundlePriceMode($Product)) {
+            $HtPrice    =   null;
+            $TtcPrice   =   (double) Order::getBundleItemsPrice($Product->getOrderItem());
+            $ItemTax    =   (double) $Product->getOrderItem()->getParentItem()->getTaxPercent();            
+        }
         //====================================================================//
         // Read Current Currency Code
         $CurrencyCode   =   $this->Object->getOrderCurrencyCode();
         //====================================================================//
         // Build Price Array
         return self::prices()->encode(
-            (double)    $Product->getPrice(),
-            (double)    $Product->getOrderItem()->getTaxPercent(),
-            null,
+            $HtPrice,
+            $ItemTax,
+            $TtcPrice,
             $CurrencyCode,
             Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
             Mage::app()->getLocale()->currency($CurrencyCode)->getName()

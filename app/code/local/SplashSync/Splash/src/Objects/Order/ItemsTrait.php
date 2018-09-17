@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -64,7 +64,6 @@ trait ItemsTrait
                 ->Name($ListName . "Description")
                 ->MicroData("http://schema.org/partOfInvoice", "description")
                 ->Association("name@lines", "qty_ordered@lines", "unit_price@lines");
-//            $this->fieldsFactory()->isRequired();
 
         //====================================================================//
         // Order Line Product Identifier
@@ -106,7 +105,6 @@ trait ItemsTrait
                 ->Association("name@lines", "qty_ordered@lines", "unit_price@lines");
     }
 
-    
     /**
      *  @abstract     Read requested Field
      *
@@ -153,10 +151,12 @@ trait ItemsTrait
                 return $Product->getData($FieldId);
                 
             case 'discount_percent':
-                return $this->getItemsDiscount($Product);
+                return $this->isProductInBundlePriceMode($Product) 
+                    ? $this->getItemsDiscount($Product->getParentItem())
+                    : $this->getItemsDiscount($Product);
                 
             case 'qty_ordered':
-                return (int) ( $Product->getHasChildren() ? 0 : $Product->getData($FieldId) );
+                return (int) $Product->getData($FieldId);
                 
             //====================================================================//
             // Order Line Product Id
@@ -175,6 +175,45 @@ trait ItemsTrait
         return Null;
     }    
     
+    /**
+     *  @abstract     Check If Item is a Bundle in Bundle Componants Price Mode 
+     *  @return       bool
+     */
+    private function isBundleInPriceMode($Product)
+    {
+        //====================================================================//
+        // If Bundle Prices Mode NOT Enabled
+        if( !Splash::Local()->isBundleComponantsPricesMode() ) {
+            return false;
+        }
+        //====================================================================//
+        // If Product has Childrens => is a Bundle
+        return (bool) $Product->getHasChildren();
+    }
+    
+    /**
+     *  @abstract     Check If Item is a Bundle in Bundle Componants Price Mode 
+     *  @return       bool
+     */
+    private function isProductInBundlePriceMode($Product)
+    {
+        //====================================================================//
+        // If Bundle Prices Mode NOT Enabled
+        if( !Splash::Local()->isBundleComponantsPricesMode() ) {
+            return false;
+        }
+        //====================================================================//
+        // If Product has Parent => is a Bundle Componant
+        if( !empty($Product->getParentItemId()) ) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     *  @abstract     Read requested Item Discount Pourcentile
+     *  @return       mixed
+     */    
     private function getItemsDiscount($Product)
     {
         if (!empty($Product->getData('discount_percent'))) {
@@ -190,25 +229,53 @@ trait ItemsTrait
      */        
     private function getItemsPrice($Product)
     {
-        
-if ($Product->getParentItemId()) {
-    Splash::log()->www("Item Options", $Product->getProductOptions());                
-}         
-        
+        //====================================================================//
+        // Read Item Regular Price 
+        $HtPrice    =   (double) $Product->getPrice();
+        $TtcPrice   =   null;
+        $ItemTax    =   (double) $Product->getTaxPercent();
+        //====================================================================//
+        // Override Item Price for Bundle Products
+        if ($this->isBundleInPriceMode($Product)) {
+            $HtPrice  =   $ItemTax    =   0.0;
+        } elseif ($this->isProductInBundlePriceMode($Product)) {
+            $HtPrice    =   null;
+            $TtcPrice   =   (double) $this->getBundleItemsPrice($Product);
+            $ItemTax    =   (double) $Product->getParentItem()->getTaxPercent();
+        }
         //====================================================================//
         // Read Current Currency Code
         $CurrencyCode   =   $this->Object->getOrderCurrencyCode();
         //====================================================================//
         // Build Price Array
         return self::prices()->encode(
-            (double)    $Product->getPrice(),
-            (double)    $Product->getTaxPercent(),
-            null,
+            $HtPrice,
+            $ItemTax,
+            $TtcPrice,
             $CurrencyCode,
             Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
             Mage::app()->getLocale()->currency($CurrencyCode)->getName()
         );
     }
+    
+    /**
+     *  @abstract     Read Order Bundled Product Price
+     */        
+    public static function getBundleItemsPrice($Product)
+    {
+        $ProductOptions  =   $Product->getProductOptions();
+        //====================================================================//
+        // Check Bundle Product Options are Here
+        if (isset($ProductOptions["bundle_selection_attributes"]) && is_scalar($ProductOptions["bundle_selection_attributes"])) {
+            $BundleOptions   = unserialize($ProductOptions["bundle_selection_attributes"]);
+            //====================================================================//
+            // Check Bundle Product Base Price Here
+            if (isset($BundleOptions["price"]) && is_numeric($BundleOptions["price"])) {
+                return (double) $BundleOptions["price"];
+            }
+        } 
+        return 0.0;
+    }    
         
     /**
      *  @abstract     Read requested Field
@@ -563,6 +630,7 @@ if ($Product->getParentItemId()) {
             }
         }
     }
+
     /**
      *  @abstract     Add or Update Given Order Line Informations
      *  @param        array     $OrderLineData          OrderLine Data Array
