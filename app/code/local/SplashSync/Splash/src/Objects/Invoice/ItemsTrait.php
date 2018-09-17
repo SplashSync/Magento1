@@ -19,6 +19,8 @@
 
 namespace Splash\Local\Objects\Invoice;
 
+use Splash\Core\SplashCore as Splash;
+
 use Mage;
 
 /**
@@ -135,7 +137,7 @@ trait ItemsTrait
                 return $this->getItemsDiscount($Product);
                 
             case 'qty':
-                return (int) ( $Product->getHasChildren() ? 0 : $Product->getData($FieldId) );
+                return (int) ( $Product->getOrderItem()->getHasChildren() ? 0 : $Product->getData($FieldId) );
                 
             //====================================================================//
             // Invoice Line Product Id
@@ -160,6 +162,12 @@ trait ItemsTrait
      */    
     private function getItemsPrice($Product)
     {
+        
+//Splash::log()->www("Item", get_class($Product));                
+//Splash::log()->www("Invoice Item", $Product->getOrderItem()->getHasChildren());                
+//Splash::log()->www("Item", $Product->getData());                
+Splash::log()->www("Item", $Product->getParentItemId());                
+        
         //====================================================================//
         // Read Current Currency Code
         $CurrencyCode   =   $this->Object->getOrderCurrencyCode();

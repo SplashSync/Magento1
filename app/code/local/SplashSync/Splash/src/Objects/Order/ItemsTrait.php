@@ -190,6 +190,11 @@ trait ItemsTrait
      */        
     private function getItemsPrice($Product)
     {
+        
+if ($Product->getParentItemId()) {
+    Splash::log()->www("Item Options", $Product->getProductOptions());                
+}         
+        
         //====================================================================//
         // Read Current Currency Code
         $CurrencyCode   =   $this->Object->getOrderCurrencyCode();
