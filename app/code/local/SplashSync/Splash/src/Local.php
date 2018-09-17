@@ -13,10 +13,7 @@
  * file that was distributed with this source code.
  */
 
-/**
- * @abstract    Splash PHP Module For Magento 1 - Local Core Class
- * @author      B. Paquier <contact@splashsync.com>
- */
+
 
 namespace Splash\Local;
 
@@ -27,6 +24,11 @@ use Splash\Core\SplashCore      as Splash;
 use Mage;
 use Mage_Core_Model_App;
 
+/**
+ * @abstract    Splash PHP Module For Magento 1 - Local Core Class
+ * @author      B. Paquier <contact@splashsync.com>
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ */
 class Local
 {
 
