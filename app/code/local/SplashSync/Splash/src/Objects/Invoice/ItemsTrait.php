@@ -172,7 +172,7 @@ trait ItemsTrait
     {
         //====================================================================//
         // If Bundle Prices Mode NOT Enabled
-        if( !Splash::Local()->isBundleComponantsPricesMode() ) {
+        if( !Splash::local()->isBundleComponantsPricesMode() ) {
             return false;
         }
         //====================================================================//
