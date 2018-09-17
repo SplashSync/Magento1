@@ -165,6 +165,15 @@
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                         </server_url>
+                        <bundle_mode>
+                            <label>Bundles Componants Prices</label>
+                            <comment>Risky!! If Enabled, Bundles Componants Prices are used, instead of Bundle Regural Price.</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <depends><expert>1</expert></depends>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                        </bundle_mode>                        
                     </fields>
                 </advanced> 
                 <thirdparty>
