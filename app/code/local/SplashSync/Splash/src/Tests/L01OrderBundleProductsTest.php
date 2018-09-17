@@ -172,7 +172,6 @@ class L01OrderBundleProductsTest extends ObjectsCase
         //====================================================================//
         //   Read Order from Magento
         $Order  =   Mage::getModel('sales/order')->load($objectId);
-        
         //====================================================================//
         //   Basic verifications
         $this->assertNotEmpty($Order);
