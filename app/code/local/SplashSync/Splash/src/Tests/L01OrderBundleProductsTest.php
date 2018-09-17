@@ -16,7 +16,7 @@ use Mage;
 class L01OrderBundleProductsTest extends ObjectsCase
 {
     
-    public function testOrdersBundleProductsHaveNoQty()
+    public function testOrdersBundleProductsReading()
     {
         //====================================================================//
         //   Search for Orders including Bundle Products
@@ -36,8 +36,18 @@ class L01OrderBundleProductsTest extends ObjectsCase
         //====================================================================//
         //   Perform Tests
         foreach ($Collection->getItems() as $listItem) {
-            $this->verifyItemsWithoutBundleMode($listItem["order_id"]);
-            $this->verifyItemsWithBundleMode($listItem["order_id"]);
+            //====================================================================//
+            //   Setup Bundle Products Prices Mode
+            $this->setBundlePricesMode(false);
+            //====================================================================//
+            //   Verify order Items
+            $this->verifyItems($listItem["order_id"]);
+            //====================================================================//
+            //   Setup Bundle Products Prices Mode
+            $this->setBundlePricesMode(true);
+            //====================================================================//
+            //   Verify order Items
+            $this->verifyItems($listItem["order_id"]);
         }
     }
 
@@ -45,11 +55,8 @@ class L01OrderBundleProductsTest extends ObjectsCase
      * @abstract    Verify Order Data Reading Without Bundle Price Mode Enabled
      * @param   string  $objectId
      */
-    private function verifyItemsWithoutBundleMode(string $objectId)
+    private function verifyItems(string $objectId)
     {
-        //====================================================================//
-        //   Setup Bundle Products Prices Mode
-        $this->setBundlePricesMode(false);
         //====================================================================//
         //   Read Order Data from Module
         $Data   =   $this->getOrderItemsData($objectId);
@@ -62,72 +69,32 @@ class L01OrderBundleProductsTest extends ObjectsCase
         foreach ($Items as $Key => $orderItem) {
             $SplashItem =   $Data["lines"][$Key];
             //====================================================================//
-            //   Splash Item Has Qty & Prices
-            $this->assertNotEmpty($SplashItem["qty_ordered"]);
+            //   Splash Item Has Qty & Prices Set
+            $this->assertArrayHasKey("qty_ordered", $SplashItem);
+            $this->assertArrayHasKey("unit_price",  $SplashItem);
             $this->assertNotEmpty($SplashItem["unit_price"]);
-            //====================================================================//
-            //   Bundle Has Real Prices
             if ( ($orderItem->getProductType() == "bundle") || $orderItem->getHasChildren() ){
-                $this->assertNotEmpty($SplashItem["unit_price"]["ht"]);
-                $this->assertNotEmpty($SplashItem["unit_price"]["ttc"]);
-                $this->assertNotEmpty($SplashItem["unit_price"]["vat"]);
+                //====================================================================//
+                //   Bundle Has Null Qty
+                $this->assertEquals(0, $SplashItem["qty_ordered"]);
+                //====================================================================//
+                //   Bundle Has Real Prices
+                $this->assertGreaterThan(0, $SplashItem["unit_price"]["ht"]);
+                $this->assertGreaterThan(0, $SplashItem["unit_price"]["ttc"]);
                 $totalFound++;
             }
             //====================================================================//
             //   Bundle Componant Has Qty
             if ($orderItem->getParentItemId()) {
-                $this->assertEmpty($SplashItem["unit_price"]["ht"]);
-                $this->assertEmpty($SplashItem["unit_price"]["ttc"]);
-                $this->assertEmpty($SplashItem["unit_price"]["vat"]);
+                $this->assertGreaterThan(0, $SplashItem["qty_ordered"]);
+                $this->assertGreaterThan(0, $SplashItem["unit_price"]["ht"]);
+                $this->assertGreaterThan(0, $SplashItem["unit_price"]["ttc"]);
                 $totalFound++;
             }
         }
         $this->assertGreaterThan(1, $totalFound);
     }
     
-    /**
-     * @abstract    Verify Order Data Reading Without Bundle Price Mode Enabled
-     * @param   string  $objectId
-     */
-    private function verifyItemsWithBundleMode(string $objectId)
-    {
-        //====================================================================//
-        //   Setup Bundle Products Prices Mode
-        $this->setBundlePricesMode(true);
-        //====================================================================//
-        //   Read Order Data from Module
-        $Data   =   $this->getOrderItemsData($objectId);
-        //====================================================================//
-        //   Read Order from Magento
-        $Items  =   $this->getMagentoOrderItems($objectId);
-        //====================================================================//
-        //   Verify Quantities
-        $totalFound =   0;
-        foreach ($Items as $Key => $orderItem) {
-            $SplashItem =   $Data["lines"][$Key];
-            //====================================================================//
-            //   Splash Item Has Qty & Prices
-            $this->assertNotEmpty($SplashItem["qty_ordered"]);
-            $this->assertNotEmpty($SplashItem["unit_price"]);
-            //====================================================================//
-            //   Bundle Has Real Prices
-            if ( ($orderItem->getProductType() == "bundle") || $orderItem->getHasChildren() ){
-                $this->assertEmpty($SplashItem["unit_price"]["ht"]);
-                $this->assertEmpty($SplashItem["unit_price"]["ttc"]);
-                $this->assertEmpty($SplashItem["unit_price"]["vat"]);
-                $totalFound++;
-            }
-            //====================================================================//
-            //   Bundle Componant Has Qty
-            if ($orderItem->getParentItemId()) {
-                $this->assertNotEmpty($SplashItem["unit_price"]["ht"]);
-                $this->assertNotEmpty($SplashItem["unit_price"]["ttc"]);
-                $this->assertNotEmpty($SplashItem["unit_price"]["vat"]);
-                $totalFound++;
-            }
-        }
-        $this->assertGreaterThan(1, $totalFound);
-    }    
     
     /**
      * @abstract    Setup Bundle Price Mode on Magento Configuration

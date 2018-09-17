@@ -134,13 +134,17 @@ trait ItemsTrait
             case 'name':
                 return $Product->getData($FieldId);
                 
+            //====================================================================//
+            // In Bundles Advanced Prices Mode, we Take Discount from Parent Bundle
             case 'discount_percent':
                 return $this->isProductInBundlePriceMode($Product) 
                     ? $this->getItemsDiscount($Product->getOrderItem()->getParentItem())
                     : $this->getItemsDiscount($Product);
                 
+            //====================================================================//
+            // Qty Always 0 for Bundles, Else Normal Reading
             case 'qty':
-                return (int) $Product->getData($FieldId);
+                return $Product->getOrderItem()->getHasChildren() ? 0 : (int) $Product->getData($FieldId);
                 
             //====================================================================//
             // Invoice Line Product Id
@@ -158,22 +162,6 @@ trait ItemsTrait
                 return Null;
         }
         return Null;
-    } 
-    
-    /**
-     *  @abstract     Check If Item is a Bundle in Bundle Componants Price Mode 
-     *  @return       bool
-     */
-    private function isBundleInPriceMode($Product)
-    {
-        //====================================================================//
-        // If Bundle Prices Mode NOT Enabled
-        if( !Splash::Local()->isBundleComponantsPricesMode() ) {
-            return false;
-        }
-        //====================================================================//
-        // If Product has Childrens => is a Bundle
-        return (bool) $Product->getOrderItem()->getHasChildren();
     }
     
     /**
@@ -206,12 +194,10 @@ trait ItemsTrait
         $TtcPrice   =   null;
         $ItemTax    =   (double) $Product->getOrderItem()->getTaxPercent();
         //====================================================================//
-        // Override Item Price for Bundle Products
-        if ($this->isBundleInPriceMode($Product)) {
-            $HtPrice  =   $ItemTax    =   0.0;
-        } elseif ($this->isProductInBundlePriceMode($Product)) {
+        // Collect Item Price at Bundle Options Level
+        if ($this->isProductInBundlePriceMode($Product)) {
             $HtPrice    =   null;
-            $TtcPrice   =   (double) Order::getBundleItemsPrice($Product->getOrderItem());
+            $TtcPrice   =   (double) Order::getBundleItemOriginPrice($Product->getOrderItem());
             $ItemTax    =   (double) $Product->getOrderItem()->getParentItem()->getTaxPercent();            
         }
         //====================================================================//
