@@ -439,6 +439,7 @@ class Local
 //====================================================================//
 //  Magento Dedicated Parameter SelfTests
 //====================================================================//
+    
     /**
      *   @abstract   Verify Langage Parameters are correctly set.
      *   @return     mixed
@@ -477,4 +478,14 @@ class Local
         }
         return (string) Mage::getConfig()->getNode()->modules->SplashSync_Splash->version;
     }
+    
+    /**
+     *   @abstract   Check if Bundle Componants Price Mode is Enabled
+     *   @return     bool
+     */
+    public static function isBundleComponantsPricesMode()
+    {
+        return (bool) Mage::getStoreConfig('splashsync_splash_options/advanced/bundle_mode');
+    }
+    
 }
