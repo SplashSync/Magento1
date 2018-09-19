@@ -252,14 +252,22 @@ trait ItemsTrait
         $ProductOptions  =   $Product->getProductOptions();
         //====================================================================//
         // Check Bundle Product Options are Here
-        if (isset($ProductOptions["bundle_selection_attributes"]) && is_scalar($ProductOptions["bundle_selection_attributes"])) {
-            $BundleOptions   = unserialize($ProductOptions["bundle_selection_attributes"]);
-            //====================================================================//
-            // Check Bundle Product Base Price Here
-            if (isset($BundleOptions["price"]) && is_numeric($BundleOptions["price"])) {
-                return (double) $BundleOptions["price"];
-            }
-        } 
+        if (!isset($ProductOptions["bundle_selection_attributes"]) || !is_scalar($ProductOptions["bundle_selection_attributes"])) {
+            return 0.0;
+        }
+        $BundleOptions   = unserialize($ProductOptions["bundle_selection_attributes"]);
+        //====================================================================//
+        // Check Bundle Product Base Qty is Here
+        if (isset($BundleOptions["qty"]) && is_numeric($BundleOptions["qty"]) && ($BundleOptions["qty"] > 0)) {
+            $Qty    =   $BundleOptions["qty"];
+        } else {
+            $Qty    =   1;
+        }
+        //====================================================================//
+        // Check Bundle Product Base Price Here
+        if (isset($BundleOptions["price"]) && is_numeric($BundleOptions["price"])) {
+            return (double) $BundleOptions["price"] / $Qty;
+        }
         return 0.0;
     }    
         
