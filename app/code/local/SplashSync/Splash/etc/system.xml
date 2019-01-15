@@ -39,7 +39,15 @@
                             <comment>Default Language used for Splash Server.</comment>
                             <sort_order>22</sort_order>
                             <show_in_default>1</show_in_default>
-                        </lang>                             
+                        </lang>  
+                        <use_nusoap>
+                            <label>Force NuSOAP: </label>
+                            <comment>In this mode, Webservice will use NuSOAP as an Alternative webservice library. Only use if you php-soap extension is missing.</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>23</sort_order>
+                            <show_in_default>1</show_in_default>
+                        </use_nusoap>                                                     
                     </fields>
                 </core> 
                 <user>

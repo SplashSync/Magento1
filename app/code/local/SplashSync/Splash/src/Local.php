@@ -61,6 +61,10 @@ class Local
         // Server Identification Parameters
         $Parameters["WsIdentifier"]         =   Mage::getStoreConfig('splashsync_splash_options/core/id');
         $Parameters["WsEncryptionKey"]      =   Mage::getStoreConfig('splashsync_splash_options/core/key');
+
+        //====================================================================//
+        // Server Ws Method
+        $Parameters["WsMethod"]             =   Mage::getStoreConfig('splashsync_splash_options/core/use_nusoap') ? "NuSOAP" : "SOAP";
         
         //====================================================================//
         // If Expert Mode => Allow Overide of Server Host Address
