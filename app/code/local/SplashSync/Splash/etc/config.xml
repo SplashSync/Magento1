@@ -10,9 +10,6 @@
             <Splash>
                 <class>SplashSync_Splash_Block</class>
             </Splash>
-<!--            <splashsync_splash_adminhtml>
-                <class>SplashSync_Splash_Block_Adminhtml</class>
-            </splashsync_splash_adminhtml>-->
         </blocks>
         
         <models>
