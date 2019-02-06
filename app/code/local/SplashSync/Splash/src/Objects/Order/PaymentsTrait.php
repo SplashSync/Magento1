@@ -28,7 +28,7 @@ use Mage_Sales_Model_Order_Payment_Transaction      as Transaction;
 use Varien_Data_Collection;
 
 /**
- * @abstract    Magento 1 Orders Payments Fields Access
+ * Magento 1 Orders Payments Fields Access
  */
 trait PaymentsTrait
 {
@@ -43,7 +43,7 @@ trait PaymentsTrait
 
     public static $PAYMENT_METHODS            =   array(
         "CreditCard"                => array(
-            "ccsave", "authorizenet", "authorizenet_directpost","verisign"
+            "ccsave", "authorizenet", "authorizenet_directpost", "verisign", "adyen_cc"
             ),
         "CheckInAdvance"            => array("checkmo"),
         "ByBankTransferInAdvance"   =>  array(
@@ -68,10 +68,9 @@ trait PaymentsTrait
     /**
     *   @abstract     Build Address Fields using FieldFactory
     */
-    private function buildPaymentLineFields()
+    protected function buildPaymentLineFields()
     {
         
-//        $ListName = Mage::helper('sales')->__('Payment Information') . " => " ;
         $ListName = "" ;
         
         //====================================================================//
@@ -93,7 +92,6 @@ trait PaymentsTrait
                 ->MicroData("http://schema.org/PaymentChargeSpecification", "validFrom")
                 ->Association("date@payments", "number@payments", "amount@payments");
     
-
         //====================================================================//
         // Payment Line Payment Identifier
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
@@ -102,7 +100,6 @@ trait PaymentsTrait
                 ->Name($ListName .  Mage::helper('sales')->__('Transaction ID'))
                 ->MicroData("http://schema.org/Invoice", "paymentMethodId")
                 ->Association("date@payments", "number@payments", "amount@payments");
-       
 
         //====================================================================//
         // Payment Line Amount
@@ -115,52 +112,6 @@ trait PaymentsTrait
     }
     
     
-    
-    /**
-     *  @abstract     Try To Detect Payment method Standardized Name
-     *
-     *  @param  OrderPayment    $OrderPayment
-     *
-     *  @return         none
-     */
-    private function getPaymentMethod($OrderPayment)
-    {
-        //====================================================================//
-        // Detect Payment Metyhod Type from Default Payment "known" methods
-        $Method = $OrderPayment->getMethod();
-        foreach (static::$PAYMENT_METHODS as $PaymentMethod => $Ids) {
-            if (in_array($Method, $Ids)) {
-                return $PaymentMethod;
-            }
-        }
-        return "free";
-    }
-    
-    
-    /**
-     *  @abstract     Read Order Payment
-     *
-     *  @return         none
-     */
-    private function loadPayment($Order)
-    {
-        $this->Payment  =   $Order->getPayment();
-    }
-    
-    /**
-     *  @abstract     Read Order Transactions Collection
-     *
-     *  @return         none
-     */
-    private function getTransactions()
-    {
-        return Mage::getModel('sales/order_payment_transaction')->getCollection()
-                    ->setOrderFilter($this->Payment->getOrder())
-                    ->addPaymentIdFilter($this->Payment->getId())
-                    ->addTxnTypeFilter(Transaction::TYPE_PAYMENT)
-                    ->setOrder('transaction_id', Varien_Data_Collection::SORT_ORDER_ASC);
-    }
-    
     /**
      *  @abstract     Read requested Field
      *
@@ -169,48 +120,52 @@ trait PaymentsTrait
      *
      *  @return         none
      */
-    private function getPaymentsFields($Key, $FieldName)
+    protected function getPaymentsFields($Key, $FieldName)
     {
-        $Index  =   0;
         //====================================================================//
-        // Decode Field Name
-        $ListFieldName = self::lists()->InitOutput($this->Out, "payments", $FieldName);
+        // Check if Payment has Transactions
+        if($this->isSplash()) {
+//        if($this->Payment->canFetchTransactionInfo()) {
+            $this->getPaymentsFromTransactions($Key, $FieldName);
+        } 
         
         //====================================================================//
-        // Fill List with Data
-        foreach ($this->getTransactions() as $Transaction) {
+        // Decode Field Name
+        $listFieldName = self::lists()->InitOutput($this->Out, "payments", $FieldName);
+        if(empty($listFieldName)) {
+            return;
+        }
+
+        //====================================================================//
+        // Fill List with Paid Amount Data
+        if ($this->Payment->getAmountPaid() > 0) 
+        {
             //====================================================================//
             // READ Fields
-            switch ($ListFieldName) {
-                //====================================================================//
-                // Payment Line - Payment Mode
-                case 'mode':
-                    $Value = $this->getPaymentMethod($this->Payment);
-                    break;
-                //====================================================================//
-                // Payment Line - Payment Date
-                case 'date':
-                    $Value = date(SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($Transaction->getCreatedAt()));
-                    break;
-                //====================================================================//
-                // Payment Line - Payment Identification Number
-                case 'number':
-                    $Value = $Transaction->getTxnId();
-                    break;
-                //====================================================================//
-                // Payment Line - Payment Amount
-                case 'amount':
-                    $Details    = $Transaction->getAdditionalInformation(Transaction::RAW_DETAILS);
-                    $Value      = isset($Details["Amount"])?$Details["Amount"]:0;
-                    break;
-                default:
-                    return;
+            $Value = $this->getPaymentData($listFieldName);
+            //====================================================================//
+            // Do Fill List with Data
+            self::lists()->Insert($this->Out, "payments", $FieldName, 0, $Value);
+        }
+        
+        //====================================================================//
+        // Fill List with Refund Amount Data
+        if ($this->Payment->getAmountRefunded() > 0) 
+        {
+            //====================================================================//
+            // READ Fields
+            if($listFieldName == "amount") {
+                $Value = $this->getPaymentData("refund");
+            } elseif($listFieldName == "number") {
+                $Value = "refund";
+            } else {
+                $Value = $this->getPaymentData($listFieldName);
             }
             //====================================================================//
             // Do Fill List with Data
-            self::lists()->Insert($this->Out, "payments", $FieldName, $Index, $Value);
-            $Index++;
+            self::lists()->Insert($this->Out, "payments", $FieldName, 1, $Value);
         }
+        
         unset($this->In[$Key]);
     }
 
@@ -222,7 +177,7 @@ trait PaymentsTrait
      *
      *  @return         none
      */
-    private function setPaymentsFields($FieldName, $Data)
+    protected function setPaymentsFields($FieldName, $Data)
     {
         //====================================================================//
         // Safety Check
@@ -258,7 +213,154 @@ trait PaymentsTrait
         }
         unset($this->In[$FieldName]);
     }
+    
+    /**
+     * Get Payment Information
+     *
+     * @param  string    $fieldName
+     *
+     * @return         mixed
+     */
+    private function getPaymentData($fieldName)
+    {
+        //====================================================================//
+        // READ Fields
+        switch ($fieldName) {
+            //====================================================================//
+            // Payment Line - Payment Mode
+            case 'mode':
+                return $this->getPaymentMethod($this->Payment);
+                
+            //====================================================================//
+            // Payment Line - Payment Date
+            case 'date':
+                return date(SPL_T_DATECAST, Mage::getModel("core/date")->gmtTimestamp($this->Object->getCreatedAt()));
+                
+            //====================================================================//
+            // Payment Line - Payment Identification Number
+            case 'number':
+                return $this->Object->getTransactionId();
+
+            //====================================================================//
+            // Payment Line - Payment Amount
+            case 'amount':
+                return $this->Payment->getAmountPaid();
+                
+            //====================================================================//
+            // Payment Line - Refound Amount
+            case 'refound':
+                return (-1) * $this->Payment->getAmountRefunded();
+        }        
         
+        return null;
+    }
+    
+    /**
+     * Try To Detect Payment method Standardized Name
+     *
+     * @param  OrderPayment    $OrderPayment
+     *
+     * @return         none
+     */
+    private function getPaymentMethod($OrderPayment)
+    {
+        //====================================================================//
+        // Detect Payment Metyhod Type from Default Payment "known" methods
+        $Method = $OrderPayment->getMethod();
+        foreach (static::$PAYMENT_METHODS as $PaymentMethod => $Ids) {
+            if (in_array($Method, $Ids)) {
+                return $PaymentMethod;
+            }
+        }
+        return "free";
+    }    
+    
+    /**
+     *  @abstract     Read Order Payment
+     *
+     *  @return         none
+     */
+    private function loadPayment($Order)
+    {
+        $this->Payment  =   $Order->getPayment();
+    }
+    
+    /**
+     *  @abstract     Read requested Field
+     *
+     *  @param        string    $Key                    Input List Key
+     *  @param        string    $FieldName              Field Identifier / Name
+     *
+     *  @return         none
+     */
+    protected function getPaymentsFromTransactions($Key, $FieldName)
+    {
+        $Index  =   0;
+        //====================================================================//
+        // Decode Field Name
+        $ListFieldName = self::lists()->InitOutput($this->Out, "payments", $FieldName);
+        //====================================================================//
+        // Fill List with Data
+        foreach ($this->getTransactions() as $Transaction) 
+        {
+            //====================================================================//
+            // Filter on Customer Valid Payments Transactions
+            if(!in_array($Transaction->getTxnType(), array(Transaction::TYPE_PAYMENT, Transaction::TYPE_CAPTURE))) {
+                continue;
+            }
+            //====================================================================//
+            // READ Fields
+            switch ($ListFieldName) {
+                //====================================================================//
+                // Payment Line - Payment Mode
+                case 'mode':
+                    $Value = $this->getPaymentMethod($this->Payment);
+                    break;
+                //====================================================================//
+                // Payment Line - Payment Date
+                case 'date':
+                    $Value = date(SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($Transaction->getCreatedAt()));
+                    break;
+                //====================================================================//
+                // Payment Line - Payment Identification Number
+                case 'number':
+                    $Value = $Transaction->getTxnId();
+                    break;
+                //====================================================================//
+                // Payment Line - Payment Amount
+                case 'amount':
+                    //====================================================================//
+                    // Look for Payment Amount in Transaction Details
+                    $Details    = $Transaction->getAdditionalInformation(Transaction::RAW_DETAILS);
+                    $Value      = isset($Details["Amount"])
+                            ? $Details["Amount"]
+                            : $this->Payment->getAmountPaid();
+                    break;
+                default:
+                    return;
+            }
+            //====================================================================//
+            // Do Fill List with Data
+            self::lists()->Insert($this->Out, "payments", $FieldName, $Index, $Value);
+            $Index++;
+        }
+        unset($this->In[$Key]);
+    }
+    
+    /**
+     *  @abstract     Read Order Transactions Collection
+     *
+     *  @return         array
+     */
+    private function getTransactions()
+    {
+        //====================================================================//
+        // Load All Transactions on this Order
+        return Mage::getModel('sales/order_payment_transaction')->getCollection()
+                    ->setOrderFilter($this->Payment->getOrder())
+                    ->addPaymentIdFilter($this->Payment->getId())
+                    ->setOrder('transaction_id', Varien_Data_Collection::SORT_ORDER_ASC);
+    }  
     
     /**
      *  @abstract     Write A Payment Line Fields
