@@ -346,7 +346,7 @@ trait ItemsTrait
         }
         return self::prices()->encode(
             (double)    $ShipAmount,
-            (double)    $ShipTaxPercent,
+            (double)    round($ShipTaxPercent,2),
             null,
             $CurrencyCode,
             Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
