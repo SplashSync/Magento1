@@ -43,7 +43,8 @@ trait PaymentsTrait
 
     public static $PAYMENT_METHODS            =   array(
         "CreditCard"                => array(
-            "ccsave", "authorizenet", "authorizenet_directpost", "verisign", "adyen_cc"
+            "ccsave", "authorizenet", "authorizenet_directpost", "verisign", "adyen_cc",
+            "braintree_legacy", "braintree"
             ),
         "CheckInAdvance"            => array("checkmo"),
         "ByBankTransferInAdvance"   =>  array(
@@ -157,7 +158,7 @@ trait PaymentsTrait
             if($listFieldName == "amount") {
                 $Value = $this->getPaymentData("refund");
             } elseif($listFieldName == "number") {
-                $Value = "refund";
+                $Value = "R-" . $this->getPaymentData($listFieldName);
             } else {
                 $Value = $this->getPaymentData($listFieldName);
             }
@@ -248,7 +249,7 @@ trait PaymentsTrait
                 
             //====================================================================//
             // Payment Line - Refound Amount
-            case 'refound':
+            case 'refund':
                 return (-1) * $this->Payment->getAmountRefunded();
         }        
         
@@ -260,7 +261,7 @@ trait PaymentsTrait
      *
      * @param  OrderPayment    $OrderPayment
      *
-     * @return         none
+     * @return         string
      */
     private function getPaymentMethod($OrderPayment)
     {
@@ -272,7 +273,8 @@ trait PaymentsTrait
                 return $PaymentMethod;
             }
         }
-        return "free";
+        Splash::log()->war("Unknown Payment Method: " . $Method);
+        return "CreditCard";        
     }    
     
     /**
