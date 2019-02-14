@@ -219,7 +219,7 @@ trait ItemsTrait
     {
         if (!empty($Product->getData('discount_percent'))) {
             return $Product->getData('discount_percent');
-        } elseif ($Product->getPriceInclTax() && $Product->getQty()) {
+        } elseif ((float) $Product->getPriceInclTax() && (float) $Product->getQty()) {
             return (double) 100 * $Product->getDiscountAmount() / ($Product->getPriceInclTax() * $Product->getQty());
         }
         return 0;
