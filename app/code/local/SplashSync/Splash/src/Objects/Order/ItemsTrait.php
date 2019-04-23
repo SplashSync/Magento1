@@ -408,7 +408,7 @@ trait ItemsTrait
                 //====================================================================//
                 // Encode Discount Price
                 $Value = self::prices()->encode(
-                    (double)    $Amount,
+                    (double)    -1 * abs($Amount),
                     (double)    0,
                     null,
                     $CurrencyCode,
