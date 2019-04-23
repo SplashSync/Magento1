@@ -44,7 +44,7 @@ trait PaymentsTrait
     public static $PAYMENT_METHODS            =   array(
         "CreditCard"                => array(
             "ccsave", "authorizenet", "authorizenet_directpost", "verisign", "adyen_cc",
-            "braintree_legacy", "braintree"
+            "braintree_legacy", "braintree", "bakerloo_manualcreditcard", "adyen_oneclick"
             ),
         "CheckInAdvance"            => array("checkmo"),
         "ByBankTransferInAdvance"   =>  array(
