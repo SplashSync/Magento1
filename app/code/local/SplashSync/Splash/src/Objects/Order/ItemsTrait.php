@@ -373,7 +373,6 @@ trait ItemsTrait
         }
         //====================================================================//
         // Get Money Points Data
-        $Amount     =   $this->Object->getMoneyForPoints(); 
         $PointsUsed =   $this->Object->getPointsBalanceChange();
         //====================================================================//
         // READ Fields
@@ -391,10 +390,10 @@ trait ItemsTrait
             //====================================================================//
             // Order Line Direct Reading Data
             case 'name':
-                $Value = "Used " . $PointsUsed . " Money Points" ;
+                $Value = "Money Points" ;
                 break;
             case 'qty_ordered':
-                $Value = 1;
+                $Value = $PointsUsed;
                 break;
             case 'discount_percent':
                 $Value = 0;
@@ -408,8 +407,8 @@ trait ItemsTrait
                 //====================================================================//
                 // Encode Discount Price
                 $Value = self::prices()->encode(
-                    (double)    -1 * abs($Amount),
-                    (double)    0,
+                    (double)    -1 * abs(0.1),
+                    (double)    20,
                     null,
                     $CurrencyCode,
                     Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
