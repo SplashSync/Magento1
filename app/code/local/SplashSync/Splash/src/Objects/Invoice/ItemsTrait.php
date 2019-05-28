@@ -215,13 +215,21 @@ trait ItemsTrait
         );
     }    
     
+    /**
+     * Read requested Item Discount Pourcent
+     * 
+     * @return int|double
+     */      
     private function getItemsDiscount($Product)
     {
         if (!empty($Product->getData('discount_percent'))) {
-            return $Product->getData('discount_percent');
-        } elseif ((float) $Product->getPriceInclTax() && (float) $Product->getQty()) {
+            return (double) $Product->getData('discount_percent');
+        } 
+        
+        if (($Product->getPriceInclTax() > 0) && ($Product->getQty() > 0)) {
             return (double) 100 * $Product->getDiscountAmount() / ($Product->getPriceInclTax() * $Product->getQty());
         }
+        
         return 0;
     }
     
