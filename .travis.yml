@@ -24,7 +24,7 @@ matrix:
 
         # Magento 1.9 Branch (For prop Sailing)       
         - php: 5.6
-          env: MAGENTO_VERSION=magento-mirror-1.9.4.3  
+          env: MAGENTO_VERSION=magento-mirror-1.9.4.5  
           
         # Magento 1.9 Branch       
         - php: 5.6
