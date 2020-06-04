@@ -41,6 +41,7 @@ install:
     
     # Configure Php ...
     - phpenv config-rm xdebug.ini
+    - phpenv config-add build/x_memory.ini    
 
     # Install Magento & Modules
     - sh build/setup.sh
