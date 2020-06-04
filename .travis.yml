@@ -33,15 +33,16 @@ matrix:
     fast_finish: true
     
 install:
+    # Configure Php ...
+    - phpenv config-rm xdebug.ini
+    - phpenv config-add build/x_memory.ini    
+    
     # With PHP 7 => Load Phpstan   
     - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" ]]; then composer require phpstan/phpstan-shim 0.9.2 --no-update; fi
     
     # Run Composer
     - composer update
     
-    # Configure Php ...
-    - phpenv config-rm xdebug.ini
-    - phpenv config-add build/x_memory.ini    
 
     # Install Magento & Modules
     - sh build/setup.sh
