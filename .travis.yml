@@ -70,7 +70,7 @@ script:
     
     # Execute Functionnal Tests 
 #    - phpunit
-    - php vendor/bin/phpunit
+    - php php ./app/code/local/SplashSync/Splash/vendor/bin/phpunit
         
 notifications:
   email:         
