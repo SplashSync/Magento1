@@ -1,5 +1,15 @@
-# Travis CI Configuration File
-language:   php
+# Tell Travis CI we're using PHP
+language: php
+os: linux
+
+# Tell Travis CI we're using MySQL
+services:
+  - mysql
+  
+# Tell Travis CI we're using Cache
+cache:
+  directories:
+    - $HOME/.composer/cache
 
 matrix:
     include:
@@ -43,7 +53,6 @@ install:
     # Run Composer
     - composer update
     
-
     # Install Magento & Modules
     - sh build/setup.sh
     
