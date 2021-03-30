@@ -67,7 +67,7 @@ class Local
         $Parameters["WsMethod"]             =   Mage::getStoreConfig('splashsync_splash_options/core/use_nusoap') ? "NuSOAP" : "SOAP";
         
         //====================================================================//
-        // If Expert Mode => Allow Overide of Server Host Address
+        // If Expert Mode => Allow Override of Server Host Address
         if (Mage::getStoreConfig('splashsync_splash_options/advanced/expert')) {
             if (!empty(Mage::getStoreConfig('splashsync_splash_options/advanced/server_url'))) {
                 $Parameters["WsHost"]           =   Mage::getStoreConfig('splashsync_splash_options/advanced/server_url');

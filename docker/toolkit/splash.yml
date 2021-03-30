@@ -1,0 +1,34 @@
+
+splash:
+
+  ################################################################################
+  # Configure Splash Bundle Parameters Cache
+  # Cache is Enabled by Default to Store Custom Connectors Configuration
+  # If disabled, configuration must be store in Static, on connections section
+  ################################################################################
+  #    cache:
+  #        enabled: false
+  #        lifetime: 10
+
+  # Allow Notifications for Generic Users
+  notify: ["ROLE_USER"]
+
+  ################################################################################
+  # List of Available Connector Connections
+  ################################################################################
+
+  connections:
+
+    ########################################################################
+    # Magento Latest
+    latest:
+      id:                 ThisIsMageLatestKey
+      key:                ThisTokenIsNotSoSecretChangeIt
+      name:               Magento 1 Latests
+      host:               false
+      connector:          soap
+      config:
+        WsIdentifier:       ThisIsMageLatestKey
+        WsEncryptionKey:    ThisTokenIsNotSoSecretChangeIt
+        WsHost:             http://latest.magento.local
+        WsPath:             /app/code/local/SplashSync/Splash/vendor/splash/phpcore/soap.php

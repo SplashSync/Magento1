@@ -53,6 +53,7 @@ class Product extends AbstractObject
     use \Splash\Local\Objects\Product\CoreTrait;
     use \Splash\Local\Objects\Product\MainTrait;
     use \Splash\Local\Objects\Product\DescTrait;
+    use \Splash\Local\Objects\Product\DescMonoTrait;
     use \Splash\Local\Objects\Product\ImagesTrait;
     use \Splash\Local\Objects\Product\StocksTrait;
     use \Splash\Local\Objects\Product\MetaTrait;

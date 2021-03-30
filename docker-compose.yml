@@ -1,0 +1,116 @@
+
+################################################################################
+#
+#  This file is part of SplashSync Project.
+# 
+#  Copyright (C) Splash Sync <www.splashsync.com>
+# 
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# 
+#  For the full copyright and license information, please view the LICENSE
+#  file that was distributed with this source code.
+# 
+#  @author Bernard Paquier <contact@splashsync.com>
+#
+################################################################################
+
+################################################################################
+# Docker Compose File
+#
+# This Docker File intend to Create a Complete Dev Environment
+# for Splash Modules on Magento 1
+#
+# To us different PS Version configured, you need to add hosts to /etc/hosts
+# 
+# 172.103.0.99        latest.magento.local
+# 172.103.0.100       toolkit.magento.local
+# 172.103.0.200       phpmyadmin.magento.local
+#
+################################################################################
+
+version: "3.2"
+
+services:
+
+
+    ################################################################################
+    # Magento 1 Latest
+    magento:
+        image: registry.gitlab.com/badpixxel-projects/php-sdk:php-7.2
+        container_name: magento-latest
+        depends_on:
+            - mysql
+        environment:
+            - MAGENTO_VERSION=magento-mirror-1.9.4.1
+        volumes:
+            - "./app/code/local/SplashSync/Splash:/var/www/html/app/code/local/SplashSync/Splash:ro"
+            - "./app/design/adminhtml/default/default/template/Splash:/var/www/html/app/design/adminhtml/default/default/template/Splash:ro"
+            - "./app/etc/modules/SplashSync_Splash.xml:/var/www/html/app/etc/modules/SplashSync_Splash.xml"
+            - "./docker/magento/docker-entrypoint.sh:/docker-entrypoint.sh:ro"
+            - "./ci:/var/www/html/ci"
+            - "./.git/:/var/www/html/.git/"
+        command: sh /docker-entrypoint.sh
+        hostname: latest.magento.local
+        networks:
+            magento:       { ipv4_address: 172.103.0.99 }
+            splashsync:    { aliases: [ latest.magento.local ] }
+
+    ################################################################################
+    # MySQL Container
+    mysql:
+        image: mysql:5.7
+        container_name: magento-mysql
+        logging: { driver: "none" }
+        environment:
+            - "MYSQL_ROOT_PASSWORD=magento"
+            - "MYSQL_DATABASE=magento"
+            - "MYSQL_USER=magento"
+            - "MYSQL_PASSWORD=magento"
+        networks:
+            - magento
+
+    ################################################################################
+    # Splash Toolkit Container   
+    toolkit:
+        image: 'splashsync/toolkit'
+        container_name: magento-toolkit
+        logging: { driver: "none" }
+        volumes:
+            # Specify Local Configuration File
+            - './docker/toolkit/splash.yml:/app/config/packages/splash.yml:ro'
+        hostname:           toolkit.magento.local
+        command:            ["php", "/app/bin/console", "server:run", "172.103.0.100:80"]
+        networks:
+            magento:        { ipv4_address: 172.103.0.100, aliases: [ toolkit.magento.local ] }
+            splashsync:     { aliases: [ toolkit.magento.local ] }
+
+    ################################################################################
+    # PhpMyAdmin Container
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:5
+        container_name: magento-phpmyadmin
+        logging: { driver: "none" }
+        depends_on:
+            - mysql
+        environment:
+            - PMA_HOST=mysql
+            - MYSQL_USER=magento
+            - MYSQL_ROOT_PASSWORD=magento
+            - MYSQL_PASSWORD=magento
+        networks:
+            magento:        { ipv4_address: 172.103.0.200, aliases: [ phpmyadmin.magento.local ] }
+
+networks:
+    ################################################################################
+    # Default Private Network
+    magento:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.103.0.0/24
+    ################################################################################
+    # External Splash Network
+    splashsync:
+        external: true  

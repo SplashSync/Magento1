@@ -1,4 +1,0 @@
-# Splash Module Modman Descriptor
-app/etc/modules/*.xml                                           app/etc/modules/
-app/code/local/SplashSync/Splash                                app/code/local/SplashSync/Splash
-app/design/adminhtml/default/default/template/Splash            app/design/adminhtml/default/default/template/Splash

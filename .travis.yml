@@ -68,7 +68,7 @@ script:
     # With PHP 7 => Execute Phpstan 
     - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" ]]; then php ./app/code/local/SplashSync/Splash/vendor/bin/grumphp run --testsuite=phpstan; fi       
     
-    # Execute Functionnal Tests 
+    # Execute Functional Tests
 #    - phpunit
     - php ./app/code/local/SplashSync/Splash/vendor/bin/phpunit
         

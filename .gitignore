@@ -107,3 +107,4 @@ var/
 /dispatch.php
 /composer.lock
 /.directory
+/.idea/
