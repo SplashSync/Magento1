@@ -9,8 +9,11 @@
     
     "config": {
         "vendor-dir":               "app/code/local/SplashSync/Splash/vendor",
-        "preferred-install":        "dist"
-        
+        "bin-dir":                  "app/code/local/SplashSync/Splash/vendor/bin",
+        "preferred-install":        "dist",
+        "platform": {
+            "php":                  "7.2.0"
+        }
     },
         
     "autoload": {

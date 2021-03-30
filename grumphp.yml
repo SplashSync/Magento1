@@ -1,60 +1,101 @@
+################################################################################
+#
+# * This file is part of SplashSync Project.
+# *
+# * Copyright (C) Splash Sync <www.splashsync.com>
+# *
+# * This program is distributed in the hope that it will be useful,
+# * but WITHOUT ANY WARRANTY; without even the implied warranty of
+# * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# *
+# * For the full copyright and license information, please view the LICENSE
+# * file that was distributed with this source code.
+# *
+# * @author Bernard Paquier <contact@splashsync.com>
+#
+################################################################################
+
+#############################################
+#   Local Config
 parameters:
-    git_dir: .
-    bin_dir: app/code/local/SplashSync/Splash/vendor/bin
-    ascii:
-        failed:     "./app/code/local/SplashSync/Splash/vendor/splash/phpcore/Resources/ascii/grumphp-grumpy.txt"
-        succeeded:  "./app/code/local/SplashSync/Splash/vendor/splash/phpcore/Resources/ascii/grumphp-happy.txt"
-    tasks:
-        composer:
-            file: "./composer.json"
-        phplint:
-            exclude: ['app/code/local/SplashSync/Splash/vendor']
-            triggered_by: ['php']
-        phpcs:
-            standard: "build/phpcs.xml"
-            triggered_by: [php, phtml]
-            warning_severity: 5            
-        git_blacklist:
-            keywords:
-                - "var_dump"
-                - "dump("
-                - "console.log"
-                - "print_r"
-                - "die("
-            triggered_by: [php, js, twig]
-        jsonlint:
-            detect_key_conflicts: true
-        phpmd:
-            ruleset: ["build/phpmd.xml"]
-        securitychecker: ~
-        phpcpd:
-            directory: 'app/code/local/SplashSync/Splash/src'
-            exclude: ['vendor']
-        xmllint: ~
-        yamllint: ~
-        phpstan:
-            level: 5
-            configuration: build/phpstan.neon
-            ignore_patterns:
-                - install-0.1.0.php
-                - IndexController.php 
-                - Stock.php
-                - Attributeset.php  
-                - Observer.php 
-                
-    testsuites:
-        travis:
-            tasks:
-                - composer
-                - phplint
-                - phpcs 
-                - git_blacklist
-                - jsonlint
-                - phpmd
-                - phpcpd
-                - xmllint
-                - yamllint
-                
-        phpstan:
-            tasks: 
-                - phpstan 
+
+    core_dir:       "./app/code/local/SplashSync/Splash/vendor/badpixxel/php-sdk"
+    mode:           "splashsync"
+
+    # For Building Splash Documentation
+    doc-enable:     false
+    doc-target:     '/public'
+    doc-contents:   ["php-composer", "php-docker", "splash-faq"]
+
+    # For Building Splash Module
+    mod-enable:     false
+
+    # For Building Splash Manifest
+    yml-enable:     false
+
+#############################################
+# Import Config. from Generic Bundle
+imports:
+    - { resource: "./app/code/local/SplashSync/Splash/vendor/badpixxel/php-sdk/grumphp/generic.yml" }
+
+#
+#parameters:
+#    git_dir: .
+#    bin_dir: app/code/local/SplashSync/Splash/vendor/bin
+#    ascii:
+#        failed:     "./app/code/local/SplashSync/Splash/vendor/splash/phpcore/Resources/ascii/grumphp-grumpy.txt"
+#        succeeded:  "./app/code/local/SplashSync/Splash/vendor/splash/phpcore/Resources/ascii/grumphp-happy.txt"
+#    tasks:
+#        composer:
+#            file: "./composer.json"
+#        phplint:
+#            exclude: ['app/code/local/SplashSync/Splash/vendor']
+#            triggered_by: ['php']
+#        phpcs:
+#            standard: "build/phpcs.xml"
+#            triggered_by: [php, phtml]
+#            warning_severity: 5
+#        git_blacklist:
+#            keywords:
+#                - "var_dump"
+#                - "dump("
+#                - "console.log"
+#                - "print_r"
+#                - "die("
+#            triggered_by: [php, js, twig]
+#        jsonlint:
+#            detect_key_conflicts: true
+#        phpmd:
+#            ruleset: ["build/phpmd.xml"]
+#        securitychecker: ~
+#        phpcpd:
+#            directory: 'app/code/local/SplashSync/Splash/src'
+#            exclude: ['vendor']
+#        xmllint: ~
+#        yamllint: ~
+#        phpstan:
+#            level: 5
+#            configuration: build/phpstan.neon
+#            ignore_patterns:
+#                - install-0.1.0.php
+#                - IndexController.php
+#                - Stock.php
+#                - Attributeset.php
+#                - Observer.php
+#
+#    testsuites:
+#        travis:
+#            tasks:
+#                - composer
+#                - phplint
+#                - phpcs
+#                - git_blacklist
+#                - jsonlint
+#                - phpmd
+#                - phpcpd
+#                - xmllint
+#                - yamllint
+#
+#        phpstan:
+#            tasks:
+#                - phpstan

@@ -104,6 +104,11 @@ stages:
 #      # Run Grumphp Splash Manifest Sequence
 #      - php modules/splashsync/vendor/bin/grumphp run -n --tasks=build-manifest
 
+    ################################################################################
+    # Run After Script
+    after_script:
+        - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/after.sh | sh
+        - bash /var/www/html/ci/gitlab/after.sh
 
 Mage-1.9.4-Php-7.2:
   image:      registry.gitlab.com/badpixxel-projects/php-sdk:php-7.2

@@ -26,6 +26,7 @@ echo
 
 echo "Insert Dummy data in Store"
 ./n98-magerun.phar dev:module:disable SplashSync_Splash
+./n98-magerun.phar cache:clean
 ./n98-magerun.phar customer:create:dummy 5 en_US
 
 echo "Enable Splash Module"

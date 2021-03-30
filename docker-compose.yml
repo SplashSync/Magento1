@@ -49,6 +49,7 @@ services:
             - "./app/design/adminhtml/default/default/template/Splash:/var/www/html/app/design/adminhtml/default/default/template/Splash:ro"
             - "./app/etc/modules/SplashSync_Splash.xml:/var/www/html/app/etc/modules/SplashSync_Splash.xml"
             - "./docker/magento/docker-entrypoint.sh:/docker-entrypoint.sh:ro"
+            - "./build/phpunit.xml.dist:/var/www/html/phpunit.xml.dist:ro"
             - "./ci:/var/www/html/ci"
             - "./.git/:/var/www/html/.git/"
         command: sh /docker-entrypoint.sh
