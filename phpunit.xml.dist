@@ -9,7 +9,7 @@
     convertNoticesToExceptions  = "true"
     convertWarningsToExceptions = "true"
     processIsolation            = "false"
-    stopOnFailure               = "true"
+    stopOnFailure               = "false"
     syntaxCheck                 = "false"
     bootstrap                   = "app/code/local/SplashSync/Splash/vendor/autoload.php" 
     verbose                     = "true"
@@ -36,6 +36,6 @@
 
     <php>
         <const  name="SPLASH_DEBUG" value="true" />
-        <server name="SERVER_NAME" value="http://127.0.0.1/Magento/Mage-Phpunit"/>
+        <server name="SERVER_NAME" value="http://127.0.0.1"/>
     </php>
 </phpunit>
