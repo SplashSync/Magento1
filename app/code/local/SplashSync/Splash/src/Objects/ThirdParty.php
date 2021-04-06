@@ -15,8 +15,6 @@
 
 namespace   Splash\Local\Objects;
 
-use Mage;
-use Mage_Customer_Model_Customer;
 use Splash\Models\AbstractObject;
 use Splash\Models\Objects\IntelParserTrait;
 
