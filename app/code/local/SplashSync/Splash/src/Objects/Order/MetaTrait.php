@@ -1,199 +1,200 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Order;
 
-// Magento Namespaces
 use Mage;
+use Mage_Core_Model_Date;
 use Mage_Sales_Model_Order      as MageOrder;
 
 /**
- * @abstract    Magento 1 Order Meta Fields Access
+ * Magento 1 Order Meta Fields Access
  */
 trait MetaTrait
 {
-    
     /**
-    *   @abstract     Build Meta Fields using FieldFactory
-    */
-    private function buildMetaFields()
+     * Build Meta Fields using FieldFactory
+     */
+    protected function buildMetaFields(): void
     {
-       
         //====================================================================//
         // ORDER STATUS FLAGS
         //====================================================================//
-        
+
         //====================================================================//
         // Is Canceled
-        // => There is no Diffrence Between a Draft & Canceled Order on Prestashop.
-        //      Any Non Validated Order is considered as Canceled
         $this->fieldsFactory()->Create(SPL_T_BOOL)
-                ->Identifier("isCanceled")
-                ->Name("Order" . " : " . "Canceled")
-                ->MicroData("http://schema.org/OrderStatus", "OrderCancelled")
-                ->Association("isCanceled", "isValidated", "isClosed")
-                ->Group("Meta")
-                ->isReadOnly();
-        
+            ->Identifier("isCanceled")
+            ->Name("Order"." : "."Canceled")
+            ->MicroData("http://schema.org/OrderStatus", "OrderCancelled")
+            ->Association("isCanceled", "isValidated", "isClosed")
+            ->Group("Meta")
+            ->isReadOnly()
+        ;
         //====================================================================//
         // Is Validated
         $this->fieldsFactory()->Create(SPL_T_BOOL)
-                ->Identifier("isValidated")
-                ->Name("Order" . " : " . "Valid")
-                ->MicroData("http://schema.org/OrderStatus", "OrderProcessing")
-                ->Association("isCanceled", "isValidated", "isClosed")
-                ->Group("Meta")
-                ->isReadOnly();
-        
+            ->Identifier("isValidated")
+            ->Name("Order"." : "."Valid")
+            ->MicroData("http://schema.org/OrderStatus", "OrderProcessing")
+            ->Association("isCanceled", "isValidated", "isClosed")
+            ->Group("Meta")
+            ->isReadOnly()
+        ;
         //====================================================================//
         // Is Closed
         $this->fieldsFactory()->Create(SPL_T_BOOL)
-                ->Identifier("isClosed")
-                ->Name("Order" . " : " . "Closed")
-                ->MicroData("http://schema.org/OrderStatus", "OrderDelivered")
-                ->Association("isCanceled", "isValidated", "isClosed")
-                ->Group("Meta")
-                ->isReadOnly();
-
+            ->Identifier("isClosed")
+            ->Name("Order"." : "."Closed")
+            ->MicroData("http://schema.org/OrderStatus", "OrderDelivered")
+            ->Association("isCanceled", "isValidated", "isClosed")
+            ->Group("Meta")
+            ->isReadOnly()
+        ;
         //====================================================================//
         // Is Paid
         $this->fieldsFactory()->Create(SPL_T_BOOL)
-                ->Identifier("isPaid")
-                ->Name("Order" . " : " . "Paid")
-                ->MicroData("http://schema.org/OrderStatus", "OrderPaid")
-                ->Group("Meta")
-                ->isReadOnly();
-
+            ->Identifier("isPaid")
+            ->Name("Order"." : "."Paid")
+            ->MicroData("http://schema.org/OrderStatus", "OrderPaid")
+            ->Group("Meta")
+            ->isReadOnly()
+        ;
         //====================================================================//
         // TRACEABILITY INFORMATIONS
         //====================================================================//
-        
+
         //====================================================================//
         // TMS - Last Change Date
         $this->fieldsFactory()->Create(SPL_T_DATETIME)
-                ->Identifier("updated_at")
-                ->Name("Last update")
-                ->MicroData("http://schema.org/DataFeedItem", "dateModified")
-                ->Group("Meta")
-                ->isReadOnly();
+            ->Identifier("updated_at")
+            ->Name("Last update")
+            ->MicroData("http://schema.org/DataFeedItem", "dateModified")
+            ->Group("Meta")
+            ->isReadOnly()
+        ;
     }
-    
-    /**
-     *  @abstract     Read requested Field
-     *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
-     *
-     *  @return         none
-     */
-    private function getMetaFields($Key, $FieldName)
-    {
 
+    /**
+     * Read requested Field
+     *
+     * @param string $key Input List Key
+     * @param string $fieldName Field Identifier / Name
+     *
+     * @return void
+     */
+    protected function getMetaFields(string $key, string $fieldName): void
+    {
         //====================================================================//
         // READ Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // ORDER STATUS FLAGS
             //====================================================================//
-       
+
             case 'isCanceled':
-                if ($this->Object->getState() === MageOrder::STATE_CANCELED) {
-                    $this->Out[$FieldName]  = true;
+                if (MageOrder::STATE_CANCELED === $this->object->getState()) {
+                    $this->out[$fieldName] = true;
                 } else {
-                    $this->Out[$FieldName]  = false;
+                    $this->out[$fieldName] = false;
                 }
+
                 break;
-                
             case 'isValidated':
-                $this->Out[$FieldName]  = $this->isValidated();
+                $this->out[$fieldName] = $this->isValidated();
+
                 break;
-            
             case 'isClosed':
-                $this->Out[$FieldName]  = $this->isClosed();
+                $this->out[$fieldName] = $this->isClosed();
+
                 break;
             case 'isPaid':
-                $this->Out[$FieldName]  = $this->isPaid();
+                $this->out[$fieldName] = $this->isPaid();
+
                 break;
-                
             //====================================================================//
             // TRACEABILITY INFORMATIONS
             //====================================================================//
 
             case 'updated_at':
-                $this->Out[$FieldName] = date(SPL_T_DATETIMECAST, Mage::getModel("core/date")->gmtTimestamp($this->Object->getData($FieldName)));
+                /** @var Mage_Core_Model_Date $model */
+                $model = Mage::getModel('core/date');
+
+                $this->out[$fieldName] = date(
+                    SPL_T_DATETIMECAST,
+                    $model->gmtTimestamp($this->object->getData($fieldName))
+                );
+
                 break;
-                    
             default:
                 return;
         }
-        
-        unset($this->In[$Key]);
+
+        unset($this->in[$key]);
     }
-    
+
     /**
-     *  @abstract     Read Validated Flag
+     * Read Validated Flag
      *
-     *  @return       bool
+     * @return bool
      */
-    private function isValidated()
+    private function isValidated(): bool
     {
-        if ($this->Object->getState() === MageOrder::STATE_NEW
-            ||  $this->Object->getState() === MageOrder::STATE_PROCESSING
-            ||  $this->Object->getState() === MageOrder::STATE_COMPLETE
-            ||  $this->Object->getState() === MageOrder::STATE_CLOSED
-            ||  $this->Object->getState() === MageOrder::STATE_CANCELED
-            ||  $this->Object->getState() === MageOrder::STATE_HOLDED
+        if (MageOrder::STATE_NEW === $this->object->getState()
+            || MageOrder::STATE_PROCESSING === $this->object->getState()
+            || MageOrder::STATE_COMPLETE === $this->object->getState()
+            || MageOrder::STATE_CLOSED === $this->object->getState()
+            || MageOrder::STATE_CANCELED === $this->object->getState()
+            || MageOrder::STATE_HOLDED === $this->object->getState()
                 ) {
             return true;
         }
+
         return false;
     }
-        
+
     /**
-     *  @abstract     Read Closed Flag
+     * Read Closed Flag
      *
-     *  @return       bool
+     * @return bool
      */
-    private function isClosed()
+    private function isClosed(): bool
     {
-        if ($this->Object->getState() === MageOrder::STATE_COMPLETE
-            ||  $this->Object->getState() === MageOrder::STATE_CLOSED
+        if (MageOrder::STATE_COMPLETE === $this->object->getState()
+            || MageOrder::STATE_CLOSED === $this->object->getState()
             ) {
             return true;
         }
-        return false;                
+
+        return false;
     }
-    
+
     /**
-     *  @abstract     Read Paid Flag
+     * Read Paid Flag
      *
-     *  @return       bool
+     * @return bool
      */
-    private function isPaid()
+    private function isPaid(): bool
     {
-        if ($this->Object->getState() === MageOrder::STATE_PROCESSING
-            ||  $this->Object->getState() === MageOrder::STATE_COMPLETE
-            ||  $this->Object->getState() === MageOrder::STATE_CLOSED
+        if (MageOrder::STATE_PROCESSING === $this->object->getState()
+            || MageOrder::STATE_COMPLETE === $this->object->getState()
+            || MageOrder::STATE_CLOSED === $this->object->getState()
                 ) {
             return true;
         }
-        return false;                
-    }    
-        
+
+        return false;
+    }
 }

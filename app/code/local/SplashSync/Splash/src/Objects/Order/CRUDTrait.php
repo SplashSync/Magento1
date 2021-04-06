@@ -1,79 +1,72 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Order;
 
+use Mage;
+use Mage_Catalog_Exception;
+use Mage_Sales_Model_Order      as MageOrder;
 use Splash\Core\SplashCore      as Splash;
 
-// Magento Namespaces
-use Mage;
-use Mage_Sales_Model_Order      as MageOrder;
-use Mage_Catalog_Exception;
-
 /**
- * @abstract    Magento 1 Customers CRUD Functions
+ * Magento 1 Customers CRUD Functions
  */
 trait CRUDTrait
 {
-    
-    protected $Payments       = null;
-        
     /**
-     * @abstract    Load Request Object
+     * Load Request Object
      *
-     * @param       array   $Id               Object id
+     * @param string $objectId Object id
      *
-     * @return      mixed
+     * @return mixed
      */
-    public function Load($Id)
+    public function load($objectId)
     {
         //====================================================================//
         // Stack Trace
-        Splash::log()->trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace();
         //====================================================================//
         // Safety Checks
-        if (empty($Id)) {
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Missing Id.");
+        if (empty($objectId)) {
+            return Splash::log()->errTrace("Missing Id.");
         }
-        $Order = Mage::getModel('sales/order')->load($Id);
-        if ($Order->getEntityId() != $Id) {
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Customer Order (" . $Id . ").");
+        /** @var MageOrder $model */
+        $model = Mage::getModel('sales/order');
+        /** @var false|MageOrder $order */
+        $order = $model->load((int) $objectId);
+        if (!$order || ($order->getEntityId() != $objectId)) {
+            return Splash::log()->errTrace("Unable to load Customer Order (".$objectId.").");
         }
         //====================================================================//
         // Load Linked Objects
-        $this->loadPayment($Order);
-        $this->loadTracking($Order);
-        return $Order;
+        $this->loadPayment($order);
+        $this->loadTracking($order);
+
+        return $order;
     }
-    
+
     /**
-     * @abstract    Create Request Object
+     * Create Request Object
      *
-     * @param       array   $List         Given Object Data
-     *
-     * @return      object     New Object
+     * @return false|object New Object
      */
-    public function Create()
+    public function create()
     {
         //====================================================================//
         // Stack Trace
-        Splash::log()->trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace();
         //====================================================================//
         // Check Required Fields
         if (!$this->verifyRequiredFields()) {
@@ -81,98 +74,92 @@ trait CRUDTrait
         }
         //====================================================================//
         // Create Empty Customer Order
-        $Order = Mage::getModel('sales/order');
+        /** @var MageOrder $order */
+        $order = Mage::getModel('sales/order');
         //====================================================================//
         // Setup Order External Id to Know this is a Splash Created Order
-        $Order->setExtOrderId(self::SPLASH_LABEL);
+        $order->setExtOrderId(self::SPLASH_LABEL);
         // Set Is Virtual Order => No Billing or Shipping Address
-        $Order->setIsVirtual(true);
+        $order->setIsVirtual(1);
         // Set Default Payment Method
-        $Order->setData('payment', array('method'    => 'checkmo'));
-        // Set Sales Order Payment
-        $Order->setPayment(Mage::getModel('sales/order_payment')->setMethod('checkmo'));
+        $order->setData('payment', array('method' => 'checkmo'));
         // Set Order Initial Status
-        $Order->setState(MageOrder::STATE_NEW, "pending", 'Just Created by SplashSync Module', true);
+        $order->setState(MageOrder::STATE_NEW, "pending", 'Just Created by SplashSync Module', true);
         //====================================================================//
         // Set Currency To Default Store Values
-        $DefaultCurrency = Mage::app()->getStore()->getBaseCurrencyCode();
-        $Order->setGlobalCurrencyCode($DefaultCurrency);
-        $Order->setOrderCurrencyCode($DefaultCurrency);
-        $Order->setBaseCurrencyCode($DefaultCurrency);
-        $Order->setBaseToOrderRate(1);
+        $defaultCurrency = Mage::app()->getStore()->getBaseCurrencyCode();
+        $order->setGlobalCurrencyCode($defaultCurrency);
+        $order->setOrderCurrencyCode($defaultCurrency);
+        $order->setBaseCurrencyCode($defaultCurrency);
+        $order->setBaseToOrderRate(1);
         //====================================================================//
         // Save Object
         try {
-            $Order->save();
+            $order->save();
         } catch (Mage_Catalog_Exception $ex) {
-            Splash::log()->deb($ex->getTraceAsString());
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
+            return Splash::log()->report($ex);
         }
         //====================================================================//
         // Load Linked Objects
-        $this->loadPayment($Order);
-        return $Order;
+        $this->loadPayment($order);
+
+        return $order;
     }
-    
+
     /**
-     * @abstract    Update Request Object
+     * Update Request Object
      *
-     * @param       array   $Needed         Is This Update Needed
+     * @param bool $needed Is This Update Needed
      *
-     * @return      string      Object Id
+     * @return false|string Object Id
      */
-    public function Update($Needed)
+    public function update($needed)
     {
         //====================================================================//
         // Stack Trace
-        Splash::log()->trace(__CLASS__, __FUNCTION__);
-        if (!$Needed) {
-            return $this->Object->getEntityId();
+        Splash::log()->trace();
+        if (!$needed) {
+            return $this->object->getEntityId();
         }
         //====================================================================//
         // Update order Totals
-        $this->_UpdateTotals();
-        
+        $this->updateOrderTotals();
         //====================================================================//
-        // Verify Update Is requiered
-        if ($Needed == false) {
-            Splash::log()->deb("MsgLocalNoUpdateReq", __CLASS__, __FUNCTION__);
-            return $this->Object->getEntityId();
+        // Verify Update Is Required
+        if (false == $needed) {
+            return $this->object->getEntityId();
         }
-        
         //====================================================================//
         // If Id Given = > Update Object
         //====================================================================//
         try {
-            $this->Object->save();
+            $this->object->save();
         } catch (Mage_Catalog_Exception $ex) {
-            Splash::log()->deb($ex->getTraceAsString());
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
-        }        
-        
-        if ($this->Object->_hasDataChanges) {
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to Update Order (" . $this->Object->getEntityId() . ").");
+            return Splash::log()->report($ex);
         }
-        Splash::object("Order")->lock($this->Object->getEntityId());
-        Splash::log()->deb("MsgLocalTpl", __CLASS__, __FUNCTION__, "Order Updated");
-        
-        return $this->Object->getEntityId();        
+
+        if ($this->object->_hasDataChanges) {
+            return Splash::log()->errTrace("Unable to Update Order (".$this->object->getEntityId().").");
+        }
+        Splash::object("Order")->lock($this->object->getEntityId());
+
+        return $this->object->getEntityId();
     }
-        
+
     /**
-     * @abstract    Delete requested Object
+     * Delete requested Object
      *
-     * @param       int     $Id     Object Id.  If NULL, Object needs to be created.
+     * @param int $objectId Object Id.  If NULL, Object needs to be created.
      *
-     * @return      bool
+     * @return bool
      */
-    public function Delete($Id = null)
+    public function delete($objectId = null)
     {
         //====================================================================//
         // Stack Trace
-        Splash::log()->trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace();
         //====================================================================//
         // Execute Generic Magento Delete Function ...
-        return $this->CoreDelete('sales/order', $Id);
+        return $this->coreDelete('sales/order', $objectId);
     }
 }

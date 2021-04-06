@@ -1,194 +1,197 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Order;
 
-// Magento Namespaces
 use Mage;
+use Mage_Sales_Model_Order_Address;
 
 /**
- * @abstract    Magento 1 Order Address Fields Access
+ * Magento 1 Order Address Fields Access
  */
 trait AddressTrait
 {
-    
     /**
-    *   @abstract     Build Address Fields using FieldFactory
-    */
-    private function buildAddressFields()
+     * Build Address Fields using FieldFactory
+     */
+    protected function buildAddressFields(): void
     {
-        
         //====================================================================//
         // Billing Address
-        $this->fieldsFactory()->Create(self::objects()->encode("Address", SPL_T_ID))
-                ->Identifier("billing_address_id")
-                ->Name('Billing Address ID')
-                ->MicroData("http://schema.org/Order", "billingAddress")
-                ->isRequired();
-        
+        $this->fieldsFactory()->create((string) self::objects()->encode("Address", SPL_T_ID))
+            ->identifier("billing_address_id")
+            ->name('Billing Address ID')
+            ->microData("http://schema.org/Order", "billingAddress")
+            ->isRequired()
+        ;
         //====================================================================//
         // Shipping Address
-        $this->fieldsFactory()->Create(self::objects()->encode("Address", SPL_T_ID))
-                ->Identifier("shipping_address_id")
-                ->Name('Shipping Address ID')
-                ->MicroData("http://schema.org/Order", "orderDelivery");
+        $this->fieldsFactory()->create((string) self::objects()->encode("Address", SPL_T_ID))
+            ->identifier("shipping_address_id")
+            ->name('Shipping Address ID')
+            ->microData("http://schema.org/Order", "orderDelivery")
+        ;
     }
-    
 
     /**
-     *  @abstract     Read requested Field
+     * Read requested Field
      *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
+     * @param string $key       Input List Key
+     * @param string $fieldName Field Identifier / Name
      *
-     *  @return         none
+     * @return void
      */
-    private function getAddressFields($Key, $FieldName)
+    protected function getAddressFields(string $key, string $fieldName): void
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // Billing/Shipping Address Object Id Readings
             case 'billing_address_id':
             case 'shipping_address_id':
-                if ($FieldName == "billing_address_id") {
-                    $Address    =  $this->Object->getBillingAddress();
+                if ("billing_address_id" == $fieldName) {
+                    $address = $this->object->getBillingAddress();
                 } else {
-                    $Address    =  $this->Object->getShippingAddress();
+                    $address = $this->object->getShippingAddress();
                 }
-                if ($Address && $Address->getCustomerAddressId()) {
-                    $this->Out[$FieldName] = self::objects()->Encode("Address", $Address->getCustomerAddressId());
+                if ($address && $address->getCustomerAddressId()) {
+                    $this->out[$fieldName] = self::objects()->Encode("Address", $address->getCustomerAddressId());
+
                     break;
                 }
-                $this->Out[$FieldName] = null;
+                $this->out[$fieldName] = null;
+
                 break;
             default:
                 return;
         }
-        
-        unset($this->In[$Key]);
+
+        unset($this->in[$key]);
     }
 
     /**
-     *  @abstract     Write Given Fields
+     * Write Given Fields
      *
-     *  @param        string    $FieldName              Field Identifier / Name
-     *  @param        mixed     $Data                   Field Data
+     * @param string $fieldName Field Identifier / Name
+     * @param mixed $data Field Data
      *
-     *  @return         none
+     * @return void
      */
-    private function setAddressFields($FieldName, $Data)
+    protected function setAddressFields(string $fieldName, $data): void
     {
         //====================================================================//
         // WRITE Field
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
-            // Billing/Shipping Address Writting
+            // Billing/Shipping Address Writing
             case 'billing_address_id':
-                $this->setAddressContents('billing', self::objects()->Id($Data));
+                $this->setAddressContents('billing', self::objects()->Id($data));
+
                 break;
             case 'shipping_address_id':
                 //====================================================================//
                 // Retrieve Address Object Id
-                $AdressId = self::objects()->Id($Data);
+                $addressId = self::objects()->id($data);
                 //====================================================================//
                 // Setup Address Object & Set Order as "Non Virtual" => With Shipping
-                if ($AdressId > 0) {
-                    $this->setAddressContents('shipping', self::objects()->Id($Data));
-                    $this->Object->setIsVirtual(false);
+                if ($addressId > 0) {
+                    $this->setAddressContents('shipping', self::objects()->id($data));
+                    $this->object->setIsVirtual(0);
                 //====================================================================//
                 // No Address Setup & Set Order as "Virtual" => No Shipping
                 } else {
-                    $this->Object->setIsVirtual(true);
+                    $this->object->setIsVirtual(1);
                 }
+
                 break;
-                
             default:
                 return;
         }
-        unset($this->In[$FieldName]);
+        unset($this->in[$fieldName]);
     }
-    
 
     /**
-     *  @abstract     Set Given Order Address
+     * Set Given Order Address
      *
-     *  @return         none
+     * @param string $type
+     * @param mixed $addressId
+     *
+     * @return void
      */
-    private function setAddressContents($Type, $AddressId)
+    private function setAddressContents(string $type, $addressId): void
     {
-        
         //====================================================================//
         // Read Original Billing/Shipping Order Address
-        if ($Type === "billing") {
-            $Address    = $this->Object->getBillingAddress();
-        } elseif ($Type === "shipping") {
-            $Address    = $this->Object->getShippingAddress();
+        if ("billing" === $type) {
+            $address = $this->object->getBillingAddress();
+        } elseif ("shipping" === $type) {
+            $address = $this->object->getShippingAddress();
         } else {
-            return false;
+            return;
         }
         //====================================================================//
         // Empty => Create Order Address
-        if (!$Address) {
-            $Address    =   Mage::getModel('sales/order_address')
-                    ->setOrder($this->Object)
-                    ->setAddressType($Type);
+        if (!$address) {
+            /** @var Mage_Sales_Model_Order_Address $address */
+            $address = Mage::getModel('sales/order_address');
+            $address
+                ->setOrder($this->object)
+                ->setAddressType($type)
+            ;
         }
-
         //====================================================================//
         // Check For Changes
-        if ($Address->getCustomerAddressId() == $AddressId) {
-            return false;
+        if ($address->getCustomerAddressId() == $addressId) {
+            return;
         }
         //====================================================================//
         // Load Customer Address
-        $CustomerAddress = Mage::getModel('customer/address')->load($AddressId);
-        if ($CustomerAddress->getEntityId() != $AddressId) {
-            return false;
+        /** @var Mage_Sales_Model_Order_Address $model */
+        $model = Mage::getModel('sales/order_address');
+        /** @var false|Mage_Sales_Model_Order_Address $customerAddress */
+        $customerAddress = $model->load($addressId);
+        if (!$customerAddress || ($customerAddress->getEntityId() != $addressId)) {
+            return;
         }
         //====================================================================//
         // Update Address
-        $Address
-            ->setCustomerAddressId($AddressId)
-            ->setFirstname($CustomerAddress->getFirstname())
-            ->setMiddlename($CustomerAddress->getMiddlename())
-            ->setLastname($CustomerAddress->getLastname())
-            ->setSuffix($CustomerAddress->getSuffix())
-            ->setCompany($CustomerAddress->getCompany())
-            ->setStreet($CustomerAddress->getStreet())
-            ->setCity($CustomerAddress->getCity())
-            ->setCountry_id($CustomerAddress->getCountry_id())
-            ->setRegion($CustomerAddress->getRegion())
-            ->setRegion_id($CustomerAddress->getRegion_id())
-            ->setPostcode($CustomerAddress->getPostcode())
-            ->setTelephone($CustomerAddress->getTelephone())
-            ->setFax($CustomerAddress->getFax())
-            ->save();
-            $this->needUpdate();
+        $address
+            ->setCustomerAddressId($addressId)
+            ->setFirstname($customerAddress->getFirstname())
+            ->setMiddlename($customerAddress->getMiddlename())
+            ->setLastname($customerAddress->getLastname())
+            ->setSuffix($customerAddress->getSuffix())
+            ->setCompany($customerAddress->getCompany())
+            ->setStreet($customerAddress->getStreet())
+            ->setCity($customerAddress->getCity())
+            ->setCountry_id($customerAddress->getCountryId())
+            ->setRegion($customerAddress->getRegion())
+            ->setRegion_id($customerAddress->getRegionId())
+            ->setPostcode($customerAddress->getPostcode())
+            ->setTelephone($customerAddress->getTelephone())
+            ->setFax($customerAddress->getFax())
+            ->save()
+        ;
+        $this->needUpdate();
         //====================================================================//
         // Update Order Address Collection
-        if ($Type === "billing") {
-            $this->Object->setBillingAddress($Address);
-        } elseif ($Type === "shipping") {
-            $this->Object->setShippingAddress($Address);
+        if ("billing" === $type) {
+            $this->object->setBillingAddress($address);
+        } elseif ("shipping" === $type) {
+            $this->object->setShippingAddress($address);
         }
-        return true;
     }
 }
