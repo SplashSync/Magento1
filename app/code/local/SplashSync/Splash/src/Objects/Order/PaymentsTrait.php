@@ -287,6 +287,18 @@ trait PaymentsTrait
     }
 
     /**
+     * Read Order Payment
+     *
+     * @param mixed $order
+     *
+     * @return void
+     */
+    protected function loadPayment($order): void
+    {
+        $this->payment = $order->getPayment();
+    }
+
+    /**
      * Get Payment Information
      *
      * @param string $fieldName
@@ -346,18 +358,6 @@ trait PaymentsTrait
         Splash::log()->war("Unknown Payment Method: ".$method);
 
         return "CreditCard";
-    }
-
-    /**
-     * Read Order Payment
-     *
-     * @param mixed $order
-     *
-     * @return void
-     */
-    protected function loadPayment($order): void
-    {
-        $this->payment = $order->getPayment();
     }
 
     /**

@@ -59,7 +59,7 @@ trait MetaTrait
     /**
      * Read requested Field
      *
-     * @param string $key Input List Key
+     * @param string $key       Input List Key
      * @param string $fieldName Field Identifier / Name
      *
      * @return void
@@ -108,7 +108,7 @@ trait MetaTrait
      * Write Given Fields
      *
      * @param string $fieldName Field Identifier / Name
-     * @param mixed $data Field Data
+     * @param mixed  $data      Field Data
      *
      * @return void
      */

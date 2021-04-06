@@ -164,7 +164,7 @@ trait ItemsTrait
     /**
      * Read requested Field
      *
-     * @param string $key Input List Key
+     * @param string $key       Input List Key
      * @param string $fieldName Field identifier / Name
      *
      * @return void
@@ -196,7 +196,7 @@ trait ItemsTrait
     /**
      * Read requested Field
      *
-     * @param string $key Input List Key
+     * @param string $key       Input List Key
      * @param string $fieldName Field identifier / Name
      *
      * @return void
@@ -258,7 +258,7 @@ trait ItemsTrait
     /**
      * Read requested Field
      *
-     * @param string $key Input List Key
+     * @param string $key       Input List Key
      * @param string $fieldName Field identifier / Name
      *
      * @return void
@@ -462,12 +462,12 @@ trait ItemsTrait
     /**
      * Read requested Item Values
      *
-     * @param mixed $product
+     * @param mixed  $product
      * @param string $fieldId
      *
      * @return mixed
      */
-    private function getItemsValues($product,string $fieldId)
+    private function getItemsValues($product, string $fieldId)
     {
         switch ($fieldId) {
             //====================================================================//
