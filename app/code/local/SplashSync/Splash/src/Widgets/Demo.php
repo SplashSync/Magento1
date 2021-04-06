@@ -1,31 +1,18 @@
 <?php
+
 /*
- * Copyright (C) 2011-2014  Bernard Paquier       <bernard.paquier@gmail.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- *
- *  \Id 	$Id: osws-local-Customers.class.php 92 2014-09-16 22:18:01Z Nanard33 $
- *  \version    $Revision: 92 $
- *  \date       $LastChangedDate: 2014-09-17 00:18:01 +0200 (mer. 17 sept. 2014) $
- *  \ingroup    Splash - Open Synchronisation WebService
- *  \brief      Local Function Definition for Management of Customers Data
- *  \class      SplashDemo
- *  \remarks	Designed for Splash Module - Dolibar ERP Version
-*/
-                    
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
+
 //====================================================================//
 // *******************************************************************//
 //                     SPLASH FOR DOLIBARR                            //
@@ -36,128 +23,94 @@
 
 namespace   Splash\Local\Widgets;
 
-use Splash\Models\WidgetBase;
+use ArrayObject;
 use Splash\Core\SplashCore      as Splash;
+use Splash\Models\AbstractWidget;
 
 /**
- *  \class      Address
- *  \brief      Address - Thirdparty Contacts Management Class
+ * ThirdParty Contacts Management Class
  */
-class Demo extends WidgetBase
+class Demo extends AbstractWidget
 {
-    
-    //====================================================================//
-    // Object Definition Parameters
-    //====================================================================//
-    
-    /**
-     *  Widget Disable Flag. Uncomment thius line to Override this flag and disable Object.
-     */
-//    protected static    $DISABLED        =  True;
-    
-    /**
-     *  Widget Name (Translated by Module)
-     */
-    protected static $NAME            =  "Demo Widget";
-    
-    /**
-     *  Widget Description (Translated by Module)
-     */
-    protected static $DESCRIPTION     =  "TEST & DEMONSTRATION WIDGET";
-    
-    /**
-     *  Widget Icon (FontAwesome or Glyph ico tag)
-     */
-    protected static $ICO            =  "fa fa-magic";
-    
     //====================================================================//
     // Define Standard Options for this Widget
     // Override this array to change default options for your widget
-    public static $OPTIONS       = array(
-        "Width"     =>      self::SIZE_XL
+    public static $OPTIONS = array(
+        "Width" => self::SIZE_XL
     );
-    
-    //====================================================================//
-    // General Class Variables
-    //====================================================================//
 
     //====================================================================//
-    // Class Constructor
+    // Object Definition Parameters
     //====================================================================//
-        
-//    /**
-//     *      @abstract       Class Constructor (Used only if localy necessary)
-//     *      @return         int                     0 if KO, >0 if OK
-//     */
-//    function __construct()
-//    {
-//        //====================================================================//
-//        // Place Here Any SPECIFIC Initialisation Code
-//        //====================================================================//
-//
-//        return True;
-//    }
-    
+
+    /**
+     *  Widget Name (Translated by Module)
+     */
+    protected static $NAME = "Demo Widget";
+
+    /**
+     *  Widget Description (Translated by Module)
+     */
+    protected static $DESCRIPTION = "TEST & DEMONSTRATION WIDGET";
+
+    /**
+     *  Widget Icon (FontAwesome or Glyph ico tag)
+     */
+    protected static $ICO = "fa fa-magic";
+
     //====================================================================//
     // Class Main Functions
     //====================================================================//
-    
+
     /**
-     *      @abstract   Return Widget Customs Parameters
+     * Return Widget Customs Parameters
      */
     public function getParameters()
     {
         //====================================================================//
         // Reference
         $this->fieldsFactory()->create(SPL_T_VARCHAR)
-                ->Identifier("text_input")
-                ->Name("Text Input")
-                ->Description("Widget Specific Custom text Input");
-        
+            ->Identifier("text_input")
+            ->Name("Text Input")
+            ->Description("Widget Specific Custom text Input");
+
         //====================================================================//
         // Reference
         $this->fieldsFactory()->create(SPL_T_INT)
-                ->Identifier("integer_input")
-                ->Name("Numeric Input")
-                ->Description("Widget Specific Custom Numeric Input");
-        
+            ->Identifier("integer_input")
+            ->Name("Numeric Input")
+            ->Description("Widget Specific Custom Numeric Input");
+
         //====================================================================//
         // Publish Fields
         return $this->fieldsFactory()->publish();
     }
-    
-    /**
-     *  @abstract     Return requested Customer Data
-     *
-     *  @param        array   $params               Search parameters for result List.
-     *                        $params["start"]      Maximum Number of results
-     *                        $params["end"]        List Start Offset
-     *                        $params["groupby"]    Field name for sort list (Available fields listed below)
 
+    /**
+     * {@inheritDoc}
      */
-    public function Get($params = null)
+    public function get($parameters = array())
     {
         //====================================================================//
         // Stack Trace
-        Splash::log()->trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace();
 
         //====================================================================//
         // Setup Widget Core Informations
         //====================================================================//
-
         $this->setTitle($this->getName());
         $this->setIcon($this->getIcon());
-        
+
         //====================================================================//
         // Build Intro Text Block
         //====================================================================//
         $this->buildIntroBlock();
-          
+
         //====================================================================//
         // Build Inputs Block
         //====================================================================//
-        $this->buildParametersBlock($params);
-        
+        $this->buildParametersBlock($parameters);
+
         //====================================================================//
         // Build Inputs Block
         //====================================================================//
@@ -165,72 +118,74 @@ class Demo extends WidgetBase
 
         //====================================================================//
         // Set Blocks to Widget
-        $this->setBlocks($this->blocksFactory()->render());
+        $this->setBlocks($this->blocksFactory()->render() ?: array());
 
         //====================================================================//
         // Publish Widget
         return $this->render();
     }
-        
 
     //====================================================================//
     // Blocks Generation Functions
     //====================================================================//
 
     /**
-    *   @abstract     Block Building - Text Intro
-    */
-    protected function buildIntroBlock()
+     * Block Building - Text Intro
+     *
+     * @return void
+     */
+    protected function buildIntroBlock(): void
     {
         //====================================================================//
         // Into Text Block
-        $this->blocksFactory()->addTextBlock("This is a Demo Text Block!!" . "You can repeat me as much as you want!");
+        $this->blocksFactory()->addTextBlock(
+            "This is a Demo Text Block!!"."You can repeat me as much as you want!"
+        );
     }
-  
-    /**
-    *   @abstract     Block Building - Inputs Parameters
-    */
-    protected function buildParametersBlock($Inputs = array())
-    {
 
+    /**
+     * Block Building - Inputs Parameters
+     *
+     * @param array|ArrayObject $inputs
+     *
+     * @return void
+     */
+    protected function buildParametersBlock($inputs = array()): void
+    {
         //====================================================================//
         // verify Inputs
-        if (!is_array($Inputs) && !is_a($Inputs, "ArrayObject")) {
-            $this->blocksFactory()->addNotificationsBlock(array("warning" => "Inputs is not an Array! Is " . get_class($Inputs)));
+        if (!is_array($inputs) && !is_a($inputs, "ArrayObject")) {
+            $this->blocksFactory()
+                ->addNotificationsBlock(array("warning" => "Inputs is not an Array! Is ".get_class($inputs)));
         }
-        
-        //====================================================================//
-        // Parameters Table Block
-        $TableContents = array();
-        $TableContents[]    =   array("Received " . count($Inputs) .  " inputs parameters","Value");
-        foreach ($Inputs as $key => $value) {
-            $TableContents[]    =   array($key, $value);
-        }
-        
-        $this->blocksFactory()->addTableBlock($TableContents, array("Width" => self::SIZE_M));
-    }
-    
-    /**
-    *   @abstract     Block Building - Notifications Parameters
-    */
-    protected function buildNotificationsBlock()
-    {
 
         //====================================================================//
-        // Notifications Block
-        
-        $Notifications = array(
-            "error" =>  "This is a Sample Error Notification",
-            "warning" =>  "This is a Sample Warning Notification",
-            "success" =>  "This is a Sample Success Notification",
-            "info" =>  "This is a Sample Infomation Notification",
-        );
-        
-        
-        $this->blocksFactory()->addNotificationsBlock($Notifications, array("Width" => self::SIZE_M));
+        // Parameters Table Block
+        $tableContents = array();
+        $tableContents[] = array("Received ".count($inputs)." inputs parameters","Value");
+        foreach ($inputs as $key => $value) {
+            $tableContents[] = array($key, $value);
+        }
+
+        $this->blocksFactory()->addTableBlock($tableContents, array("Width" => self::SIZE_M));
     }
-    
-    //====================================================================//
-    // Class Tooling Functions
-    //====================================================================//
+
+    /**
+     * Block Building - Notifications Parameters
+     *
+     * @return void
+     */
+    protected function buildNotificationsBlock(): void
+    {
+        //====================================================================//
+        // Notifications Block
+        $notifications = array(
+            "error" => "This is a Sample Error Notification",
+            "warning" => "This is a Sample Warning Notification",
+            "success" => "This is a Sample Success Notification",
+            "info" => "This is a Sample Information Notification",
+        );
+
+        $this->blocksFactory()->addNotificationsBlock($notifications, array("Width" => self::SIZE_M));
+    }
 }

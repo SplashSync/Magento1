@@ -1,89 +1,119 @@
 <?php
 
+/*
+ *  This file is part of SplashSync Project.
+ *
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
+
 namespace Splash\Local\Tests;
 
+use Exception;
+use Mage;
+use Mage_Sales_Model_Order;
+use Mage_Sales_Model_Order_Shipment_Track;
+use Splash\Client\Splash;
 use Splash\Tests\Tools\ObjectsCase;
 
-use Splash\Client\Splash;
-
-use Mage;
-
 /**
- * @abstract    Local Test Suite - Order Tracking Reading Verifications
- *
- * @author SplashSync <contact@splashsync.com>
+ * Local Test Suite - Order Tracking Reading Verifications
  */
 class L02OrderTrackingTest extends ObjectsCase
 {
-    
-    public function testOrdersTrackingNumbers()
+    /**
+     * Test Reading of Order Tracking Numbers
+     *
+     * @return void
+     */
+    public function testOrdersTrackingNumbers(): void
     {
         //====================================================================//
         //   Search for Orders including Bundle Products
-        $Collection = Mage::getModel('sales/order_shipment_track')
-                            ->getCollection()
-                            ->addAttributeToSelect('order_id')
-                ;
-
+        /** @var Mage_Sales_Model_Order_Shipment_Track $model */
+        $model = Mage::getModel('sales/order_shipment_track');
+        $collection = $model
+            ->getCollection()
+            ->addAttributeToSelect('order_id')
+        ;
         //====================================================================//
         //   Skip if Empty
-        if ($Collection->getSize() < 1) {
+        if ($collection->getSize() < 1) {
             $this->markTestSkipped('No Orders including Tracking Numbers in Database.');
-            return false;
         }
-
         //====================================================================//
         //   Perform Tests
-        foreach ($Collection->getItems() as $listItem) {
+        foreach ($collection->getItems() as $listItem) {
             $this->verifyNumbers($listItem["order_id"]);
         }
     }
 
-    private function verifyNumbers(string $objectId)
+    /**
+     * Verify Tracking Numbers
+     *
+     * @param string $objectId
+     *
+     * @throws Exception
+     *
+     * @return void
+     */
+    private function verifyNumbers(string $objectId): void
     {
         //====================================================================//
         //   Get Readable Object Fields List
-        $Fields = $this->reduceFieldList(Splash::object("Order")->fields(), true, false);
+        $fields = $this->reduceFieldList(Splash::object("Order")->fields(), true, false);
         //====================================================================//
         //   Read Order Data from Module
-        $Data   =   Splash::object("Order")->get($objectId, $Fields);
+        $data = Splash::object("Order")->get($objectId, $fields);
         //====================================================================//
         //   Basic verifications
-        $this->assertNotEmpty($Data);
-        $this->assertArrayHasKey("tracking", $Data);
-        $this->assertNotEmpty($Data["tracking"]);
+        $this->assertIsArray($data);
+        $this->assertNotEmpty($data);
+        $this->assertArrayHasKey("tracking", $data);
+        $this->assertNotEmpty($data["tracking"]);
         //====================================================================//
         //   Read Order from Magento
-        $Order  =   Mage::getModel('sales/order')->load($objectId);
-        
+        /** @var Mage_Sales_Model_Order $model */
+        $model = Mage::getModel('sales/order');
+        /** @var false|Mage_Sales_Model_Order $order */
+        $order = $model->load((int) $objectId);
         //====================================================================//
         //   Basic verifications
-        $this->assertNotEmpty($Order);
-        $this->assertNotEmpty($Order->getTracksCollection());
-        
+        $this->assertNotEmpty($order);
+        $this->assertInstanceOf(Mage_Sales_Model_Order::class, $order);
+        $this->assertNotEmpty($order->getTracksCollection());
+
         //====================================================================//
         //   Verify Quantities
-        $totalFound =   0;
-        foreach ($Order->getTracksCollection() as $Key => $orderTracking) {
+        $totalFound = 0;
+        /** @var Mage_Sales_Model_Order_Shipment_Track[] $orderTracks */
+        $orderTracks = $order->getTracksCollection();
+        foreach ($orderTracks as $key => $orderTracking) {
             $this->assertEquals(
                 $orderTracking->getTitle(),
-                $Data["tracking"][$Key-1]["title"]
+                $data["tracking"][$key - 1]["title"]
             );
             $this->assertEquals(
                 $orderTracking->getCarrierCode(),
-                $Data["tracking"][$Key-1]["carrier_code"]
+                $data["tracking"][$key - 1]["carrier_code"]
             );
             $this->assertEquals(
-                $orderTracking->getTrackNumber(),
-                $Data["tracking"][$Key-1]["track_number"]
+                $orderTracking->getNumber(),
+                $data["tracking"][$key - 1]["track_number"]
             );
 
             if (!$totalFound) {
-                $this->assertEquals($orderTracking->getTitle(), $Data["title"]);
-                $this->assertEquals($orderTracking->getCarrierCode(), $Data["carrier_code"]);
-                $this->assertEquals($orderTracking->getTrackNumber(), $Data["tracking"][$Key-1]["track_number"]);
+                $this->assertEquals($orderTracking->getTitle(), $data["title"]);
+                $this->assertEquals($orderTracking->getCarrierCode(), $data["carrier_code"]);
+                $this->assertEquals($orderTracking->getNumber(), $data["tracking"][$key - 1]["track_number"]);
             }
-            
+
             $totalFound++;
         }
         $this->assertGreaterThan(0, $totalFound);
