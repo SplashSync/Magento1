@@ -1,91 +1,86 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Core;
 
 /**
- * @abstract    Magento 1 Object SplashId Access
+ * Magento 1 Object SplashId Access
  */
 trait SplashIdTrait
 {
-    
-
     /**
-    *   @abstract     Build Fields using FieldFactory
-    */
-    private function buildSplashIdFields()
+     * Build Fields using FieldFactory
+     */
+    protected function buildSplashIdFields(): void
     {
         //====================================================================//
         // Splash Unique Object Id
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("splash_id")
-                ->Name("Splash Id")
-                ->Group("Meta")
-                ->MicroData("http://splashync.com/schemas", "ObjectId")
-                ->NotTested;
+            ->Identifier("splash_id")
+            ->Name("Splash Id")
+            ->Group("Meta")
+            ->MicroData("http://splashync.com/schemas", "ObjectId")
+            ->isNotTested()
+        ;
     }
-    
+
     /**
-     *  @abstract     Read requested Field
+     * Read requested Field
      *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
+     * @param string $key       Input List Key
+     * @param string $fieldName Field Identifier / Name
      *
-     *  @return         none
+     * @return void
      */
-    private function getSplashIdFields($Key, $FieldName)
+    protected function getSplashIdFields($key, $fieldName): void
     {
-            
         //====================================================================//
         // READ Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
             case 'splash_id':
-                $this->getData($FieldName);
+                $this->getData($fieldName);
+
                 break;
             default:
                 return;
         }
-        unset($this->In[$Key]);
+        unset($this->in[$key]);
     }
-    
 
     /**
-     *  @abstract     Write Given Fields
+     * Write Given Fields
      *
-     *  @param        string    $FieldName              Field Identifier / Name
-     *  @param        mixed     $Data                   Field Data
+     * @param string $fieldName Field Identifier / Name
+     * @param mixed  $data      Field Data
      *
-     *  @return         none
+     * @return void
      */
-    private function setSplashIdFields($FieldName, $Data)
+    private function setSplashIdFields($fieldName, $data)
     {
         //====================================================================//
         // WRITE Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // Splash Meta Data
             case 'splash_id':
-                $this->setData($FieldName, $Data);
+                $this->setData($fieldName, $data);
+
                 break;
             default:
                 return;
         }
-        unset($this->In[$FieldName]);
+        unset($this->in[$fieldName]);
     }
 }

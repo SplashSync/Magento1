@@ -1,136 +1,129 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Core;
 
-use Splash\Core\SplashCore      as Splash;
-
-// Magento Namespaces
 use Mage;
+use Mage_Core_Model_Store;
 use Mage_Core_Model_Website;
 
 /**
- * @abstract    Magento 1 Object SplashOrigin Access
+ * Magento 1 Object SplashOrigin Access
  */
 trait SplashOriginTrait
 {
-    
-
     /**
-    *   @abstract     Build Fields using FieldFactory
-    */
-    private function buildSplashOriginFields()
-    {
-        //====================================================================//
-        // Splash Object SOrigin Node Id
-        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("splash_origin")
-                ->Name("Splash Origin Node")
-                ->Group("Meta")
-                ->MicroData("http://splashync.com/schemas", "SourceNodeId");
-    }
-    
-    /**
-     *  @abstract     Read requested Field
+     * Detect Creation Website with Origin Id Given by Splash
      *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
-     *
-     *  @return         none
-     */
-    private function getSplashOriginFields($Key, $FieldName)
-    {
-        //====================================================================//
-        // READ Fields
-        switch ($FieldName) {
-            case 'splash_origin':
-                $this->getData($FieldName);
-                break;
-            default:
-                return;
-        }
-        unset($this->In[$Key]);
-    }
-    
-
-    /**
-     *  @abstract     Write Given Fields
-     *
-     *  @param        string    $FieldName              Field Identifier / Name
-     *  @param        mixed     $Data                   Field Data
-     *
-     *  @return         none
-     */
-    private function setSplashOriginFields($FieldName, $Data)
-    {
-        //====================================================================//
-        // WRITE Fields
-        switch ($FieldName) {
-            case 'splash_origin':
-                $this->setData($FieldName, $Data);
-                break;
-            default:
-                return;
-        }
-        unset($this->In[$FieldName]);
-    }
-    
-    /**
-     *  @abstract   Detect Creation Website with Origin Id Given by Splash
-     *
-     *  @return     Mage_Core_Model_Website
+     * @return Mage_Core_Model_Website
      */
     protected function getSplashOriginWebsite()
     {
         //====================================================================//
-        // If Origin Given => Select Choosen Website
-        if ( isset($this->In["splash_origin"]) && !empty($this->In["splash_origin"]) ) {
+        // If Origin Given => Select Website
+        if (isset($this->in["splash_origin"]) && !empty($this->in["splash_origin"])) {
             foreach (Mage::app()->getWebsites() as $website) {
-                if ($this->In["splash_origin"] == $website->getConfig('splashsync_splash_options/advanced/origin')) {
+                if ($this->in["splash_origin"] == $website->getConfig('splashsync_splash_options/advanced/origin')) {
                     return $website;
                 }
             }
         }
         //====================================================================//
-        // If No Origin Given => Select Default WebSite      
+        // If No Origin Given => Select Default WebSite
         return Mage::app()->getWebsite(
             Mage::getStoreConfig('splashsync_splash_options/advanced/website')
         );
     }
-    
+
     /**
-     *  @abstract     Detect Creation Websites Ids Array with Origin Id Given by Splash
+     * Detect Creation Websites Ids Array with Origin Id Given by Splash
      *
-     *  @return         array
+     * @return array
      */
-    protected function getSplashOriginWebsiteIds()
+    protected function getSplashOriginWebsiteIds(): array
     {
-        return [$this->getSplashOriginWebsite()->getId()];
-    }    
-    
+        return array($this->getSplashOriginWebsite()->getId());
+    }
+
     /**
-     *  @abstract   Detect Creation Store with Origin Id Given by Splash
+     * Detect Creation Store with Origin Id Given by Splash
      *
-     *  @return     Mage_Core_Model_Store,
+     * @return Mage_Core_Model_Store,
      */
     protected function getSplashOriginStore()
     {
         return $this->getSplashOriginWebsite()->getDefaultStore();
-    }    
+    }
+
+    /**
+     * Build Fields using FieldFactory
+     */
+    protected function buildSplashOriginFields(): void
+    {
+        //====================================================================//
+        // Splash Object SOrigin Node Id
+        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
+            ->Identifier("splash_origin")
+            ->Name("Splash Origin Node")
+            ->Group("Meta")
+            ->MicroData("http://splashync.com/schemas", "SourceNodeId");
+    }
+
+    /**
+     * Read requested Field
+     *
+     * @param string $key Input List Key
+     * @param string $fieldName Field Identifier / Name
+     *
+     * @return void
+     */
+    protected function getSplashOriginFields(string $key, string $fieldName): void
+    {
+        //====================================================================//
+        // READ Fields
+        switch ($fieldName) {
+            case 'splash_origin':
+                $this->getData($fieldName);
+
+                break;
+            default:
+                return;
+        }
+        unset($this->in[$key]);
+    }
+
+    /**
+     * Write Given Fields
+     *
+     * @param string $fieldName Field Identifier / Name
+     * @param mixed $data Field Data
+     *
+     * @return void
+     */
+    protected function setSplashOriginFields(string $fieldName, $data)
+    {
+        //====================================================================//
+        // WRITE Fields
+        switch ($fieldName) {
+            case 'splash_origin':
+                $this->setData($fieldName, $data);
+
+                break;
+            default:
+                return;
+        }
+        unset($this->in[$fieldName]);
+    }
 }

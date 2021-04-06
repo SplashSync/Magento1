@@ -1,172 +1,169 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Core;
 
-// Magento Namespaces
 use Mage;
-
+use Mage_Tax_Model_Calculation;
 use Splash\Core\SplashCore      as Splash;
 
 /**
- * @abstract    Magento 1 Object Prices Getter & Setters
+ * Magento 1 Object Prices Getter & Setters
  */
 trait PricesTrait
 {
-    
     /**
-     *  @abstract     Check if Magento Prices Include VAT or Not
+     * Encode Magento Product Price
      *
-     *  @param        string    $Context                Context ( Products / Shipping )
-     *
-     *  @return       bool
+     * @return array|string
      */
-    private function isVatIncluded($Context = 'Products')
-    {
-        switch ($Context) {
-            case 'Shipping':
-                return (bool)   Mage::getStoreConfig('tax/calculation/shipping_includes_tax');
-                
-            case 'Products':
-            default:
-                return (bool)   Mage::getStoreConfig('tax/calculation/price_includes_tax');
-        }
-    }
-    
-    
-    /**
-     *  @abstract     Encode Magento Product Price
-     *
-     *  @return       array
-     */
-    public function getProductPrice()
+    protected function getProductPrice()
     {
         //====================================================================//
-        // Load Product Appliable Tax Rate
-        $Store              =   Mage::app()->getStore($this->Object->getStore());
-        $TaxCalculation     =   Mage::getModel('tax/calculation');
-        $TaxRequest         =   $TaxCalculation->getRateRequest(null, null, null, $Store);
-        $Tax                =   (double)  $TaxCalculation->getRate(
-            $TaxRequest->setProductClassId($this->Object->getTaxClassId())
+        // Load Product Tax Rate
+        $store = Mage::app()->getStore($this->object->getStore());
+        /** @var Mage_Tax_Model_Calculation $taxCalculation */
+        $taxCalculation = Mage::getModel('tax/calculation');
+        $taxRequest = $taxCalculation->getRateRequest(null, null, null, $store);
+        $tax = (float)  $taxCalculation->getRate(
+            /** @phpstan-ignore-next-line */
+            $taxRequest->setProductClassId($this->object->getTaxClassId())
         );
 
         //====================================================================//
         // Read Current Currency Code
-        $CurrencyCode   =   Mage::app()->getStore()->getCurrentCurrencyCode();
+        $currencyCode = Mage::app()->getStore()->getCurrentCurrencyCode();
         //====================================================================//
         // Read Price
         if ($this->isVatIncluded()) {
-            $PriceTTC   = (double)  $this->Object->getPrice();
-            $PriceHT    = null;
+            $priceTTC = (float)  $this->object->getPrice();
+            $priceHT = null;
         } else {
-            $PriceTTC   = null;
-            $PriceHT    = (double)  $this->Object->getPrice();
+            $priceTTC = null;
+            $priceHT = (float)  $this->object->getPrice();
         }
 
         //====================================================================//
         // Build Price Array
         return self::prices()->encode(
-            $PriceHT,
-            $Tax,
-            $PriceTTC,
-            $CurrencyCode,
-            Mage::app()->getLocale()->currency($CurrencyCode)->getSymbol(),
-            Mage::app()->getLocale()->currency($CurrencyCode)->getName()
+            $priceHT,
+            $tax,
+            $priceTTC,
+            $currencyCode,
+            Mage::app()->getLocale()->currency($currencyCode)->getSymbol(),
+            Mage::app()->getLocale()->currency($currencyCode)->getName()
         );
     }
-    
-    
+
     /**
-     * @abstract     Update Magento Product Price
+     * Update Magento Product Price
      *
-     * @param   array   $SplashPrice        Splash Price Array Description
+     * @param array $splashPrice Splash Price Array Description
      *
-     * @return       array
+     * @return void
      */
-    public function setProductPrice($SplashPrice)
+    protected function setProductPrice($splashPrice): void
     {
         //====================================================================//
         // Read Current Product Price (Via Out Buffer)
-        $CurrentPrice   =   $this->getProductPrice();
-        
+        /** @var array $currentPrice */
+        $currentPrice = $this->getProductPrice();
+
         //====================================================================//
         // Compare Prices
-        if (self::prices()->Compare($CurrentPrice, $SplashPrice)) {
+        if (self::prices()->compare($currentPrice, $splashPrice)) {
             return;
         }
-        
+
         //====================================================================//
         // Update Product Price if Required
         if ($this->isVatIncluded()) {
-            $OldPrice   = (double)  self::prices()->TaxIncluded($CurrentPrice);
-            $NewPrice   = (double)  self::prices()->TaxIncluded($SplashPrice);
+            $oldPrice = (float)  self::prices()->taxIncluded($currentPrice);
+            $newPrice = (float)  self::prices()->taxIncluded($splashPrice);
         } else {
-            $OldPrice   = (double)  self::prices()->TaxExcluded($CurrentPrice);
-            $NewPrice   = (double)  self::prices()->TaxExcluded($SplashPrice);
+            $oldPrice = (float)  self::prices()->taxExcluded($currentPrice);
+            $newPrice = (float)  self::prices()->taxExcluded($splashPrice);
         }
-        if (abs($OldPrice - $NewPrice) > 1E-6) {
-            $this->Object->setPrice($NewPrice);
+        if (abs($oldPrice - $newPrice) > 1E-6) {
+            $this->object->setPrice($newPrice);
             $this->needUpdate();
         }
 
         //====================================================================//
         // Update Product Tax Class if Required
-        $OldTaxId     = $this->identifyPriceTaxClass(self::prices()->TaxPercent($CurrentPrice));
-        $NewTaxId     = $this->identifyPriceTaxClass(self::prices()->TaxPercent($SplashPrice));
-        if ($OldTaxId != $NewTaxId) {
-            $this->Object->setTaxClassId($NewTaxId);
+        $oldTaxId = $this->identifyPriceTaxClass((float) self::prices()->taxPercent($currentPrice));
+        $newTaxId = $this->identifyPriceTaxClass((float) self::prices()->taxPercent($splashPrice));
+        if ($oldTaxId != $newTaxId) {
+            $this->object->setTaxClassId($newTaxId);
             $this->needUpdate();
         }
     }
-    
-    
+
     /**
-     *  @abstract     Identify Tax Class Id from Tax Percentile
+     * Check if Magento Prices Include VAT or Not
      *
-     *  @return       int
+     * @param string $context Context ( Products / Shipping )
+     *
+     * @return bool
      */
-    private function identifyPriceTaxClass($Tax_Percent = 0)
+    private function isVatIncluded($context = 'Products'): bool
+    {
+        switch ($context) {
+            case 'Shipping':
+                return (bool)   Mage::getStoreConfig('tax/calculation/shipping_includes_tax');
+            case 'Products':
+            default:
+                return (bool)   Mage::getStoreConfig('tax/calculation/price_includes_tax');
+        }
+    }
+
+    /**
+     * Identify Tax Class Id from Tax Percentile
+     *
+     * @param float $taxRate
+     *
+     * @return int
+     */
+    private function identifyPriceTaxClass($taxRate = 0)
     {
         //====================================================================//
         // No Tax Rate Applied
-        if ($Tax_Percent == 0) {
+        if (0 == $taxRate) {
             return 0;
         }
-        
-        //====================================================================//
-        // Load Products Appliable Tax Rates
-        $Store              =   Mage::app()->getStore($this->Object->getStore());
-        $TaxCalculation     =   Mage::getModel('tax/calculation');
-        $TaxRequest         =   $TaxCalculation->getRateRequest(null, null, null, $Store);
-        $AvailableTaxes     =   $TaxCalculation->getRatesForAllProductTaxClasses($TaxRequest);
 
         //====================================================================//
-        // For Each Additionnal Tax Class
-        $BestId     =   0;
-        $BestRate   =   0;
-        foreach ($AvailableTaxes as $TaxClassId => $TaxRate) {
-            if (abs($Tax_Percent - $TaxRate) <  abs($Tax_Percent - $BestRate)) {
-                $BestId     =   $TaxClassId;
-                $BestRate   =   $TaxRate;
+        // Load Products Tax Rates
+        $store = Mage::app()->getStore($this->object->getStore());
+        /** @var Mage_Tax_Model_Calculation $taxCalculation */
+        $taxCalculation = Mage::getModel('tax/calculation');
+        $taxRequest = $taxCalculation->getRateRequest(null, null, null, $store);
+        /** @var float[] $availableTaxes */
+        $availableTaxes = $taxCalculation->getRatesForAllProductTaxClasses($taxRequest);
+
+        //====================================================================//
+        // For Each Additional Tax Class
+        $bestId = 0;
+        $bestRate = 0;
+        foreach ($availableTaxes as $txClassId => $txRate) {
+            if (abs($taxRate - $txRate) < abs($taxRate - $bestRate)) {
+                $bestId = $txClassId;
+                $bestRate = $txRate;
             }
         }
-        
-        return $BestId;
+
+        return $bestId;
     }
 }

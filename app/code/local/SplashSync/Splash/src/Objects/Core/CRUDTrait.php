@@ -1,99 +1,114 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Core;
 
-use Splash\Core\SplashCore      as Splash;
-
-// Magento Namespaces
 use Mage;
 use Mage_Core_Exception;
+use Splash\Core\SplashCore      as Splash;
+use Splash\Local\Local;
 
 /**
- * @abstract    Magento 1 Core CRUD Functions
+ * Magento 1 Core CRUD Functions
  */
 trait CRUDTrait
 {
-
     /**
-    *   @abstract   Generic Delete of requested Object
-    *   @param      string      $Type           Object Magento Type
-    *   @param      int         $Id             Object Id.  If NULL, Object needs to be created.
-    *   @return     int                         0 if KO, >0 if OK
-    */
-    public function CoreDelete($Type, $Id = null)
+     * Generic Delete of requested Object
+     *
+     * @param string $model    Object Magento Type
+     * @param int    $objectId Object Id.  If NULL, Object needs to be created.
+     *
+     * @return bool
+     */
+    public function coreDelete(string $model, $objectId = null)
     {
         //====================================================================//
         // Stack Trace
-        Splash::log()->trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace();
         //====================================================================//
         // Safety Checks
-        if (empty($Id)) {
+        if (empty($objectId)) {
             return Splash::log()->err("ErrSchNoObjectId", __CLASS__."::".__FUNCTION__);
         }
         //====================================================================//
         // Initialize Remote Admin user ...
-        if (!Splash::local()->LoadLocalUser()) {
+        /** @var Local $local */
+        $local = Splash::local();
+        if (!$local->loadLocalUser()) {
             return true;
         }
         //====================================================================//
         // Load Object From DataBase
         //====================================================================//
-        $Object = Mage::getModel($Type)->load($Id);
-        if ($Object->getEntityId() != $Id) {
-            return Splash::log()->war("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to load (" . $Id . ").");
+        $mageModel = Mage::getModel($model);
+        if (!$mageModel) {
+            return Splash::log()->warTrace("Unable find Mage Model ".$model.".");
+        }
+        $object = $mageModel->load($objectId);
+        if ($object->getEntityId() != $objectId) {
+            return Splash::log()->warTrace("Unable to load (".$objectId.").");
         }
         //====================================================================//
         // Delete Object From DataBase
         //====================================================================//
-        $Object->delete();
+        $object->delete();
+
         return true;
     }
-    
+
     /**
-     * @abstract    Update Request Object
-     *
-     * @param       array   $Needed         Is This Update Needed
-     *
-     * @return      string      Object Id
+     * @return false|string
      */
-    public function CoreUpdate($Needed)
+    public function getObjectIdentifier()
+    {
+        if (!$this->object) {
+            return false;
+        }
+
+        return $this->object->getEntityId();
+    }
+
+    /**
+     * Update Request Object
+     *
+     * @param bool $needed Is This Update Needed
+     *
+     * @return false|string Object Id
+     */
+    protected function coreUpdate($needed)
     {
         //====================================================================//
         // Stack Trace
-        Splash::log()->trace(__CLASS__, __FUNCTION__);
-        if (!$Needed) {
-            return $this->Object->getEntityId();
+        Splash::log()->trace();
+        if (!$needed) {
+            return $this->object->getEntityId();
         }
         //====================================================================//
         // Update Object
         try {
-            $this->Object->save();
+            $this->object->save();
         } catch (Mage_Core_Exception $ex) {
-            Splash::log()->deb($ex->getTraceAsString());
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
+            return Splash::log()->report($ex);
         }
         //====================================================================//
         // Ensure All changes have been saved
-        if ($this->Object->_hasDataChanges) {
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to update (" . $this->Object->getEntityId() . ").");
+        if ($this->object->_hasDataChanges) {
+            return Splash::log()->errTrace("Unable to update (".$this->object->getEntityId().").");
         }
-        return $this->Object->getEntityId();
-    }    
+
+        return $this->object->getEntityId();
+    }
 }
