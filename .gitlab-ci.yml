@@ -47,6 +47,9 @@ stages:
     ################################################################
     # Before Script
     before_script:
+        # Setup Apache Server
+        - echo '127.0.0.1 latest.magento.local' >> /etc/hosts
+        - cat /etc/hosts
         # Build Module (Composer)
         - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh | sh
         # Move Module to Magento Dir
@@ -64,6 +67,8 @@ stages:
     ################################################################
     # Test Script
     script:
+      # Restart Apache Server
+      - service apache2 restart && service apache2 status
       - cd $CI_PROJECT_DIR
       ################################################################################
       # Run Grumphp Main Test Sequence

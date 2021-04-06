@@ -34,7 +34,7 @@
 
     <php>
         <const  name="SPLASH_DEBUG" value="true" />
-        <server name="SERVER_NAME" value="http://localhost"/>
+        <server name="SERVER_NAME" value="http://latest.magento.local"/>
 
         <!-- Only Test Specified Types -->
 <!--        <const  name="SPLASH_TYPES"     value="Address" />-->
