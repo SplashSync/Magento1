@@ -1,40 +1,31 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Product;
 
-// Magento Namespaces
 use Mage;
 
 /**
- * @abstract    Magento 1 Products Main Fields Access
+ * Magento 1 Products Main Fields Access
  */
 trait MainTrait
 {
-    
-    
-    
-    
     /**
-    *   @abstract     Build Address Fields using FieldFactory
-    */
-    private function buildMainFields()
+     * Build Address Fields using FieldFactory
+     */
+    protected function buildMainFields(): void
     {
         //====================================================================//
         // PRODUCT SPECIFICATIONS
@@ -42,100 +33,93 @@ trait MainTrait
 
         //====================================================================//
         // Weight
-        $this->fieldsFactory()->Create(SPL_T_DOUBLE)
-                ->Identifier("weight")
-                ->Name("Weight")
-                ->MicroData("http://schema.org/Product", "weight");
-        
+        $this->fieldsFactory()->create(SPL_T_DOUBLE)
+            ->identifier("weight")
+            ->name("Weight")
+            ->microData("http://schema.org/Product", "weight")
+        ;
+
         //====================================================================//
         // PRICES INFORMATIONS
         //====================================================================//
-        
+
         //====================================================================//
         // Product Selling Price
-        $this->fieldsFactory()->Create(SPL_T_PRICE)
-                ->Identifier("price")
-                ->Name("Selling Price HT" . " (" . Mage::app()->getStore()->getCurrentCurrencyCode() . ")")
-                ->MicroData("http://schema.org/Product", "price")
-                ->isListed();
-        
-        //====================================================================//
-        // WholeSale Price
-//        $this->fieldsFactory()->Create(SPL_T_PRICE)
-//                ->Identifier("price-wholesale")
-//                ->Name($this->spl->l("Supplier Price") . " (" . $this->Currency->sign . ")")
-//                ->MicroData("http://schema.org/Product","wholesalePrice");
+        $this->fieldsFactory()->create(SPL_T_PRICE)
+            ->identifier("price")
+            ->name("Selling Price HT"." (".Mage::app()->getStore()->getCurrentCurrencyCode().")")
+            ->microData("http://schema.org/Product", "price")
+            ->isListed()
+        ;
     }
 
     /**
-     *  @abstract     Read requested Field
+     * Read requested Field
      *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
+     * @param string $key       Input List Key
+     * @param string $fieldName Field Identifier / Name
      *
-     *  @return         none
+     * @return void
      */
-    private function getMainFields($Key, $FieldName)
+    protected function getMainFields(string $key, string $fieldName): void
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
                 //====================================================================//
                 // PRODUCT SPECIFICATIONS
                 //====================================================================//
             case 'weight':
-                $this->Out[$FieldName] = (double) $this->Object->getData($FieldName);
+                $this->out[$fieldName] = (float) $this->object->getData($fieldName);
+
                 break;
-                
                 //====================================================================//
                 // PRICE INFORMATIONS
                 //====================================================================//
             case 'price':
-                $this->Out[$FieldName] = $this->getProductPrice();
+                $this->out[$fieldName] = $this->getProductPrice();
+
                 break;
-                
             default:
                 return;
         }
-        
-        if (!is_null($Key)) {
-            unset($this->In[$Key]);
-        }
+
+        unset($this->in[$key]);
     }
-    
-    
+
     /**
-     *  @abstract     Write Given Fields
+     * Write Given Fields
      *
-     *  @param        string    $FieldName              Field Identifier / Name
-     *  @param        mixed     $Data                   Field Data
+     * @param string $fieldName Field Identifier / Name
+     * @param mixed  $data      Field Data
      *
-     *  @return         none
+     * @return void
      */
-    private function setMainFields($FieldName, $Data)
+    protected function setMainFields(string $fieldName, $data): void
     {
         //====================================================================//
         // WRITE Field
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // PRODUCT SPECIFICATIONS
             //====================================================================//
             case 'weight':
-                if (abs((double) $this->Object->getData($FieldName) - (double) $Data) > 1E-3) {
-                    $this->Object->setData($FieldName, $Data);
+                if (abs((float) $this->object->getData($fieldName) - (float) $data) > 1E-3) {
+                    $this->object->setData($fieldName, $data);
                     $this->needUpdate();
                 }
+
                 break;
             //====================================================================//
             // PRICES INFORMATIONS
             //====================================================================//
             case 'price':
-                $this->setProductPrice($Data);
+                $this->setProductPrice($data);
+
                 break;
-                
             default:
                 return;
         }
-        unset($this->In[$FieldName]);
+        unset($this->in[$fieldName]);
     }
 }

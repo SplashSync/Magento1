@@ -1,94 +1,100 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Product;
 
-use Splash\Core\SplashCore      as Splash;
-
-// Magento Namespaces
 use Mage;
-use Mage_Core_Model_App;
+use Mage_Catalog_Exception;
+use Mage_Catalog_Model_Product;
 use Mage_Catalog_Model_Product_Status;
 use Mage_Catalog_Model_Product_Type;
-use Mage_Catalog_Exception;
+use Splash\Core\SplashCore      as Splash;
 
 /**
- * @abstract    Magento 1 Customers CRUD Functions
+ * Magento 1 Customers CRUD Functions
  */
 trait CRUDTrait
 {
-    
     //====================================================================//
     // General Class Variables
     //====================================================================//
-    protected $ProductId      = null;     // Magento Product Class Id
-    protected $AttributeId    = null;     // Magento Product Attribute Class Id
 
-    
     /**
-     * @abstract    Load Request Object
+     * Magento Product Class Id
      *
-     * @param       array   $Id               Object id
-     *
-     * @return      mixed
+     * @var int
      */
-    public function Load($Id)
+    protected $productId;
+
+    /**
+     * Magento Product Attribute Class Id
+     *
+     * @var int
+     */
+    protected $attributeId;
+
+    /**
+     * Load Request Object
+     *
+     * @param string $objectId Object id
+     *
+     * @return false|object
+     */
+    public function load($objectId)
     {
         //====================================================================//
         // Stack Trace
-        Splash::log()->trace(__CLASS__, __FUNCTION__);
-        $Product = False;        
+        Splash::log()->trace();
+        $product = false;
         //====================================================================//
         // Decode Product Id
-        $this->ProductId        = self::getId($Id);
-        $this->AttributeId      = self::getAttribute($Id);
+        $this->productId = self::getId((int) $objectId);
+        $this->attributeId = self::getAttribute((int) $objectId);
         //====================================================================//
         // Safety Checks
-        if (empty($Id)  || empty($this->ProductId)) {
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Missing Id.");
+        if (empty($objectId) || empty($this->productId)) {
+            return Splash::log()->errTrace("Missing Product Id.");
         }
         //====================================================================//
         // If $id Given => Load Product Object From DataBase
         //====================================================================//
-        if (!empty($this->ProductId)) {
+        if (!empty($this->productId)) {
             //====================================================================//
             // Init Object
-            $Product = Mage::getModel('catalog/product')->load($this->ProductId);
-            if ($Product->getEntityId() != $this->ProductId) {
-                return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to fetch Product (" . $this->ProductId . ")");
+            /** @var Mage_Catalog_Model_Product $model */
+            $model = Mage::getModel('catalog/product');
+            /** @var false|Mage_Catalog_Model_Product $product */
+            $product = $model->load($this->productId);
+            if (!$product || ($product->getEntityId() != $this->productId)) {
+                return Splash::log()->errTrace("Unable to fetch Product (".$this->productId.")");
             }
         }
-        return $Product;
+
+        return $product;
     }
-    
+
     /**
-     * @abstract    Create Request Object
+     * Create Request Object
      *
-     * @param       array   $List         Given Object Data
-     *
-     * @return      object     New Object
+     * @return false|object New Object
      */
-    public function Create()
+    public function create()
     {
         //====================================================================//
         // Stack Trace
-        Splash::log()->trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace();
         //====================================================================//
         // Check Required Fields
         if (!$this->verifyRequiredFields()) {
@@ -96,109 +102,113 @@ trait CRUDTrait
         }
         //====================================================================//
         // Init Product Class
-        $Product = Mage::getModel('catalog/product')
-                // Setup Product in default website
-                ->setWebsiteIds($this->getSplashOriginWebsiteIds())
-                // Setup Product Status
-                ->setStatus(Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
+        /** @var Mage_Catalog_Model_Product $product */
+        $product = Mage::getModel('catalog/product');
+        $product
+            // Setup Product in default website
+            ->setWebsiteIds($this->getSplashOriginWebsiteIds())
+            // Setup Product Status
+            ->setStatus(Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
         //====================================================================//
         // Init Product Entity
-        $Product->setAttributeSetId(Mage::getStoreConfig('splashsync_splash_options/products/attribute_set'));
+        $product->setAttributeSetId(Mage::getStoreConfig('splashsync_splash_options/products/attribute_set'));
         //====================================================================//
         // Init Product Type => Always Simple when Created formOutside Magento
-        $Product->setTypeId((Mage_Catalog_Model_Product_Type::TYPE_SIMPLE));
-        $Product->setData("sku", $this->In["sku"]);
+        $product->setTypeId((Mage_Catalog_Model_Product_Type::TYPE_SIMPLE));
+        $product->setData("sku", $this->in["sku"]);
         //====================================================================//
         // Save Object
         try {
-            $Product->save();
+            $product->save();
         } catch (Mage_Catalog_Exception $ex) {
-            Splash::log()->deb($ex->getTraceAsString());
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
+            Splash::log()->report($ex);
+
+            return false;
         }
-        $this->ProductId        = $Product->getEntityId();
-        return $Product;
+        $this->productId = $product->getEntityId();
+
+        return $product;
     }
-    
+
     /**
-     * @abstract    Update Request Object
+     * Update Request Object
      *
-     * @param       array   $Needed         Is This Update Needed
+     * @param bool $needed Is This Update Needed
      *
-     * @return      string      Object Id
+     * @return false|string Object Id
      */
-    public function Update($Needed)
+    public function update($needed)
     {
-        return $this->CoreUpdate($Needed);
+        return $this->coreUpdate($needed);
     }
-        
+
     /**
-     * @abstract    Delete requested Object
+     * Delete requested Object
      *
-     * @param       int     $Id     Object Id.  If NULL, Object needs to be created.
+     * @param string $objectId Object Id.  If NULL, Object needs to be created.
      *
-     * @return      bool
+     * @return bool
      */
-    public function Delete($Id = null)
+    public function delete($objectId = null)
     {
         //====================================================================//
         // Stack Trace
-        Splash::log()->trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace();
         //====================================================================//
         // Decode Product Id
-        if (!empty($Id)) {
-            $this->ProductId    = $this->getId($Id);
-            $this->AttributeId  = $this->getAttribute($Id);
+        if (!empty($objectId)) {
+            $this->productId = $this->getId((int) $objectId);
+            $this->attributeId = $this->getAttribute((int) $objectId);
         } else {
             return Splash::log()->err("ErrSchWrongObjectId", __FUNCTION__);
         }
         //====================================================================//
         // Execute Generic Magento Delete Function ...
-        return $this->CoreDelete('catalog/product', $this->ProductId);
+        return $this->coreDelete('catalog/product', $this->productId);
     }
-    
-   
-// *******************************************************************//
-// Product COMMON Local Functions
-// *******************************************************************//
+
+    //====================================================================//
+    // Product COMMON Local Functions
+    //====================================================================//
 
     /**
-     * @abstract       Convert id_product & id_product_attribute pair
-     * 
-     * @param   int     $ProductId          Product Identifier (Int10)
-     * @param   int     $AttributeId        Product Combinaison Identifier (Int10)
-     * 
-     * @return  int     0 if KO, >0 if OK (Int32)
+     * Convert id_product & id_product_attribute pair
+     *
+     * @param int $productId   Product Identifier (Int10)
+     * @param int $attributeId Product Combinaison Identifier (Int10)
+     *
+     * @return int 0 if KO, >0 if OK (Int32)
      */
-    public function getUnikId($ProductId = null, $AttributeId = 0)
+    public function getUnikId($productId = null, $attributeId = 0)
     {
-        if (is_null($ProductId)) {
-            return $this->ProductId + ($this->AttributeId << 20);
+        if (is_null($productId)) {
+            return $this->productId + ($this->attributeId << 20);
         }
-        return $ProductId + ($AttributeId << 20);
+
+        return $productId + ($attributeId << 20);
     }
-    
+
     /**
-     * @abstract       Revert UnikId to decode id_product
-     * 
-     * @param   int     $UnikId         Product UnikId (Int32)
-     * 
-     * @return  int     0 if KO, >0 if OK (Int10)
+     * Revert Unique Id to decode id_product
+     *
+     * @param int $objectId Product Unique Id (Int32)
+     *
+     * @return int 0 if KO, >0 if OK (Int10)
      */
-    static public function getId($UnikId)
+    public static function getId($objectId)
     {
-        return $UnikId & 0xFFFFF;
+        return $objectId & 0xFFFFF;
     }
-    
+
     /**
-     * @abstract       Revert UnikId to decode id_product_attribute
-     * 
-     * @param   int     $UnikId         Product UnikId (Int32)
-     * 
-     * @return  int     0 if KO, >0 if OK (Int10)
+     * Revert Unique Id to decode id_product_attribute
+     *
+     * @param int $objectId Product Unique Id (Int32)
+     *
+     * @return int 0 if KO, >0 if OK (Int10)
      */
-    static public function getAttribute($UnikId)
+    public static function getAttribute($objectId)
     {
-        return $UnikId >> 20;
+        return $objectId >> 20;
     }
 }

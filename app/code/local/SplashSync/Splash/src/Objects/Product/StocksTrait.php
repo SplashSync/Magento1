@@ -1,85 +1,78 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Product;
 
+use Mage;
+use Mage_Catalog_Model_Product;
 use Splash\Core\SplashCore      as Splash;
 
-use Mage;
-
 /**
- * @abstract    Magento 1 Products Stocks Fields Access
+ * Magento 1 Products Stocks Fields Access
  */
 trait StocksTrait
 {
-    
-
     /**
-    *   @abstract     Build Fields using FieldFactory
-    */
-    private function buildStocksFields()
+     * Build Fields using FieldFactory
+     */
+    protected function buildStocksFields(): void
     {
-        
         //====================================================================//
         // PRODUCT STOCKS
         //====================================================================//
-        
-        //====================================================================//
-        // Stock Reel
-        $this->fieldsFactory()->Create(SPL_T_INT)
-                ->Identifier("qty")
-                ->Name("Stock")
-                ->Group("Stocks")
-                ->MicroData("http://schema.org/Offer", "inventoryLevel")
-                ->isListed();
 
         //====================================================================//
+        // Stock Reel
+        $this->fieldsFactory()->create(SPL_T_INT)
+            ->identifier("qty")
+            ->name("Stock")
+            ->group("Stocks")
+            ->microData("http://schema.org/Offer", "inventoryLevel")
+        ;
+        //====================================================================//
         // Out of Stock Flag
-        $this->fieldsFactory()->Create(SPL_T_BOOL)
-                ->Identifier("outofstock")
-                ->Name('Out of stock')
-                ->Group("Stocks")
-                ->MicroData("http://schema.org/ItemAvailability", "OutOfStock")
-                ->isReadOnly();
-                
+        $this->fieldsFactory()->create(SPL_T_BOOL)
+            ->identifier("outofstock")
+            ->name('Out of stock')
+            ->group("Stocks")
+            ->microData("http://schema.org/ItemAvailability", "OutOfStock")
+            ->isReadOnly()
+        ;
         //====================================================================//
         // Minimum Order Quantity
         $this->fieldsFactory()->Create(SPL_T_INT)
-                ->Identifier("min_sale_qty")
-                ->Name('Min. Order Quantity')
-                ->Group("Stocks")
-                ->MicroData("http://schema.org/Offer", "eligibleTransactionVolume");
+            ->Identifier("min_sale_qty")
+            ->Name('Min. Order Quantity')
+            ->Group("Stocks")
+            ->MicroData("http://schema.org/Offer", "eligibleTransactionVolume")
+        ;
     }
 
-        /**
-     *  @abstract     Read requested Field
+    /**
+     * Read requested Field
      *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
+     * @param string $key Input List Key
+     * @param string $fieldName Field Identifier / Name
      *
-     *  @return         none
+     * @return void
      */
-    private function getStocksFields($Key, $FieldName)
+    protected function getStocksFields(string $key, string $fieldName): void
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // PRODUCT STOCKS
             //====================================================================//
@@ -88,83 +81,90 @@ trait StocksTrait
             //====================================================================//
             // Minimum Order Quantity
             case 'min_sale_qty':
-                $this->Out[$FieldName] = (int) $this->Object->getStockItem()->getData($FieldName);
+                $this->out[$fieldName] = (int) $this->object->getStockItem()->getData($fieldName);
+
                 break;
             //====================================================================//
             // Out Of Stock
             case 'outofstock':
-                $this->Out[$FieldName] = $this->Object->getStockItem()->getIsInStock() ? false : true;
+                $this->out[$fieldName] = $this->object->getStockItem()->getIsInStock() ? false : true;
+
                 break;
             default:
                 return;
         }
-        
-        unset($this->In[$Key]);
+
+        unset($this->in[$key]);
     }
 
-
     /**
-     *  @abstract     Write Given Fields
+     * Write Given Fields
      *
-     *  @param        string    $FieldName              Field Identifier / Name
-     *  @param        mixed     $Data                   Field Data
+     * @param string $fieldName Field Identifier / Name
+     * @param mixed $data Field Data
      *
-     *  @return         none
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
-    private function setStocksFields($FieldName, $Data)
+    protected function setStocksFields(string $fieldName, $data): void
     {
-        $UpdateStock    = false;
+        $updateStock = false;
         //====================================================================//
         // WRITE Field
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // PRODUCT STOCKS
             case 'qty':
             case 'min_sale_qty':
                 //====================================================================//
                 // If New PRODUCT => Reload Product to get Stock Item
-                if (empty($this->Object->getStockItem())) {
-                    $StockItem = Mage::getModel('catalog/product')->load($this->ProductId)->getStockItem();
+                if (empty($this->object->getStockItem())) {
+                    /** @var Mage_Catalog_Model_Product $model */
+                    $model = Mage::getModel('catalog/product');
+                    /** @var false|Mage_Catalog_Model_Product $product */
+                    $product = $model->load($this->productId);
+                    $stockItem = $product ? $product->getStockItem() : 0;
                 } else {
-                    $StockItem      = $this->Object->getStockItem();
+                    $stockItem = $this->object->getStockItem();
                 }
                 //====================================================================//
                 // Get Stock Item
-                if (empty($StockItem)) {
+                if (empty($stockItem)) {
                     break;
                 }
-                if ($StockItem->getData($FieldName) != $Data) {
-                    $StockItem->setData($FieldName, $Data);
-                    $UpdateStock = true;
+                if ($stockItem->getData($fieldName) != $data) {
+                    $stockItem->setData($fieldName, $data);
+                    $updateStock = true;
                 }
-                break;
 
+                break;
             default:
                 return;
         }
-        
-        unset($this->In[$FieldName]);
-        
+
+        unset($this->in[$fieldName]);
+
         //====================================================================//
         // UPDATE PRODUCT STOCK
         //====================================================================//
-        if (!$UpdateStock) {
+        if (!$updateStock) {
             return;
         }
         //====================================================================//
         // If New PRODUCT => Set Stock/Warehouse Id
-        if (!$StockItem->getStockId()) {
-            $StockItem->setStockId(Mage::getStoreConfig('splashsync_splash_options/products/default_stock'));
+        if (!$stockItem->getStockId()) {
+            $stockItem->setStockId(Mage::getStoreConfig('splashsync_splash_options/products/default_stock'));
         } else {
-            $StockItem->setStockId($StockItem->getStockId());
+            $stockItem->setStockId($stockItem->getStockId());
         }
         //====================================================================//
         // Save PRODUCT Stock Item
-        $StockItem->save();
+        $stockItem->save();
         //====================================================================//
         // Verify Item Saved
-        if ($StockItem->_hasDataChanges) {
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to Update Stocks (" . $this->Object->getEntityId() . ").");
+        if ($stockItem->_hasDataChanges) {
+            Splash::log()->errTrace("Unable to Update Stocks (".$this->object->getEntityId().").");
         }
     }
 }

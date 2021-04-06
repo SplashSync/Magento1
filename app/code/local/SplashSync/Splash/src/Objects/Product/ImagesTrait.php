@@ -1,201 +1,151 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Product;
 
-// Splash Namespaces
+use ArrayObject;
+use Exception;
+use Mage;
 use Splash\Core\SplashCore      as Splash;
 
-// Magento Namespaces
-use Mage;
-use Mage_Core_Exception;
-
-use Exception;
-
 /**
- * @abstract    Magento 1 Products Images Fields Access
+ * Magento 1 Products Images Fields Access
  */
 trait ImagesTrait
 {
-    private $ImgPosition = 0;
-    
     /**
-    *   @abstract     Build Fields using FieldFactory
-    */
-    private function buildImagesFields()
+     * @var int
+     */
+    private $imgPosition = 0;
+
+    /**
+     * Build Fields using FieldFactory
+     *
+     * @return void
+     */
+    protected function buildImagesFields(): void
     {
-        //====================================================================//
-        // Product Cover Image Position
-//        $this->fieldsFactory()->Create(SPL_T_INT)
-//                ->Identifier("cover_image")
-//                ->Name($this->spl->l("Cover"))
-//                ->MicroData("http://schema.org/Product","coverImage")
-//                ->isNotTested();
-        
         //====================================================================//
         // Product Images List
         $this->fieldsFactory()->Create(SPL_T_IMG)
-                ->Identifier("image")
-                ->InList("images")
-                ->Name("Images")
-                ->Group("Images")
-                ->MicroData("http://schema.org/Product", "image");
+            ->Identifier("image")
+            ->InList("images")
+            ->Name("Images")
+            ->Group("Images")
+            ->MicroData("http://schema.org/Product", "image");
     }
 
     /**
-     *  @abstract     Read requested Field
+     * Read requested Field
      *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
+     * @param string $key       Input List Key
+     * @param string $fieldName Field Identifier / Name
      *
-     *  @return         none
+     * @return void
      */
-    private function getImagesFields($Key, $FieldName)
+    protected function getImagesFields(string $key, string $fieldName): void
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName) {
-            
-//            case 'cover_image':
-//                $CoverImage             = Image::getCover((int) $this->ProductId);
-//                $this->Out[$FieldName]  = isset($CoverImage["position"])?$CoverImage["position"]:0;
-//                break;
-            
+        switch ($fieldName) {
             case 'image@images':
                 $this->getImageGallery();
+
                 break;
-                
             default:
                 return;
         }
-        
-        if (!is_null($Key)) {
-            unset($this->In[$Key]);
-        }
+
+        unset($this->in[$key]);
     }
-    
-    
+
     /**
-     *  @abstract     Write Given Fields
+     * Write Given Fields
      *
-     *  @param        string    $FieldName              Field Identifier / Name
-     *  @param        mixed     $Data                   Field Data
+     * @param string $fieldName Field Identifier / Name
+     * @param mixed $data Field Data
      *
-     *  @return         none
+     * @return void
      */
-    private function setImagesFields($FieldName, $Data)
+    protected function setImagesFields(string $fieldName, $data): void
     {
         //====================================================================//
         // WRITE Field
-        switch ($FieldName) {
-            
-//            case 'cover_image':
-//                //====================================================================//
-//                // Read Product Images List
-//                $ObjectImagesList   =   Image::getImages($this->LangId,$this->ProductId);
-//                //====================================================================//
-//                // Disable Wrong Images Cover
-//                foreach ($ObjectImagesList as $ImageArray) {
-//                    //====================================================================//
-//                    // Is Cover Image but shall not
-//                    if ($ImageArray["cover"] && ($ImageArray["position"] != $Data) ) {
-//                        $ObjectImage = new Image($ImageArray["id_image"],  $this->LangId);
-//                        $ObjectImage->cover     =   0;
-//                        $this->update           =   True;
-//                        $ObjectImage->update();
-//                    }
-//                }
-//                //====================================================================//
-//                // Enable New Image Cover
-//                foreach ($ObjectImagesList as $ImageArray) {
-//                    //====================================================================//
-//                    // Is Cover Image but shall not
-//                    if (!$ImageArray["cover"] && ($ImageArray["position"] == $Data) ) {
-//                        $ObjectImage = new Image($ImageArray["id_image"],  $this->LangId);
-//                        $ObjectImage->cover     =   1;
-//                        $this->update           =   True;
-//                        $ObjectImage->update();
-//                    }
-//                }
-//                break;
-
+        switch ($fieldName) {
             case 'images':
-                $this->setImageGallery($Data);
+                $this->setImageGallery($data);
+
                 break;
-                            
             default:
                 return;
         }
-        unset($this->In[$FieldName]);
+        unset($this->in[$fieldName]);
     }
-    
-    
+
     /**
-     *   @abstract     Return Product Image Array from Prestashop Object Class
+     * Return Product Image Array from Prestashop Object Class
      */
-    public function getImageGallery()
+    private function getImageGallery(): bool
     {
         //====================================================================//
         // Load Object Images List
-        $ObjectImagesList   =   $this->Object->getMediaGallery();
-        $Media              =   $this->Object->getMediaConfig();
+        $objectImagesList = $this->object->getMediaGallery();
+        $media = $this->object->getMediaConfig();
         //====================================================================//
         // Init Images List
-        if (!isset($this->Out["images"])) {
-            $this->Out["images"] = array();
+        if (!isset($this->out["images"])) {
+            $this->out["images"] = array();
         }
         //====================================================================//
         // Images List is Empty
-        if (!isset($ObjectImagesList["images"]) || !count($ObjectImagesList["images"])) {
+        if (!isset($objectImagesList["images"]) || !count($objectImagesList["images"])) {
             return true;
         }
         //====================================================================//
         // Create Images List
-        foreach ($ObjectImagesList["images"] as $key => $Image) {
+        foreach ($objectImagesList["images"] as $key => $image) {
             //====================================================================//
             // Init Image List Item
-            if (!isset($this->Out["images"][$key])) {
-                $this->Out["images"][$key] = array();
+            if (!isset($this->out["images"][$key])) {
+                $this->out["images"][$key] = array();
             }
             //====================================================================//
             // Insert Image in Output List
-            $this->Out["images"][$key]["image"] = self::images()->encode(
-                $Image["label"]?$Image["label"]:$this->Object->getSku(), // Image Legend/Label
-                basename($Image["file"]),                               // Image File Filename
-                dirname($Media->getMediaPath($Image['file'])) . DS,     // Image Server Path (Without Filename)
-                $Media->getMediaUrl($Image['file'])                     // Image Public Url
+            $this->out["images"][$key]["image"] = self::images()->encode(
+                $image["label"]?$image["label"]:$this->object->getSku(), // Image Legend/Label
+                basename($image["file"]),                               // Image File Filename
+                dirname($media->getMediaPath($image['file'])).DS,     // Image Server Path (Without Filename)
+                $media->getMediaUrl($image['file'])                     // Image Public Url
             );
         }
-            
+
         return true;
     }
-         
-     
+
     /**
-    *   @abstract     Update Product Image Array from Server Data
-    *   @param        array   $Data             Input Image List for Update
-    */
-    public function setImageGallery($Data)
+     * Update Product Image Array from Server Data
+     *
+     * @param array|ArrayObject $data Input Image List for Update
+     *
+     * @return bool
+     */
+    private function setImageGallery($data): bool
     {
         //====================================================================//
         // Safety Check
-        if (!is_array($Data) && !is_a($Data, "ArrayObject")) {
+        if (!is_array($data) && !is_a($data, "ArrayObject")) {
             return false;
         }
         //====================================================================//
@@ -204,143 +154,152 @@ trait ImagesTrait
 
         //====================================================================//
         // Load Object Images List
-        $ObjectImagesList   =   $this->Object->getMediaGallery();
-        
+        $objectImagesList = $this->object->getMediaGallery();
+
         //====================================================================//
-        // If New PRODUCT => Reload Product to get Stcok Item
-        if (empty($ObjectImagesList)) {
+        // If New PRODUCT => Reload Product to get Stock Item
+        if (empty($objectImagesList)) {
             //====================================================================//
             // Media gallery initialization
-            $this->Object->setMediaGallery(array('images'=>array (), 'values'=>array ()));
+            $this->object->setMediaGallery(array('images' => array(), 'values' => array()));
             //====================================================================//
             // Load Object Images List
-            $ObjectImagesList   =   $this->Object->getMediaGallery();
+            $objectImagesList = $this->object->getMediaGallery();
         }
         //====================================================================//
         // UPDATE IMAGES LIST
         //====================================================================//
-        $this->ImgPosition = 0;
+        $this->imgPosition = 0;
         //====================================================================//
         // Given List Is Not Empty
-        foreach ($Data as $InValue) {
-            $this->setImage($ObjectImagesList, $InValue);
+        foreach ($data as $inValue) {
+            $this->setImage($objectImagesList, $inValue);
         }
-        
+
         //====================================================================//
         // If Remaining Image List Is Not Empty => Clear Remaining Local Images
         //====================================================================//
-        if (isset($ObjectImagesList["images"]) && !empty($ObjectImagesList["images"])) {
-            $this->cleanUpImages($ObjectImagesList["images"]);
+        if (isset($objectImagesList["images"]) && !empty($objectImagesList["images"])) {
+            $this->cleanUpImages($objectImagesList["images"]);
         }
-        
+
         return true;
     }
-            
+
     /**
-    *   @abstract     Update Product Image from Server Data
-    *   @param        array   $Data             Input Image List for Update
-    */
-    public function setImage(&$ObjectImagesList, $InValue)
+     * Update Product Image from Server Data
+     *
+     * @param mixed $objectImagesList
+     * @param mixed $inValue
+     */
+    private function setImage(&$objectImagesList, $inValue): void
     {
-        if (!isset($InValue["image"]) || empty($InValue["image"])) {
+        if (!isset($inValue["image"]) || empty($inValue["image"])) {
             return;
         }
-        $this->ImgPosition++;
-        $InImage = $InValue["image"];
+        $this->imgPosition++;
+        $inImage = $inValue["image"];
         //====================================================================//
         // Search For Image In Current List
-        $ImageFound = false;
-        foreach ($ObjectImagesList["images"] as $key => $Image) {
+        $imageFound = false;
+        foreach ($objectImagesList["images"] as $key => $image) {
             //====================================================================//
             // Compute Md5 CheckSum for this Image
-            $CheckSum = md5_file($this->Object->getMediaConfig()->getMediaPath($Image['file']));
+            $checkSum = md5_file($this->object->getMediaConfig()->getMediaPath($image['file']));
             //====================================================================//
             // If CheckSum are Different => Continue
-            if ($InImage["md5"] !== $CheckSum) {
+            if ($inImage["md5"] !== $checkSum) {
                 continue;
             }
             //====================================================================//
             // If Positions are Different => Continue
-            if ($this->ImgPosition !== $Image['position']) {
+            if ($this->imgPosition !== $image['position']) {
                 continue;
             }
 
-            $ImageFound = $Image;
+            $imageFound = $image;
             //====================================================================//
             // If Object Found, Unset from Current List
-            unset($ObjectImagesList["images"][$key]);
+            unset($objectImagesList["images"][$key]);
+
             break;
         }
 
         //====================================================================//
         // If found => Next
-        if ($ImageFound) {
+        if ($imageFound) {
             return;
         }
         //====================================================================//
         // If Not found, Add this object to list
-        $this->addImage($InImage);
+        $this->addImage($inImage);
     }
-    
+
     /**
-    *   @abstract     Import a Product Image from Server Data
-    *   @param        array   $ImgArray             Splash Image Definition Array
-    */
-    public function addImage($ImgArray)
+     * Import a Product Image from Server Data
+     *
+     * @param array $imgArray Splash Image Definition Array
+     *
+     * @return bool
+     */
+    private function addImage($imgArray): bool
     {
         //====================================================================//
         // Read Image Raw Data From Splash Server
-        $NewImageFile    =   Splash::file()->getFile($ImgArray["file"], $ImgArray["md5"]);
+        $newImageFile = Splash::file()->getFile($imgArray["file"], $imgArray["md5"]);
         //====================================================================//
         // File Imported => Write it Here
-        if ($NewImageFile == false) {
+        if (false == $newImageFile) {
             return false;
         }
         //====================================================================//
         // Write Image On Local Import Folder
-        $Path       = Mage::getBaseDir('media') . DS . 'import' . DS ;
-        $Filename  = isset($ImgArray["filename"]) ? $ImgArray["filename"] : ( $NewImageFile["name"] );
-        Splash::file()->writeFile($Path, $Filename, $NewImageFile["md5"], $NewImageFile["raw"]);
+        $path = Mage::getBaseDir('media').DS.'import'.DS ;
+        $filename = isset($imgArray["filename"]) ? $imgArray["filename"] : ($newImageFile["name"]);
+        Splash::file()->writeFile($path, $filename, $newImageFile["md5"], $newImageFile["raw"]);
         //====================================================================//
         // Create Image in Product Media Gallery
-        if (file_exists($Path . $Filename)) {
+        if (file_exists($path.$filename)) {
             try {
-                $this->Object->addImageToMediaGallery($Path . $Filename, array('image'), true, false);
+                $this->object->addImageToMediaGallery($path.$filename, array('image'), true, false);
                 $this->needUpdate();
             } catch (Exception $e) {
-                Splash::log()->war("ErrLocalTpl", __CLASS__, __FUNCTION__, "Image Path (" . $Path . $Filename);
-                return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to add image (" . $e->getMessage() . ").");
-            } catch (Mage_Core_Exception $e) {
-                Splash::log()->war("ErrLocalTpl", __CLASS__, __FUNCTION__, "Image Path (" . $Path . $Filename);
-                return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, "Unable to add image (" . $e->getMessage() . ").");
+                Splash::log()->warTrace("Image Path (".$path.$filename.").");
+
+                return Splash::log()->errTrace("Unable to add image (".$e->getMessage().").");
             }
         }
+
         return true;
     }
-    
+
     /**
-    *   @abstract   Remaining Image List Is Not Empty => Clear Remaining Local Images
-    *   @param      array   $MageImgArray             Magento Product Image Gallery Array
-    */
-    public function cleanUpImages($MageImgArray)
+     * Remaining Image List Is Not Empty => Clear Remaining Local Images
+     *
+     * @param array $mageImgArray Magento Product Image Gallery Array
+     *
+     * @return bool
+     */
+    private function cleanUpImages($mageImgArray): bool
     {
         //====================================================================//
         // Load Images Gallery Object
-        $ProductAttributes = $this->Object->getTypeInstance()->getSetAttributes();
-        if (!isset($ProductAttributes['media_gallery'])) {
+        $productAttributes = $this->object->getTypeInstance()->getSetAttributes();
+        if (!isset($productAttributes['media_gallery'])) {
             return true;
         }
-        $ImageGallery = $ProductAttributes['media_gallery'];
+        $imageGallery = $productAttributes['media_gallery'];
         //====================================================================//
         // Iterate All Remaining Images
-        foreach ($MageImgArray as $Image) {
+        foreach ($mageImgArray as $image) {
             //====================================================================//
             // Delete Image Object
-            if ($ImageGallery->getBackend()->getImage($this->Object, $Image['file'])) {
-                $ImageGallery->getBackend()->removeImage($this->Object, $Image['file']);
+            if ($imageGallery->getBackend()->getImage($this->object, $image['file'])) {
+                $imageGallery->getBackend()->removeImage($this->object, $image['file']);
                 $this->needUpdate();
             }
         }
+
         return true;
     }
 }

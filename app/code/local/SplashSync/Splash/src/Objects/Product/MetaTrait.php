@@ -1,139 +1,137 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Product;
 
-// Magento Namespaces
 use Mage;
 use Mage_Catalog_Model_Product_Status;
+use Mage_Core_Model_Date;
 
 /**
- * @abstract    Magento 1 Products Meta Fields Access
+ * Magento 1 Products Meta Fields Access
  */
 trait MetaTrait
 {
-    
-
     /**
-    *   @abstract     Build Meta Fields using FieldFactory
-    */
-    private function buildMetaFields()
+     * Build Meta Fields using FieldFactory
+     */
+    protected function buildMetaFields(): void
     {
-        
         //====================================================================//
         // Active => Product Is Enables & Visible
         $this->fieldsFactory()->Create(SPL_T_BOOL)
-                ->Identifier("status")
-                ->Group("Meta")
-                ->Name("Enabled")
-                ->MicroData("http://schema.org/Product", "offered")
-                ->isListed();
-        
+            ->Identifier("status")
+            ->Group("Meta")
+            ->Name("Enabled")
+            ->MicroData("http://schema.org/Product", "offered")
+            ->isListed();
+
         //====================================================================//
         // Active => Product Is available_for_order
         $this->fieldsFactory()->Create(SPL_T_BOOL)
-                ->Identifier("available_for_order")
-                ->Name("Available for order")
-                ->Group("Meta")
-                ->isReadOnly();
-        
+            ->Identifier("available_for_order")
+            ->Name("Available for order")
+            ->Group("Meta")
+            ->isReadOnly();
+
         //====================================================================//
         // On Sale
         $this->fieldsFactory()->Create(SPL_T_BOOL)
-                ->Identifier("on_special")
-                ->Name("On Sale")
-                ->Group("Meta")
-                ->MicroData("http://schema.org/Product", "onsale")
-                ->isReadOnly();
+            ->Identifier("on_special")
+            ->Name("On Sale")
+            ->Group("Meta")
+            ->MicroData("http://schema.org/Product", "onsale")
+            ->isReadOnly();
     }
 
     /**
-     *  @abstract     Read requested Field
+     * Read requested Field
      *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
+     * @param string $key Input List Key
+     * @param string $fieldName Field Identifier / Name
      *
-     *  @return         none
+     * @return void
      */
-    private function getMetaFields($Key, $FieldName)
+    protected function getMetaFields(string $key, string $fieldName): void
     {
-
         //====================================================================//
         // READ Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
             case 'status':
-                $this->Out[$FieldName] = !$this->Object->isDisabled();
+                $this->out[$fieldName] = !$this->object->isDisabled();
+
                 break;
             case 'available_for_order':
-                $this->Out[$FieldName] = $this->Object->getData("status") && $this->Object->getStockItem()->getIsInStock();
+                $this->out[$fieldName] = $this->object->getData("status")
+                    && $this->object->getStockItem()->getIsInStock();
+
                 break;
             case 'on_special':
-                $Current    = new \DateTime();
-                $From       = Mage::getModel("core/date")->timestamp($this->Object->getData("special_from_date"));
-                if ($Current->getTimestamp() < $From) {
-                    $this->Out[$FieldName] = false;
+                $current = new \DateTime();
+                /** @var Mage_Core_Model_Date $model */
+                $model = Mage::getModel('core/date');
+                $from = $model->timestamp($this->object->getData("special_from_date"));
+                if ($current->getTimestamp() < $from) {
+                    $this->out[$fieldName] = false;
+
                     break;
                 }
-                $toTimestamp    = Mage::getModel("core/date")->timestamp($this->Object->getData("special_to_date"));
-                if ($Current->getTimestamp() < $toTimestamp) {
-                    $this->Out[$FieldName] = false;
+                $toTimestamp = $model->timestamp($this->object->getData("special_to_date"));
+                if ($current->getTimestamp() < $toTimestamp) {
+                    $this->out[$fieldName] = false;
+
                     break;
                 }
-                $this->Out[$FieldName] = true;
+                $this->out[$fieldName] = true;
+
                 break;
-                
             default:
                 return;
         }
-        
-        unset($this->In[$Key]);
+
+        unset($this->in[$key]);
     }
-    
-    
+
     /**
-     *  @abstract     Write Given Fields
+     * Write Given Fields
      *
-     *  @param        string    $FieldName              Field Identifier / Name
-     *  @param        mixed     $Data                   Field Data
+     * @param string $fieldName Field Identifier / Name
+     * @param mixed $data Field Data
      *
-     *  @return         none
+     * @return void
      */
-    private function setMetaFields($FieldName, $Data)
+    protected function setMetaFields(string $fieldName, $data): void
     {
         //====================================================================//
         // WRITE Field
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
-            // Direct Writtings
+            // Direct Writings
             case 'status':
-                if ($this->Object->isDisabled() && $Data) {
-                    $this->Object->setData($FieldName, Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
+                if ($this->object->isDisabled() && $data) {
+                    $this->object->setData($fieldName, Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
                     $this->needUpdate();
-                } elseif (!$this->Object->isDisabled() && !$Data) {
-                    $this->Object->setData($FieldName, Mage_Catalog_Model_Product_Status::STATUS_DISABLED);
+                } elseif (!$this->object->isDisabled() && !$data) {
+                    $this->object->setData($fieldName, Mage_Catalog_Model_Product_Status::STATUS_DISABLED);
                     $this->needUpdate();
                 }
+
                 break;
-                
             default:
                 return;
         }
-        unset($this->In[$FieldName]);
+        unset($this->in[$fieldName]);
     }
 }
