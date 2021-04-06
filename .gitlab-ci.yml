@@ -47,14 +47,11 @@ stages:
     ################################################################
     # Before Script
     before_script:
-        # Move Module
-        - shopt -s dotglob  # for considering dot files (turn on dot files)
-        - cp -Rf $CI_PROJECT_DIR/* /var/www/html/
-        - echo $CI_PROJECT_DIR
-        - ls -l $CI_PROJECT_DIR
-        - ls -l /var/www/html
         # Build Module (Composer)
         - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh | sh
+        # Move Module to Magento Dir
+        - shopt -s dotglob  # for considering dot files (turn on dot files)
+        - cp -Rf $CI_PROJECT_DIR/* /var/www/html/
         # Install N89 Mage Run
         - bash /var/www/html/ci/scripts/install_magerun.sh
         # Install Magento
@@ -66,47 +63,19 @@ stages:
     ################################################################
     # Test Script
     script:
-      - pwd
+      - cd $CI_PROJECT_DIR
+      ################################################################################
+      # Run Grumphp Main Test Sequence
+      - php app/code/local/SplashSync/Splash/vendor/bin/grumphp run -n --testsuite=travis
+      # Run Grumphp CsFixer Test Sequence
+      - php app/code/local/SplashSync/Splash/vendor/bin/grumphp run -n --testsuite=csfixer
+      ################################################################################
+      # Run Grumphp Php Stan Test Sequence
       - cd /var/www/html
-      - ls -l
-#      - cd $TMP_DIR
+      - php app/code/local/SplashSync/Splash/vendor/bin/grumphp run -n --testsuite=phpstan
 #      ################################################################################
-#      # Build Module (Composer)
-#      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh | sh
-#      ################################################################################
-#      # Install Prestashop + WebServer (Apache & PHP-Fpm)
-#      - cat $CI_PROJECT_DIR/docker/docker-entrypoint.sh | bash
-#      ################################################################################
-#      # Install Module
-#      - bash $SCRIPTS_DIR/module/install.sh
-#      ################################################################################
-#      # Run Grumphp Main Test Sequence
-#      - cd $TMP_DIR
-#      - php modules/splashsync/vendor/bin/grumphp run -n --testsuite=travis
-#      ################################################################################
-#      # Run Grumphp CsFixer Test Sequence
-#      - cd $TRAVIS_BUILD_DIR
-#      - composer install
-#      - php modules/splashsync/vendor/bin/grumphp run -n --testsuite=csfixer
-#      ################################################################################
-#      # Run Grumphp Php Stan Test Sequence
-#      - if [ -f "/var/www/html/vendor/autoload.php" ]; then php modules/splashsync/vendor/bin/grumphp run -n --testsuite=phpstan; fi
-#      ################################################################################
-#      # Run PhpUnit Core Test Sequence (Will Enable the Module)
-#      - modules/splashsync/vendor/bin/phpunit -c travis/phpunit.xml.dist modules/splashsync/vendor/splash/phpcore/Tests/Core/
-#      ################################################################################
-#      # ALL PHP   =>  Run PhpUnit Local Sequence with No Data Inside
-#      - modules/splashsync/vendor/bin/phpunit -c travis/phpunit.xml.dist --testsuite=Local
-#      ################################################################################
-#      # Run PhpUnit Test Sequence (With Coverage)
-#      - php modules/splashsync/vendor/bin/phpunit -c travis/phpunit.xml.dist
-#      ################################################################################
-#      # Run PhpUnit Product with MSF Sequence
-#      - php travis/setup_shops.php && php travis/setup_shops.php
-#      - modules/splashsync/vendor/bin/phpunit -c travis/phpunit.products.xml
-#      ################################################################################
-#      # Run Grumphp Splash Manifest Sequence
-#      - php modules/splashsync/vendor/bin/grumphp run -n --tasks=build-manifest
+#      # Run PhpUnit Test Sequence
+#      - php app/code/local/SplashSync/Splash/vendor/bin/phpunit
 
     ################################################################################
     # Run After Script
