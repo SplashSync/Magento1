@@ -1,0 +1,31 @@
+includes:
+	- %currentWorkingDirectory%/app/code/local/SplashSync/Splash/vendor/phpstan/phpstan-phpunit/extension.neon
+parameters:
+    bootstrapFiles:
+        - "./phpstan.php"
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    inferPrivatePropertyTypeFromConstructor: true
+    universalObjectCratesClasses:
+        - ArrayObject
+    ignoreErrors:
+
+        # Wrong Inputs definition
+        - '#Parameter \#4 \$store of method Mage_Tax_Model_Calculation::getRateRequest\(\) expects int\|null\, Mage_Core_Model_Store given.#'
+
+        # Missing Payments Functions
+        - '#Call to an undefined method Mage_Sales_Model_Order_Payment::setTransactionId\(\).#'
+
+        # Missing Product Functions
+        - '#Call to an undefined method Mage_Catalog_Model_Product::setWebsiteIds\(\).#'
+        - '#Call to an undefined method Mage_Catalog_Model_Product::setAttributeSetId\(\).#'
+        - '#Call to an undefined method Mage_Catalog_Model_Product::setTypeId\(\).#'
+        - '#Call to an undefined method Mage_Catalog_Model_Product::getStockItem\(\).#'
+
+        # Missing Order Items Functions
+        - '#Call to an undefined method Mage_Sales_Model_Order_Item::getHasChildren\(\).#'
+        - '#Call to an undefined method Mage_Sales_Model_Order_Item::setTotalQtyOrdered\(\).#'
+        - '#Call to an undefined method Mage_Sales_Model_Order_Item::setBaseDiscountTaxAmount\(\).#'
+        - '#Call to an undefined method Mage_Sales_Model_Order_Item::setQuoteParentItemId\(\).#'
+        - '#Call to an undefined method Mage_Sales_Model_Order_Item::getShippingTaxAmount\(\).#'
+        - '#Call to an undefined method Mage_Sales_Model_Order_Item::setShippingTaxAmount\(\).#'

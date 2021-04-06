@@ -21,6 +21,10 @@ parameters:
 
     core_dir:       "./app/code/local/SplashSync/Splash/vendor/badpixxel/php-sdk"
     mode:           "splashsync"
+    exclude:        ["app/code/local/SplashSync/Splash/vendor", "docker", "var", "docs", "bin"]
+
+    # Php Stan
+    stan-config:        "./ci/phpstan.neon"
 
     # For Building Splash Documentation
     doc-enable:     false

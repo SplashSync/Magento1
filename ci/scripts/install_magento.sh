@@ -18,6 +18,8 @@
 
 set -e
 
+sleep 5
+
 if [ -z $MAGENTO_DB_HOST ]; then MAGENTO_DB_HOST="mysql"; fi
 if [ -z $MAGENTO_DB_PORT ]; then MAGENTO_DB_PORT="3306"; fi
 if [ -z $MAGENTO_DB_USER ]; then MAGENTO_DB_USER="root"; fi
@@ -29,7 +31,7 @@ echo "---------------------"
 echo "- Magento Install   -"
 echo "---------------------"
 echo
-echo "Installing ${MAGENTO_VERSION} in ${BUILDENV}/htdocs"
+echo "Installing ${MAGENTO_VERSION} in /var/www/html"
 echo "using Database Credentials:"
 echo "    Host: ${MAGENTO_DB_HOST}"
 echo "    Port: ${MAGENTO_DB_PORT}"
@@ -39,7 +41,7 @@ echo "    Main DB: ${MAGENTO_DB_NAME}"
 echo
 
 echo "Create Database"
-mysql -u${MAGENTO_DB_USER} -p${MAGENTO_DB_PASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT} -e "CREATE DATABASE IF NOT EXISTS \`${MAGENTO_DB_NAME}\`;"
+mysql -u${MAGENTO_DB_USER} -p${MAGENTO_DB_PASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT} -e "DROP DATABASE IF EXISTS \`${MAGENTO_DB_NAME}\`; CREATE DATABASE \`${MAGENTO_DB_NAME}\`;"
 
 echo "Install Magento"
 ./n98-magerun.phar install \

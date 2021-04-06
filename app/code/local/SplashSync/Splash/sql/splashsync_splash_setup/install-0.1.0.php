@@ -1,99 +1,101 @@
 <?php
 
 /*
- * This file is part of SplashSync Project.
+ *  This file is part of SplashSync Project.
  *
- * Copyright (C) Splash Sync <www.splashsync.com>
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
  */
 
-/**
- * @abstract    Splash PHP Module For Magento 1
- * @author      B. Paquier <contact@splashsync.com>
- */
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+// phpcs:disable PSR1.Files.SideEffects
 
+/** @phpstan-ignore-next-line */
 $installer = $this;
 
 $installer->startSetup();
 
 //====================================================================//
-// Setup Customer Additionnal Attributes
+// Setup Customer Additional Attributes
 //====================================================================//
-SplashInstaller::AddSplashId("customer");
-SplashInstaller::AddSplashId("customer_address");
-SplashInstaller::AddSplashOrigin("customer");
-SplashInstaller::AddSplashOrigin("catalog_product");
+SplashInstaller::addSplashId("customer");
+SplashInstaller::addSplashId("customer_address");
+SplashInstaller::addSplashOrigin("customer");
+SplashInstaller::addSplashOrigin("catalog_product");
 
 //====================================================================//
-// Setup Product Additionnal Attributes
+// Setup Product Additional Attributes
 //====================================================================//
-SplashInstaller::AddSplashId("catalog_product");
+SplashInstaller::addSplashId("catalog_product");
 
 //====================================================================//
-// Setup Orders Additionnal Attributes
+// Setup Orders Additional Attributes
 //====================================================================//
-SplashInstaller::AddSplashId("order");
-        
+SplashInstaller::addSplashId("order");
+
 $installer->endSetup();
 
-class SplashInstaller {
-
-    static public function AddSplashId($EntityType)
+class SplashInstaller
+{
+    /**
+     * @param string $entityType
+     */
+    public static function addSplashId($entityType): void
     {
-
         //====================================================================//
         // Init
         //====================================================================//
-        $setup              = new Mage_Eav_Model_Entity_Setup('core_setup');
+        $setup = new Mage_Eav_Model_Entity_Setup('core_setup');
 
         //====================================================================//
         // Add SplashId Attributes
         //====================================================================//
-        $setup->addAttribute($EntityType, "splash_id", array(
-            "type"          => "varchar",
-            "backend"       => "",
-            "label"         => "Splash Id",
-            "input"         => "text",
-            "source"        => "",
-            "visible"       => true,
-            "required"      => false,
-            "default"       => "",
-            "frontend"      => false,
-            "unique"        => true,
-            "note"          => "This Id is automaticaly set by Splash."
-                ));
+        $setup->addAttribute($entityType, "splash_id", array(
+            "type" => "varchar",
+            "backend" => "",
+            "label" => "Splash Id",
+            "input" => "text",
+            "source" => "",
+            "visible" => true,
+            "required" => false,
+            "default" => "",
+            "frontend" => false,
+            "unique" => true,
+            "note" => "This Id is automatically set by Splash."
+        ));
     }
 
-    static public function AddSplashOrigin($EntityType)
+    /**
+     * @param string $entityType
+     */
+    public static function addSplashOrigin($entityType): void
     {
-
         //====================================================================//
         // Init
         //====================================================================//
-        $setup              = new Mage_Eav_Model_Entity_Setup('core_setup');
+        $setup = new Mage_Eav_Model_Entity_Setup('core_setup');
 
         //====================================================================//
         // Add SplashId Attributes
         //====================================================================//
-        $setup->addAttribute($EntityType, "splash_origin", array(
-            "type"          => "varchar",
-            "backend"       => "",
-            "label"         => "Splash Origin",
-            "input"         => "text",
-            "source"        => "",
-            "visible"       => true,
-            "required"      => false,
-            "default"       => "",
-            "frontend"      => false,
-            "unique"        => true,
-            "note"          => "This Field is automaticaly set by Splash."
-                ));
+        $setup->addAttribute($entityType, "splash_origin", array(
+            "type" => "varchar",
+            "backend" => "",
+            "label" => "Splash Origin",
+            "input" => "text",
+            "source" => "",
+            "visible" => true,
+            "required" => false,
+            "default" => "",
+            "frontend" => false,
+            "unique" => true,
+            "note" => "This Field is automatically set by Splash."
+        ));
     }
-    
 }

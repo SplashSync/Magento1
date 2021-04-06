@@ -16,16 +16,23 @@
 #
 ################################################################################
 
-# Install N89 Mage Run
-bash /var/www/html/ci/scripts/install_magerun.sh
-
-# Install Magento
-bash /var/www/html/ci/scripts/install_magento.sh
+set -e
 
 # Configure Apache
 bash /var/www/html/ci/scripts/config_apache.sh
 
-# Configure Magento
-bash /var/www/html/ci/scripts/config_magento.sh
+# Install N89 Mage Run
+bash /var/www/html/ci/scripts/install_magerun.sh
+
+
+if [ ! -f installed.txt ]; then
+  # Install Magento
+  bash /var/www/html/ci/scripts/install_magento.sh
+
+  # Configure Magento
+  bash /var/www/html/ci/scripts/config_magento.sh
+fi
+
+echo ${MAGENTO_VERSION} > installed.txt
 
 exec apache2-foreground
