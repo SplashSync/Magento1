@@ -1,41 +1,35 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\ThirdParty;
 
-// Magento Namespaces
 use Mage;
 use Mage_Newsletter_Model_Subscriber;
 
 /**
- * @abstract    Magento 1 Customers Meta Fields Access
+ * Magento 1 Customers Meta Fields Access
  */
 trait MetaTrait
 {
-    
-
     /**
-    *   @abstract     Build Customers Unused Fields using FieldFactory
-    */
-    private function buildMetaFields()
+     * Build Customers Unused Fields using FieldFactory
+     *
+     * @return void
+     */
+    protected function buildMetaFields(): void
     {
-        
         //====================================================================//
         // STRUCTURAL INFORMATIONS
         //====================================================================//
@@ -43,95 +37,104 @@ trait MetaTrait
         //====================================================================//
         // Active
         $this->fieldsFactory()->Create(SPL_T_BOOL)
-                ->Identifier("is_active")
-                ->Name("Is Enabled")
-                ->Group("Meta")
-                ->MicroData("http://schema.org/Organization", "active")
-                ->isListed()->isReadOnly();
-        
+            ->Identifier("is_active")
+            ->Name("Is Enabled")
+            ->Group("Meta")
+            ->MicroData("http://schema.org/Organization", "active")
+            ->isListed()->isReadOnly();
+
         //====================================================================//
         // Newsletter
         $this->fieldsFactory()->Create(SPL_T_BOOL)
-                ->Identifier("newsletter")
-                ->Name("Newletter")
-                ->Group("Meta")
-                ->MicroData("http://schema.org/Organization", "newsletter");
+            ->Identifier("newsletter")
+            ->Name("Newletter")
+            ->Group("Meta")
+            ->MicroData("http://schema.org/Organization", "newsletter");
     }
-    
+
     /**
-     *  @abstract     Read requested Field
+     * Read requested Field
      *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
+     * @param string $key Input List Key
+     * @param string $fieldName Field Identifier / Name
      *
-     *  @return         none
+     * @return void
      */
-    private function getMetaFields($Key, $FieldName)
+    protected function getMetaFields(string $key, string $fieldName): void
     {
-            
         //====================================================================//
         // READ Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // Active Flag
             case 'is_active':
-                $this->Out[$FieldName] = $this->Object->getData($FieldName);
+                $this->out[$fieldName] = $this->object->getData($fieldName);
+
                 break;
             case 'newsletter':
-                $this->Out[$FieldName] = Mage::getModel('newsletter/subscriber')->loadByCustomer($this->Object)->isSubscribed();
+                /** @var \Mage_Newsletter_Model_Subscriber $model */
+                $model = Mage::getModel('newsletter/subscriber');
+                $this->out[$fieldName] = $model
+                    ->loadByCustomer($this->object)
+                    ->isSubscribed()
+                ;
+
                 break;
             default:
                 return;
         }
-        unset($this->In[$Key]);
+        unset($this->in[$key]);
     }
-    
 
     /**
-     *  @abstract     Write Given Fields
+     * Write Given Fields
      *
-     *  @param        string    $FieldName              Field Identifier / Name
-     *  @param        mixed     $Data                   Field Data
+     * @param string $fieldName Field Identifier / Name
+     * @param mixed $data Field Data
      *
-     *  @return         none
+     * @return void
      */
-    private function setMetaFields($FieldName, $Data)
+    protected function setMetaFields(string $fieldName, $data): void
     {
         //====================================================================//
         // WRITE Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // Active Flag
             case 'is_active':
-                if ($this->Object->getData($FieldName) != $Data) {
-                    $this->Object->setData($FieldName, $Data);
+                if ($this->object->getData($fieldName) != $data) {
+                    $this->object->setData($fieldName, $data);
                     $this->needUpdate();
                 }
+
                 break;
             case 'newsletter':
-                $subscriber = Mage::getModel('newsletter/subscriber')->loadByCustomer($this->Object);
+                /** @var \Mage_Newsletter_Model_Subscriber $model */
+                $model = Mage::getModel('newsletter/subscriber');
+                $subscriber = $model->loadByCustomer($this->object);
                 //====================================================================//
                 // Read Newsletter Status
-                if ($subscriber->isSubscribed() == $Data) {
+                if ($subscriber->isSubscribed() == $data) {
                     break;
                 }
                 //====================================================================//
-                // Status Change Requiered => Subscribe
-                if ($Data) {
+                // Status Change Required => Subscribe
+                if ($data) {
                     $subscriber->setStatus(Mage_Newsletter_Model_Subscriber::STATUS_SUBSCRIBED);
                 } else {
                     $subscriber->setStatus(Mage_Newsletter_Model_Subscriber::STATUS_UNSUBSCRIBED);
                 }
-                $subscriber->setSubscriberEmail($this->Object->getEmail());
+                $subscriber->setSubscriberEmail($this->object->getEmail());
                 $subscriber->setSubscriberConfirmCode($subscriber->RandomSequence());
                 $subscriber->setStoreId(Mage::app()->getStore()->getId());
-                $subscriber->setCustomerId($this->Object->getId());
+                $subscriber->setCustomerId($this->object->getId());
                 $subscriber->save();
                 $this->needUpdate();
+
                 break;
             default:
                 return;
         }
-        unset($this->In[$FieldName]);
+        unset($this->in[$fieldName]);
     }
 }

@@ -1,98 +1,92 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\ThirdParty;
 
-use Splash\Core\SplashCore      as Splash;
-
-// Magento Namespaces
 use Mage;
-use Mage_Customer_Exception;
+use Mage_Core_Model_Date;
+use Splash\Core\SplashCore      as Splash;
 
 /**
  * @abstract    Magento 1 Customers Main Fields Access
  */
 trait MainTrait
 {
-    
-    
     /**
-    *   @abstract     Build Customers Main Fields using FieldFactory
-    */
-    private function buildMainFields()
+     * Build Customers Main Fields using FieldFactory
+     *
+     * @return void
+     */
+    protected function buildMainFields(): void
     {
         //====================================================================//
         // Gender Name
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("gender_name")
-                ->Name("Social title")
-                ->MicroData("http://schema.org/Person", "honorificPrefix")
-                ->isReadOnly();
+            ->Identifier("gender_name")
+            ->Name("Social title")
+            ->MicroData("http://schema.org/Person", "honorificPrefix")
+            ->isReadOnly();
 
         //====================================================================//
         // Gender Type
-        $desc = "Social title" . " ; 0 => Male // 1 => Female // 2 => Neutral";
+        $desc = "Social title"." ; 0 => Male // 1 => Female // 2 => Neutral";
         $this->fieldsFactory()->Create(SPL_T_INT)
-                ->Identifier("gender")
-                ->Name("Social title")
-                ->MicroData("http://schema.org/Person", "gender")
-                ->Description($desc)
-                ->AddChoice(0, "Male")
-                ->AddChoice(1, "Femele")
-                ->isNotTested();
-        
+            ->Identifier("gender")
+            ->Name("Social title")
+            ->MicroData("http://schema.org/Person", "gender")
+            ->Description($desc)
+            ->AddChoice("0", "Male")
+            ->AddChoice("1", "Female")
+            ->isNotTested();
+
         //====================================================================//
         // Date Of Birth
         $this->fieldsFactory()->Create(SPL_T_DATE)
-                ->Identifier("dob")
-                ->Name("Date of birth")
-                ->MicroData("http://schema.org/Person", "birthDate");
+            ->Identifier("dob")
+            ->Name("Date of birth")
+            ->MicroData("http://schema.org/Person", "birthDate");
 
         //====================================================================//
         // Company
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("company")
-                ->Name("Company")
-                ->MicroData("http://schema.org/Organization", "legalName")
-                ->isReadOnly();
-        
+            ->Identifier("company")
+            ->Name("Company")
+            ->MicroData("http://schema.org/Organization", "legalName")
+            ->isReadOnly();
+
         //====================================================================//
         // Prefix
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("prefix")
-                ->Name("Prefix name")
-                ->MicroData("http://schema.org/Person", "honorificPrefix");
-        
+            ->Identifier("prefix")
+            ->Name("Prefix name")
+            ->MicroData("http://schema.org/Person", "honorificPrefix");
+
         //====================================================================//
         // MiddleName
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("middlename")
-                ->Name("Middlename")
-                ->MicroData("http://schema.org/Person", "additionalName");
-        
+            ->Identifier("middlename")
+            ->Name("Middlename")
+            ->MicroData("http://schema.org/Person", "additionalName");
+
         //====================================================================//
         // Suffix
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("suffix")
-                ->Name("Suffix name")
-                ->MicroData("http://schema.org/Person", "honorificSuffix");
-        
+            ->Identifier("suffix")
+            ->Name("Suffix name")
+            ->MicroData("http://schema.org/Person", "honorificSuffix");
+
 //        //====================================================================//
 //        // Address List
 //        $this->fieldsFactory()->Create(self::ObjectId_Encode( "Address" , SPL_T_ID))
@@ -102,57 +96,57 @@ trait MainTrait
 //                ->MicroData("http://schema.org/Organization","address")
 //                ->isReadOnly();
     }
-    
-    
-    
+
     /**
-     *  @abstract     Read requested Field
+     * Read requested Field
      *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
+     * @param string $key Input List Key
+     * @param string $fieldName Field Identifier / Name
      *
-     *  @return         none
+     * @return void
      */
-    private function getMainFields($Key, $FieldName)
+    protected function getMainFields(string $key, string $fieldName): void
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
-            // Customer Company Overriden by User Id
+            // Customer Company Override by User Id
             case 'company':
-                $this->Out[$FieldName] = $this->getCompany();
+                $this->out[$fieldName] = $this->getCompany();
+
                 break;
-            
             //====================================================================//
             // Gender Name
             case 'gender_name':
-                $this->Out[$FieldName] = $this->getGenderName();
+                $this->out[$fieldName] = $this->getGenderName();
+
                 break;
-            
             //====================================================================//
             // Gender Type
             case 'gender':
-                $this->Out[$FieldName] = ($this->Object->getData($FieldName) == 2) ? 1 : 0 ;
+                $this->out[$fieldName] = (2 == $this->object->getData($fieldName)) ? 1 : 0 ;
+
                 break;
-                
             //====================================================================//
             // Customer Date Of Birth
             case 'dob':
-                $this->Out[$FieldName] = date(
-                        SPL_T_DATECAST, 
-                        Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName))
-                        );
-                break;
+                /** @var Mage_Core_Model_Date $model */
+                $model = Mage::getModel('core/date');
+                $this->out[$fieldName] = date(
+                    SPL_T_DATECAST,
+                    $model->timestamp($this->object->getData($fieldName))
+                );
 
+                break;
             //====================================================================//
             // Customer Extended Names
             case 'prefix':
             case 'middlename':
             case 'suffix':
-                $this->Out[$FieldName] = $this->Object->getData($FieldName);
+                $this->out[$fieldName] = $this->object->getData($fieldName);
+
                 break;
-            
 //            //====================================================================//
 //            // Customer Address List
 //            case 'address@contacts':
@@ -163,50 +157,22 @@ trait MainTrait
             default:
                 return;
         }
-        unset($this->In[$Key]);
+        unset($this->in[$key]);
     }
-    
+
     /**
-     *  @abstract     Read Customer Company Name
-     *  @return       string
-     */
-    private function getCompany()
-    {
-        if (!empty($this->Object->getData('company'))) {
-            return $this->Object->getData('company');
-        }
-        return "Magento1("  . $this->Object->getEntityId() . ")";
-    } 
-    
-    /**
-     *  @abstract     Read Customer Gender Name
-     *  @return       string
-     */
-    private function getGenderName()
-    {
-        if (empty($this->Object->getData("gender"))) {
-            Splash::trans("Empty");
-        }
-        if ($this->Object->getData("gender") == 2) {
-            return "Femele";
-        } else {
-            return "Male";
-        }
-    }    
-    
-    /**
-     *  @abstract     Write Given Fields
+     * Write Given Fields
      *
-     *  @param        string    $FieldName              Field Identifier / Name
-     *  @param        mixed     $Data                   Field Data
+     * @param string $fieldName Field Identifier / Name
+     * @param mixed $data Field Data
      *
-     *  @return         none
+     * @return void
      */
-    private function setMainFields($FieldName, $Data)
+    protected function setMainFields(string $fieldName, $data): void
     {
         //====================================================================//
         // WRITE Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // Gender Type
             case 'gender':
@@ -214,35 +180,69 @@ trait MainTrait
                 // Convert Gender Type Value to Magento Values
                 // Splash Social title ; 0 => Male // 1 => Female // 2 => Neutral
                 // Magento Social title ; 1 => Male // 2 => Female
-                $Data++;
+                $data++;
                 //====================================================================//
                 // Update Gender Type
-                $this->setData($FieldName, $Data);
+                $this->setData($fieldName, $data);
+
                 break;
             //====================================================================//
             // Customer Date Of Birth
             case 'dob':
-                $CurrentDob = date(
-                        SPL_T_DATECAST, 
-                        Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName))
-                        );
-                if ($CurrentDob != $Data) {
-                    $this->Object->setData($FieldName, Mage::getModel("core/date")->gmtDate(null, $Data));
+                /** @var Mage_Core_Model_Date $model */
+                $model = Mage::getModel('core/date');
+                $currentDob = date(
+                    SPL_T_DATECAST,
+                    $model->timestamp($this->object->getData($fieldName))
+                );
+                if ($currentDob != $data) {
+                    $this->object->setData($fieldName, $model->gmtDate(null, $data));
                     $this->needUpdate();
                 }
+
                 break;
-            
             //====================================================================//
             // Customer Extended Names
             case 'prefix':
             case 'middlename':
             case 'suffix':
-                $this->setData($FieldName, $Data);
+                $this->setData($fieldName, $data);
+
                 break;
-                
             default:
                 return;
         }
-        unset($this->In[$FieldName]);
+        unset($this->in[$fieldName]);
+    }
+
+    /**
+     * Read Customer Company Name
+     *
+     * @return string
+     */
+    private function getCompany(): string
+    {
+        if (!empty($this->object->getData('company'))) {
+            return $this->object->getData('company');
+        }
+
+        return "Magento1(".$this->object->getEntityId().")";
+    }
+
+    /**
+     * Read Customer Gender Name
+     *
+     * @return string
+     */
+    private function getGenderName(): string
+    {
+        if (empty($this->object->getData("gender"))) {
+            Splash::trans("Empty");
+        }
+        if (2 == $this->object->getData("gender")) {
+            return "Femele";
+        }
+
+        return "Male";
     }
 }

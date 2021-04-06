@@ -1,125 +1,122 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\ThirdParty;
 
-use Splash\Core\SplashCore      as Splash;
-
-// Magento Namespaces
 use Mage;
 use Mage_Customer_Exception;
+use Mage_Customer_Model_Customer;
+use Splash\Core\SplashCore      as Splash;
 
 /**
- * @abstract    Magento 1 Customers CRUD Functions
+ * Magento 1 Customers CRUD Functions
  */
 trait CRUDTrait
 {
-    
     /**
-     * @abstract    Load Request Object
+     * Load Request Object
      *
-     * @param       array   $Id               Object id
+     * @param string $objectId Object id
      *
-     * @return      mixed
+     * @return false|object
      */
-    public function Load($Id)
+    public function load($objectId)
     {
         //====================================================================//
         // Stack Trace
-        Splash::log()->trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace();
         //====================================================================//
         // Init Object
-        $Customer   =   Mage::getModel('customer/customer')->load($Id);
-        if ($Customer->getEntityId() != $Id) {
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Customer (" . $Id . ").");
+        /** @var Mage_Customer_Model_Customer $model */
+        $model = Mage::getModel('customer/customer');
+        $customer = $model->load((int) $objectId);
+        if ($customer->getEntityId() != $objectId) {
+            return Splash::log()->errTrace("Unable to load Customer (".$objectId.").");
         }
-        return $Customer;
+
+        return $customer;
     }
-    
+
     /**
-     * @abstract    Create Request Object
+     * Create Request Object
      *
-     * @param       array   $List         Given Object Data
-     *
-     * @return      object     New Object
+     * @return false|object New Object
      */
-    public function Create()
+    public function create()
     {
         //====================================================================//
         // Stack Trace
-        Splash::log()->trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace();
         //====================================================================//
         // Check Required Fields
-        if (empty($this->In["firstname"])) {
+        if (empty($this->in["firstname"])) {
             return Splash::log()->err("ErrLocalFieldMissing", __CLASS__, __FUNCTION__, "firstname");
         }
-        if (empty($this->In["lastname"])) {
+        if (empty($this->in["lastname"])) {
             return Splash::log()->err("ErrLocalFieldMissing", __CLASS__, __FUNCTION__, "lastname");
         }
-        if (empty($this->In["email"])) {
+        if (empty($this->in["email"])) {
             return Splash::log()->err("ErrLocalFieldMissing", __CLASS__, __FUNCTION__, "email");
         }
+        /** @var Mage_Customer_Model_Customer $model */
+        $model = Mage::getModel('customer/customer');
         //====================================================================//
         // Create Empty Customer
-        $Customer   =   Mage::getModel('customer/customer')
-                // Setup Customer in default store
-                ->setStore($this->getSplashOriginStore());
-        $Customer->setData("firstname", $this->In["firstname"]);
-        $Customer->setData("lastname", $this->In["lastname"]);
-        $Customer->setData("email", $this->In["email"]);
+        $customer = $model->setStore($this->getSplashOriginStore());
+        $customer->setData("firstname", $this->in["firstname"]);
+        $customer->setData("lastname", $this->in["lastname"]);
+        $customer->setData("email", $this->in["email"]);
         //====================================================================//
         // Save Object
         try {
-            $Customer->save();
+            $customer->save();
         } catch (Mage_Customer_Exception $ex) {
             Splash::log()->deb($ex->getTraceAsString());
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, $ex->getMessage());
+
+            return Splash::log()->errTrace($ex->getMessage());
         }
-        return $Customer;
+
+        return $customer;
     }
-    
+
     /**
-     * @abstract    Update Request Object
+     * Update Request Object
      *
-     * @param       array   $Needed         Is This Update Needed
+     * @param bool $needed Is This Update Needed
      *
-     * @return      string      Object Id
+     * @return false|string Object Id
      */
-    public function Update($Needed)
+    public function update($needed)
     {
-        return $this->CoreUpdate($Needed);
+        return $this->coreUpdate($needed);
     }
-        
+
     /**
-     * @abstract    Delete requested Object
+     * Delete requested Object
      *
-     * @param       int     $Id     Object Id.  If NULL, Object needs to be created.
+     * @param int $objectId Object Id.  If NULL, Object needs to be created.
      *
-     * @return      bool
+     * @return bool
      */
-    public function Delete($Id = null)
+    public function delete($objectId = null): bool
     {
         //====================================================================//
         // Stack Trace
-        Splash::log()->trace(__CLASS__, __FUNCTION__);
+        Splash::log()->trace();
         //====================================================================//
         // Execute Generic Magento Delete Function ...
-        return $this->CoreDelete('customer/customer', $Id);
+        return $this->coreDelete('customer/customer', $objectId);
     }
 }
