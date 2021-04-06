@@ -1,31 +1,38 @@
 <?php
 
 /*
- * This file is part of SplashSync Project.
+ *  This file is part of SplashSync Project.
  *
- * Copyright (C) Splash Sync <www.splashsync.com>
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
  */
 
 use Splash\Client\Splash;
+use Splash\Components\Logger;
+use Splash\Local\Local;
+
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+// phpcs:disable Squiz.Classes.ValidClassName
 
 /**
- * @abstract    Splash PHP Module For Magento 1 - Data Observer
- * @author      B. Paquier <contact@splashsync.com>
+ * Splash PHP Module For Magento 1 - Data Observer
+ *
+ * @SuppressWarnings(PHPMD.CamelCaseClassName)
  */
 class SplashSync_Splash_Model_Observer
 {
-    
-    /*
+    /**
      * Objects Ressources Filter
+     *
+     * @var string[]
      */
-    private $ResourceFilter = array(
+    private $resourceFilter = array(
         "customer/customer",
         "customer/address",
         "catalog/product",
@@ -33,38 +40,125 @@ class SplashSync_Splash_Model_Observer
         "sales/order_invoice"
     );
 
-    /*
+    /**
      * Objects Ressources Types
+     *
+     * @var string[]
      */
-    private $ResourceTypes = array(
-        "customer/customer"     => "ThirdParty",
-        "customer/address"      => "Address",
-        "catalog/product"       => "Product",
-        "sales/order"           => "Order",
-        "sales/order_invoice"   => "Invoice"
+    private $resourceTypes = array(
+        "customer/customer" => "ThirdParty",
+        "customer/address" => "Address",
+        "catalog/product" => "Product",
+        "sales/order" => "Order",
+        "sales/order_invoice" => "Invoice"
     );
-    
-    /*
+
+    /**
      * Objects Ressources Names
+     *
+     * @var string[]
      */
-    private $ResourceNames = array(
-        "customer/customer"     => "Customer",
-        "customer/address"      => "Customer Address",
-        "catalog/product"       => "Product",
-        "sales/order"           => "Customer Order",
-        "sales/order_invoice"   => "Customer Invoice"
+    private $resourceNames = array(
+        "customer/customer" => "Customer",
+        "customer/address" => "Customer Address",
+        "catalog/product" => "Product",
+        "sales/order" => "Customer Order",
+        "sales/order_invoice" => "Customer Invoice"
     );
-    
-    /*
-     * Ensure Splash Libraries are Loaded
+
+    /**
+     * Object Change Save Before Event = Used only to detect Object Id and Create/Update Actions
+     *
+     * @param Varien_Event_Observer $observer
+     *
+     * @throws Exception
      */
-    private function _SplashInit()
+    public function onSaveBefore(Varien_Event_Observer $observer): void
     {
         //====================================================================//
-        // Splash Module Autoload Loacations
+        // Filter & Get Object From Event Class
+        $object = $this->filterEvent($observer);
+        if (is_null($object)) {
+            return;
+        }
+        //====================================================================//
+        // Init Splash Module
+        $this->ensureInit();
+        //====================================================================//
+        // Verify if Object is New & Store Entity Id
+        /** @var Local $local */
+        $local = Splash::local();
+        if ($object->isObjectNew()) {
+            $local->action = SPL_A_CREATE;
+        } else {
+            $local->action = SPL_A_UPDATE;
+        }
+    }
+
+    /**
+     * Object Change Save Commit After Event = Execute Splash Commits for Create/Update Actions
+     *
+     * @param Varien_Event_Observer $observer
+     *
+     * @throws Exception
+     */
+    public function onSaveCommitAfter(Varien_Event_Observer $observer): void
+    {
+        //====================================================================//
+        // Filter & Get Object From Event Class
+        $object = $this->filterEvent($observer);
+        if (is_null($object)) {
+            return;
+        }
+        //====================================================================//
+        // Init Splash Module
+        $this->ensureInit();
+        //====================================================================//
+        // Translate Object Type & Comment
+        $objectType = $this->resourceTypes[$object->getResourceName()];
+        $comment = $this->resourceNames[$object->getResourceName()];
+        /** @var Local $local */
+        $local = Splash::local();
+        //====================================================================//
+        // Do Generic Change Commit
+        $this->commitChanges($objectType, $local->action, $object->getEntityId(), $comment);
+    }
+
+    /**
+     * Object Change Delete Commit After Event = Execute Splash Commits for Delete Actions
+     *
+     * @param Varien_Event_Observer $observer
+     */
+    public function onDeleteCommitAfter(Varien_Event_Observer $observer): void
+    {
+        //====================================================================//
+        // Filter & Get Object From Event Class
+        $object = $this->filterEvent($observer);
+        if (is_null($object)) {
+            return;
+        }
+        //====================================================================//
+        // Init Splash Module
+        $this->ensureInit();
+        //====================================================================//
+        // Translate Object Type & Comment
+        $objectType = $this->resourceTypes[$object->getResourceName()];
+        $comment = $this->resourceNames[$object->getResourceName()];
+        //====================================================================//
+        // Do Generic Change Commit
+        $this->commitChanges($objectType, SPL_A_DELETE, $object->getEntityId(), $comment);
+    }
+
+    /**
+     * Ensure Splash Libraries are Loaded
+     */
+    private function ensureInit(): void
+    {
+        //====================================================================//
+        // Splash Module Autoload Locations
         $autoloadLocations = array(
-            dirname(dirname(__FILE__)) . '/vendor/autoload.php',
-            BP . '/app/code/local/SplashSync/Splash/vendor/autoload.php',
+            dirname(dirname(__FILE__)).'/vendor/autoload.php',
+            BP.'/app/code/local/SplashSync/Splash/vendor/autoload.php',
         );
         //====================================================================//
         // Load Splash Module
@@ -72,170 +166,121 @@ class SplashSync_Splash_Model_Observer
             if (is_file($autoload)) {
                 require_once($autoload);
                 Splash::Core();
+
                 return;
             }
         }
     }
-    
-    /*
-     * Ensure Event is in Requiered Scope (Object action, Resources Filter)
+
+    /**
+     * Ensure Event is in Required Scope (Object action, Resources Filter)
      *
-     * @return mixed         Return Event Objects if Event to be treated
+     * @return mixed Return Event Objects if Event to be treated
      */
-    private function _FilterEvent(Varien_Event_Observer $observer)
+    private function filterEvent(Varien_Event_Observer $observer)
     {
         //====================================================================//
         // Get Object From Event Class
-        $Object = $observer->getEvent()->getObject();
-        if (is_null($Object)) {
+        /** @phpstan-ignore-next-line */
+        $object = $observer->getEvent()->getObject();
+        if (is_null($object)) {
             return null;
         }
         //====================================================================//
         // Get Object Type from Class
-        $ResourceName   =    $Object->getResourceName();
-        if (is_null($ResourceName)) {
+        $resourceName = $object->getResourceName();
+        if (is_null($resourceName)) {
             return null;
         }
         //====================================================================//
         // Filter Object Type
-        if (!in_array($ResourceName, $this->ResourceFilter)) {
+        if (!in_array($resourceName, $this->resourceFilter, true)) {
             return null;
         }
-        return $Object;
+
+        return $object;
     }
-    
-    /*
+
+    /**
      * Generic Splash Object Changes Commit Function
+     *
+     * @param string $objectType
+     * @param string $action
+     * @param mixed $local
+     * @param string $comment
+     * @return bool
      */
-    public function _CommitChanges($_Type, $_Action, $_Id, $_Comment)
+    private function commitChanges(string $objectType, string $action, $local, string $comment): bool
     {
         //====================================================================//
         // Complete Comment for Logging
-        $_Comment .= " " . $_Action . " on Magento 1";
+        $comment .= " ".$action." on Magento 1";
         //====================================================================//
         // Prepare User Name for Logging
-        $AdminUser = Mage::getSingleton('admin/session')->getUser();
-        if (!empty($AdminUser)) {
-            $_User   = $AdminUser->getUsername();
+        /** @var \Mage_Admin_Model_Session $sessionModel */
+        $sessionModel = Mage::getModel('admin/session');
+        /** @phpstan-ignore-next-line */
+        $adminUser = $sessionModel->getUser();
+        if (!empty($adminUser)) {
+            $user = $adminUser->getUsername();
         } else {
-            $_User   = 'Unknown Employee';
+            $user = 'Unknown Employee';
         }
         //====================================================================//
         // Init Splash Module
-        $this->_SplashInit();
+        $this->ensureInit();
         //====================================================================//
         // Prevent Repeated Commit if Needed
-        if (($_Action == SPL_A_UPDATE) && Splash::object($_Type)->isLocked()) {
+        if ((SPL_A_UPDATE == $action) && Splash::object($objectType)->isLocked()) {
             return true;
         }
         //====================================================================//
         // Commit Action on remotes nodes (Master & Slaves)
-        $result = Splash::commit($_Type, $_Id, $_Action, $_User, $_Comment);
+        $result = Splash::commit($objectType, $local, $action, $user, $comment);
         //====================================================================//
         // Post Splash Messages
-        $this->_importLog(Splash::log());
+        $this->importLog(Splash::log());
+
         return $result;
     }
-    
-    /*
-     * Object Change Save Before Event = Used only to detect Object Id and Create/Update Actions
-     */
-    public function onSaveBefore(Varien_Event_Observer $observer)
-    {
-        //====================================================================//
-        // Filter & Get Object From Event Class
-        $Object = $this->_FilterEvent($observer);
-        if (is_null($Object)) {
-            return;
-        }
-        //====================================================================//
-        // Init Splash Module
-        $this->_SplashInit();
-        //====================================================================//
-        // Verify if Object is New & Store Entity Id
-        if ($Object->isObjectNew()) {
-            Splash::local()->_Action    = SPL_A_CREATE;
-        } else {
-            Splash::local()->_Action    = SPL_A_UPDATE;
-        }
 
-        return true;
-    }
-
-    /*
-     * Object Change Save Commit After Event = Execute Splash Commits for Create/Update Actions
+    /**
+     * Import Splash Logs to User Session
+     *
+     * @param Logger $log
      */
-    public function onSaveCommitAfter(Varien_Event_Observer $observer)
-    {
-        //====================================================================//
-        // Filter & Get Object From Event Class
-        $Object = $this->_FilterEvent($observer);
-        if (is_null($Object)) {
-            return;
-        }
-        //====================================================================//
-        // Init Splash Module
-        $this->_SplashInit();
-        //====================================================================//
-        // Translate Object Type & Comment
-        $_Type      =   $this->ResourceTypes[$Object->getResourceName()];
-        $_Comment   =   $this->ResourceNames[$Object->getResourceName()];
-        //====================================================================//
-        // Do Generic Change Commit
-        $this->_CommitChanges($_Type, Splash::local()->_Action, $Object->getEntityId(), $_Comment);
-        return true;
-    }
-    
-    /*
-     * Object Change Delete Commit After Event = Execute Splash Commits for Delete Actions
-     */
-    public function onDeleteCommitAfter(Varien_Event_Observer $observer)
-    {
-        //====================================================================//
-        // Filter & Get Object From Event Class
-        $Object = $this->_FilterEvent($observer);
-        if (is_null($Object)) {
-            return;
-        }
-        //====================================================================//
-        // Init Splash Module
-        $this->_SplashInit();
-        //====================================================================//
-        // Translate Object Type & Comment
-        $_Type      =   $this->ResourceTypes[$Object->getResourceName()];
-        $_Comment   =   $this->ResourceNames[$Object->getResourceName()];
-        //====================================================================//
-        // Do Generic Change Commit
-        $this->_CommitChanges($_Type, SPL_A_DELETE, $Object->getEntityId(), $_Comment);
-    }
-    
-    protected function _importLog($Log)
+    private function importLog($log): void
     {
         //====================================================================//
         // Import Errors
-        if (isset($Log->err) && !empty($Log->err)) {
-            $this->_importMessages($Log->err, "addError");
+        if (isset($log->err) && !empty($log->err)) {
+            $this->importMessages($log->err, "addError");
         }
         //====================================================================//
         // Import Warnings
-        if (isset($Log->war) && !empty($Log->war)) {
-            $this->_importMessages($Log->war, "addWarning");
+        if (isset($log->war) && !empty($log->war)) {
+            $this->importMessages($log->war, "addWarning");
         }
         //====================================================================//
         // Import Messages
-        if (isset($Log->msg) && !empty($Log->msg)) {
-            $this->_importMessages($Log->msg, "addSuccess");
+        if (isset($log->msg) && !empty($log->msg)) {
+            $this->importMessages($log->msg, "addSuccess");
         }
         //====================================================================//
         // Import Debug
-        if (isset($Log->deb) && !empty($Log->deb)) {
-            $this->_importMessages($Log->deb, "addSuccess");
+        if (isset($log->deb) && !empty($log->deb)) {
+            $this->importMessages($log->deb, "addSuccess");
         }
     }
-    private function _importMessages($MessagesArray, $Method)
+
+    /**
+     * @param array  $messagesArray
+     * @param string $method
+     */
+    private function importMessages($messagesArray, $method): void
     {
-        foreach ($MessagesArray as $Message) {
-            Mage::getSingleton('adminhtml/session')->$Method($Message);
+        foreach ($messagesArray as $message) {
+            Mage::getSingleton('adminhtml/session')->{$method}($message);
         }
-    }    
+    }
 }

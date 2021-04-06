@@ -1,71 +1,72 @@
 <?php
-/**
- * Magento
+
+/*
+ *  This file is part of SplashSync Project.
  *
- * NOTICE OF LICENSE
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magento.com so we can send you a copy immediately.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magento.com for more information.
- *
- * @category    Mage
- * @package     Mage_Adminhtml
- * @copyright  Copyright (c) 2006-2016 X.commerce, Inc. and affiliates (http://www.magento.com)
- * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
  */
+
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+// phpcs:disable Squiz.Classes.ValidClassName
 
 /**
  * Config category source
  *
  * @category   Mage
  * @package    Mage_Adminhtml
- * @author      Magento Core Team <core@magentocommerce.com>
+ *
+ * @SuppressWarnings(PHPMD.CamelCaseClassName)
+ * @SuppressWarnings(PHPMD.LongClassName)
  */
 class SplashSync_Splash_Model_System_Config_Source_Product_Attributeset
 {
-    public function toOptionArray()
+    /**
+     * @return array
+     */
+    public function toOptionArray(): array
     {
-        $EntityTypeId = null;        
+        $entityTypeId = null;
         //====================================================================//
         // Get Products Entity Type Id
-        foreach (Mage::getResourceModel('eav/entity_type_collection')->load() as $EntityType) {
+        /** @var Mage_Eav_Model_Entity_Type $eavModel */
+        $eavModel = Mage::getResourceModel('eav/entity_type_collection');
+        /** @phpstan-ignore-next-line */
+        foreach ($eavModel->load() as $entityType) {
             //====================================================================//
             // Search for Products Entity Type Name
-            if ($EntityType->getEntityModel() === 'catalog/product') {
-                $EntityTypeId = $EntityType->getEntityTypeId();
+            if ('catalog/product' === $entityType->getEntityModel()) {
+                $entityTypeId = $entityType->getEntityTypeId();
             }
         }
         //====================================================================//
         // Load List Of Products Attributes Set
-        $AttributeSetCollection = Mage::getResourceModel('eav/entity_attribute_set_collection')->load();
+        /** @phpstan-ignore-next-line */
+        $attributeSetCollection = Mage::getResourceModel('eav/entity_attribute_set_collection')->load();
         //====================================================================//
         // Iterate all set
-        $Select = array();
-        foreach ($AttributeSetCollection as $AttributeSet) {
+        $select = array();
+        foreach ($attributeSetCollection as $attributeSet) {
             //====================================================================//
             // Verify This set is for Products
-            if ($AttributeSet->getEntityTypeId() != $EntityTypeId) {
+            if ($attributeSet->getEntityTypeId() != $entityTypeId) {
                 continue;
             }
             //====================================================================//
             // Add Attribute Set to Select List
-            $Select[] = array(
-                'value' => $AttributeSet->getEntityTypeId(),
-                'label' => $AttributeSet->getAttributeSetName(),
+            $select[] = array(
+                'value' => $attributeSet->getEntityTypeId(),
+                'label' => $attributeSet->getAttributeSetName(),
             );
         }
         //====================================================================//
         // Return Sets List
-        return $Select;
+        return $select;
     }
 }
