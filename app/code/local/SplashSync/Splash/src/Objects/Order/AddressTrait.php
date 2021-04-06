@@ -16,6 +16,7 @@
 namespace Splash\Local\Objects\Order;
 
 use Mage;
+use Mage_Customer_Model_Address;
 use Mage_Sales_Model_Order_Address;
 
 /**
@@ -68,7 +69,7 @@ trait AddressTrait
                     $address = $this->object->getShippingAddress();
                 }
                 if ($address && $address->getCustomerAddressId()) {
-                    $this->out[$fieldName] = self::objects()->Encode("Address", $address->getCustomerAddressId());
+                    $this->out[$fieldName] = self::objects()->encode("Address", $address->getCustomerAddressId());
 
                     break;
                 }
@@ -98,7 +99,9 @@ trait AddressTrait
             //====================================================================//
             // Billing/Shipping Address Writing
             case 'billing_address_id':
-                $this->setAddressContents('billing', self::objects()->Id($data));
+                if ($this->setAddressContents('billing', self::objects()->id($data))) {
+                    $this->needUpdate();
+                }
 
                 break;
             case 'shipping_address_id':
@@ -108,7 +111,9 @@ trait AddressTrait
                 //====================================================================//
                 // Setup Address Object & Set Order as "Non Virtual" => With Shipping
                 if ($addressId > 0) {
-                    $this->setAddressContents('shipping', self::objects()->id($data));
+                    if ($this->setAddressContents('shipping', $addressId)) {
+                        $this->needUpdate();
+                    }
                     $this->object->setIsVirtual(0);
                 //====================================================================//
                 // No Address Setup & Set Order as "Virtual" => No Shipping
@@ -129,9 +134,9 @@ trait AddressTrait
      * @param string $type
      * @param mixed  $addressId
      *
-     * @return void
+     * @return bool
      */
-    private function setAddressContents(string $type, $addressId): void
+    private function setAddressContents(string $type, $addressId): bool
     {
         //====================================================================//
         // Read Original Billing/Shipping Order Address
@@ -140,7 +145,7 @@ trait AddressTrait
         } elseif ("shipping" === $type) {
             $address = $this->object->getShippingAddress();
         } else {
-            return;
+            return false;
         }
         //====================================================================//
         // Empty => Create Order Address
@@ -155,16 +160,16 @@ trait AddressTrait
         //====================================================================//
         // Check For Changes
         if ($address->getCustomerAddressId() == $addressId) {
-            return;
+            return false;
         }
         //====================================================================//
         // Load Customer Address
-        /** @var Mage_Sales_Model_Order_Address $model */
-        $model = Mage::getModel('sales/order_address');
-        /** @var false|Mage_Sales_Model_Order_Address $customerAddress */
+        /** @var Mage_Customer_Model_Address $model */
+        $model = Mage::getModel('customer/address');
+        /** @var false|Mage_Customer_Model_Address $customerAddress */
         $customerAddress = $model->load($addressId);
         if (!$customerAddress || ($customerAddress->getEntityId() != $addressId)) {
-            return;
+            return false;
         }
         //====================================================================//
         // Update Address
@@ -193,5 +198,7 @@ trait AddressTrait
         } elseif ("shipping" === $type) {
             $this->object->setShippingAddress($address);
         }
+
+        return true;
     }
 }

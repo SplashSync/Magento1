@@ -18,6 +18,7 @@ namespace Splash\Local\Objects\Order;
 use Mage;
 use Mage_Catalog_Exception;
 use Mage_Sales_Model_Order      as MageOrder;
+use Mage_Sales_Model_Order_Payment;
 use Splash\Core\SplashCore      as Splash;
 
 /**
@@ -83,6 +84,10 @@ trait CRUDTrait
         $order->setIsVirtual(1);
         // Set Default Payment Method
         $order->setData('payment', array('method' => 'checkmo'));
+        /** @var Mage_Sales_Model_Order_Payment $orderPayment */
+        $orderPayment = Mage::getModel('sales/order_payment');
+        // Set Sales Order Payment
+        $order->setPayment($orderPayment->setMethod('checkmo'));
         // Set Order Initial Status
         $order->setState(MageOrder::STATE_NEW, "pending", 'Just Created by SplashSync Module', true);
         //====================================================================//

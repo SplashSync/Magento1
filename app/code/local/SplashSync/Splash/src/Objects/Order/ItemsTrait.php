@@ -188,7 +188,7 @@ trait ItemsTrait
         foreach ($products as $index => $product) {
             //====================================================================//
             // Do Fill List with Data
-            self::lists()->Insert($this->out, "lines", $fieldName, $index, $this->getItemsValues($product, $fieldId));
+            self::lists()->insert($this->out, "lines", $fieldName, $index, $this->getItemsValues($product, $fieldId));
         }
         unset($this->in[$key]);
     }
@@ -205,8 +205,8 @@ trait ItemsTrait
     {
         //====================================================================//
         // Check if List field & Init List Array
-        $fieldId = self::lists()->InitOutput($this->out, "lines", $fieldName);
-        if (!$fieldId || !empty(Splash::input("SPLASH_TRAVIS"))) {
+        $fieldId = self::lists()->initOutput($this->out, "lines", $fieldName);
+        if (!$fieldId || Splash::isDebugMode()) {
             return;
         }
 

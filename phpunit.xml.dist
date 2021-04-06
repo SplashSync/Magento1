@@ -10,11 +10,9 @@
     convertWarningsToExceptions = "true"
     processIsolation            = "false"
     stopOnFailure               = "true"
-    syntaxCheck                 = "false"
-    bootstrap                   = "app/code/local/SplashSync/Splash/vendor/autoload.php" 
+    bootstrap                   = "app/code/local/SplashSync/Splash/vendor/autoload.php"
     verbose                     = "true"
-    debug                       = "true"
-    timeoutForLargeTests        = "120"  
+    timeoutForLargeTests        = "120"
 >
     <filter>
         <whitelist>
@@ -37,5 +35,13 @@
     <php>
         <const  name="SPLASH_DEBUG" value="true" />
         <server name="SERVER_NAME" value="http://localhost"/>
+
+        <!-- Only Test Specified Types -->
+<!--        <const  name="SPLASH_TYPES"     value="Address" />-->
+<!--        <const  name="SPLASH_TYPES"     value="ThirdParty" />-->
+<!--        <const  name="SPLASH_TYPES"     value="Product" />-->
+<!--        <const  name="SPLASH_TYPES"     value="Order" />-->
+<!--        <const  name="SPLASH_TYPES"     value="Invoice" />-->
+
     </php>
 </phpunit>

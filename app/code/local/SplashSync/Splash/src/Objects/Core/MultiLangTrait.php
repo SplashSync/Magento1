@@ -163,7 +163,7 @@ trait MultiLangTrait
             $this->object->setData($key, $data);
         }
 
-        return false;
+        return true;
     }
 
     //====================================================================//

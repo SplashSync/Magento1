@@ -39,12 +39,44 @@ trait ImagesTrait
     {
         //====================================================================//
         // Product Images List
-        $this->fieldsFactory()->Create(SPL_T_IMG)
-            ->Identifier("image")
+        $this->fieldsFactory()->create(SPL_T_IMG)
+            ->identifier("image")
+            ->inList("images")
+            ->name("Images")
+            ->group("Images")
+            ->microData("http://schema.org/Product", "image")
+        ;
+        //====================================================================//
+        // Product Images => Position
+        $this->fieldsFactory()->create(SPL_T_INT)
+            ->identifier("position")
+            ->inList("images")
+            ->name("Img. Position")
+            ->microData("http://schema.org/Product", "positionImage")
+            ->group("Images")
+            ->isReadOnly()
+            ->isNotTested()
+        ;
+        //====================================================================//
+        // Product Images => Is Cover
+        $this->fieldsFactory()->create(SPL_T_BOOL)
+            ->Identifier("cover")
             ->InList("images")
-            ->Name("Images")
-            ->Group("Images")
-            ->MicroData("http://schema.org/Product", "image");
+            ->name("Img. Cover")
+            ->microData("http://schema.org/Product", "isCover")
+            ->group("Images")
+            ->isNotTested()
+        ;
+        //====================================================================//
+        // Product Images => Is Visible Image
+        $this->fieldsFactory()->create(SPL_T_BOOL)
+            ->identifier("visible")
+            ->inList("images")
+            ->name("Img. Visible")
+            ->microData("http://schema.org/Product", "isVisibleImage")
+            ->group("Images")
+            ->isNotTested()
+        ;
     }
 
     /**
@@ -58,16 +90,29 @@ trait ImagesTrait
     protected function getImagesFields(string $key, string $fieldName): void
     {
         //====================================================================//
-        // READ Fields
-        switch ($fieldName) {
-            case 'image@images':
-                $this->getImageGallery();
-
-                break;
-            default:
-                return;
+        // Check if List field & Init List Array
+        $fieldId = self::lists()->initOutput($this->out, "images", $fieldName);
+        if (!$fieldId) {
+            return;
         }
-
+        //====================================================================//
+        // Load Object Images List
+        $objectImagesList = $this->object->getMediaGallery();
+        //====================================================================//
+        // Images List is Empty
+        if (!isset($objectImagesList["images"]) || !count($objectImagesList["images"])) {
+            return;
+        }
+        //====================================================================//
+        // Walk on Images List
+        foreach ($objectImagesList["images"] as $index => $mageImage) {
+            //====================================================================//
+            // Collect Data
+            $value = $this->getImageGalleryValue($fieldId, $mageImage);
+            //====================================================================//
+            // Do Fill List with Data
+            self::lists()->insert($this->out, "images", $fieldName, $index, $value);
+        }
         unset($this->in[$key]);
     }
 
@@ -96,42 +141,43 @@ trait ImagesTrait
 
     /**
      * Return Product Image Array from Prestashop Object Class
+     *
+     * @param string $fieldId
+     * @param array  $mageImage
+     *
+     * @return null|mixed
      */
-    private function getImageGallery(): bool
+    private function getImageGalleryValue(string $fieldId, array $mageImage)
     {
         //====================================================================//
-        // Load Object Images List
-        $objectImagesList = $this->object->getMediaGallery();
-        $media = $this->object->getMediaConfig();
-        //====================================================================//
-        // Init Images List
-        if (!isset($this->out["images"])) {
-            $this->out["images"] = array();
+        // Load Object Images Media Config
+        static $mediaCfg;
+        if (!isset($mediaCfg)) {
+            $mediaCfg = $this->object->getMediaConfig();
         }
         //====================================================================//
-        // Images List is Empty
-        if (!isset($objectImagesList["images"]) || !count($objectImagesList["images"])) {
-            return true;
+        // READ Field
+        switch ($fieldId) {
+            case 'position':
+                return $mageImage["position"];
+            case 'cover':
+                return 1 == $mageImage["position"];
+            case 'visible':
+                return empty($mageImage["disabled"]);
+            case 'image':
+                return self::images()->encode(
+                    // Image Legend/Label
+                    $mageImage["label"] ? $mageImage["label"] : $this->object->getSku(),
+                    // Image File Filename
+                    basename($mageImage["file"]),
+                    // Image Server Path (Without Filename)
+                    dirname($mediaCfg->getMediaPath($mageImage['file'])).DS,
+                    // Image Public Url
+                    $mediaCfg->getMediaUrl($mageImage['file'])
+                );
+            default:
+                return null;
         }
-        //====================================================================//
-        // Create Images List
-        foreach ($objectImagesList["images"] as $key => $image) {
-            //====================================================================//
-            // Init Image List Item
-            if (!isset($this->out["images"][$key])) {
-                $this->out["images"][$key] = array();
-            }
-            //====================================================================//
-            // Insert Image in Output List
-            $this->out["images"][$key]["image"] = self::images()->encode(
-                $image["label"]?$image["label"]:$this->object->getSku(), // Image Legend/Label
-                basename($image["file"]),                               // Image File Filename
-                dirname($media->getMediaPath($image['file'])).DS,     // Image Server Path (Without Filename)
-                $media->getMediaUrl($image['file'])                     // Image Public Url
-            );
-        }
-
-        return true;
     }
 
     /**

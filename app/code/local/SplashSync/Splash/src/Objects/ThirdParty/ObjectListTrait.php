@@ -16,7 +16,6 @@
 namespace Splash\Local\Objects\ThirdParty;
 
 use Mage_Customer_Model_Customer;
-use Splash\Client\Splash;
 
 /**
  * Magento 1 Customers Objects Lists Access
@@ -33,8 +32,6 @@ trait ObjectListTrait
      */
     public function objectsList($filter = null, $params = null)
     {
-        Splash::local()->selfTest();
-
         //====================================================================//
         // Setup filters
         $filters = array();
