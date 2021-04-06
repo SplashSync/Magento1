@@ -73,10 +73,10 @@ stages:
       ################################################################################
       # Run Grumphp Php Stan Test Sequence
       - cd /var/www/html
-      - php app/code/local/SplashSync/Splash/vendor/bin/grumphp run -n --testsuite=phpstan
-#      ################################################################################
-#      # Run PhpUnit Test Sequence
-#      - php app/code/local/SplashSync/Splash/vendor/bin/phpunit
+#      - php app/code/local/SplashSync/Splash/vendor/bin/grumphp run -n --testsuite=phpstan
+      ################################################################################
+      # Run PhpUnit Test Sequence
+      - php app/code/local/SplashSync/Splash/vendor/bin/phpunit
 
     ################################################################################
     # Run After Script
