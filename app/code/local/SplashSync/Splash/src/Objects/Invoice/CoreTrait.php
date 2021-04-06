@@ -1,197 +1,216 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Invoice;
 
 use Mage;
+use Mage_Core_Model_Date;
+use Mage_Sales_Model_Order;
 
 /**
- * @abstract    Magento 1 Invoice Core Fields Access
+ * Magento 1 Invoice Core Fields Access
  */
 trait CoreTrait
 {
-    
     /**
-    *   @abstract     Build Core Fields using FieldFactory
-    */
-    private function buildCoreFields()
+     * Build Core Fields using FieldFactory
+     */
+    protected function buildCoreFields(): void
     {
-        
         //====================================================================//
         // Customer Object
-        $this->fieldsFactory()->Create(self::objects()->Encode("ThirdParty", SPL_T_ID))
-                ->Identifier("customer_id")
-                ->Name('Customer')
-                ->MicroData("http://schema.org/Invoice", "customer")
-                ->isReadOnly();
-
+        $this->fieldsFactory()->create((string) self::objects()->Encode("ThirdParty", SPL_T_ID))
+            ->identifier("customer_id")
+            ->name('Customer')
+            ->microData("http://schema.org/Invoice", "customer")
+            ->isReadOnly()
+        ;
         //====================================================================//
         // Customer Name
-        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("customer_name")
-                ->Name('Customer Name')
-                ->MicroData("http://schema.org/Invoice", "customer")
-                ->isListed()
-                ->isReadOnly();
-
-        
+        $this->fieldsFactory()->create(SPL_T_VARCHAR)
+            ->identifier("customer_name")
+            ->name('Customer Name')
+            ->microData("http://schema.org/Invoice", "customer")
+            ->isListed()
+            ->isReadOnly()
+        ;
         //====================================================================//
         // Order Object
-        $this->fieldsFactory()->Create(self::objects()->Encode("Order", SPL_T_ID))
-                ->Identifier("order_id")
-                ->Name('Order')
-                ->MicroData("http://schema.org/Invoice", "referencesOrder")
-                ->isRequired();
-        
+        $this->fieldsFactory()->create((string) self::objects()->Encode("Order", SPL_T_ID))
+            ->identifier("order_id")
+            ->name('Order')
+            ->microData("http://schema.org/Invoice", "referencesOrder")
+            ->isRequired()
+        ;
         //====================================================================//
         // Invoice Reference
-        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("increment_id")
-                ->Name('Number')
-                ->MicroData("http://schema.org/Invoice", "confirmationNumber")
-                ->isListed();
-
+        $this->fieldsFactory()->create(SPL_T_VARCHAR)
+            ->identifier("increment_id")
+            ->name('Number')
+            ->microData("http://schema.org/Invoice", "confirmationNumber")
+            ->isListed()
+        ;
         //====================================================================//
         // Order Reference
-        $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("reference")
-                ->Name('Reference')
-                ->MicroData("http://schema.org/Order", "orderNumber")
-                ->isReadOnly();
-
+        $this->fieldsFactory()->create(SPL_T_VARCHAR)
+            ->identifier("reference")
+            ->name('Reference')
+            ->microData("http://schema.org/Order", "orderNumber")
+            ->isReadOnly()
+        ;
         //====================================================================//
         // Order Date
-        $this->fieldsFactory()->Create(SPL_T_DATE)
-                ->Identifier("created_at")
-                ->Name("Date")
-                ->MicroData("http://schema.org/Order", "orderDate")
-                ->isRequired()
-                ->isListed();
+        $this->fieldsFactory()->create(SPL_T_DATE)
+            ->identifier("created_at")
+            ->name("Date")
+            ->microData("http://schema.org/Order", "orderDate")
+            ->isRequired()
+            ->isListed()
+        ;
     }
-    
+
     /**
-     *  @abstract     Read requested Field
+     * Read requested Field
      *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
+     * @param string $key       Input List Key
+     * @param string $fieldName Field Identifier / Name
      *
-     *  @return         none
+     * @return void
      */
-    private function getCoreFields($Key, $FieldName)
+    protected function getCoreFields(string $key, string $fieldName): void
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // Direct Readings
             case 'increment_id':
-                $this->getData($FieldName);
+                $this->getData($fieldName);
+
                 break;
             //====================================================================//
             // Order Reference Number
             case 'number':
-                $this->Out[$FieldName] = $this->Object->getOrderIncrementId();
+                $this->out[$fieldName] = $this->object->getOrderIncrementId();
+
                 break;
             //====================================================================//
             // Customer Object Id Readings
             case 'customer_id':
-                $this->Out[$FieldName] = self::objects()->Encode("ThirdParty", $this->Object->getOrder()->getData($FieldName));
+                $this->out[$fieldName] = self::objects()->Encode(
+                    "ThirdParty",
+                    $this->object->getOrder()->getData($fieldName)
+                );
+
                 break;
             //====================================================================//
             // Customer Name
             case 'customer_name':
-                $this->Out[$FieldName] = $this->Object->getOrder()->getCustomerName();
+                $this->out[$fieldName] = $this->object->getOrder()->getCustomerName();
+
                 break;
             //====================================================================//
             // Object Object Id Readings
             case 'order_id':
-                $this->Out[$FieldName] = self::objects()->Encode("Order", $this->Object->getData($FieldName));
+                $this->out[$fieldName] = self::objects()->encode("Order", $this->object->getData($fieldName));
+
                 break;
             //====================================================================//
             // Order Official Date
             case 'created_at':
-                $this->Out[$FieldName] = date(SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
+                /** @var Mage_Core_Model_Date $model */
+                $model = Mage::getModel('core/date');
+                $this->out[$fieldName] = date(
+                    SPL_T_DATECAST,
+                    $model->timestamp($this->object->getData($fieldName))
+                );
+
                 break;
             case 'reference':
-                $this->getSimple($FieldName, "Order");
+                $this->getSimple($fieldName, "Order");
+
                 break;
             default:
                 return;
         }
-        
-        unset($this->In[$Key]);
+
+        unset($this->in[$key]);
     }
-    
+
     /**
-     *  @abstract     Write Given Fields
+     * Write Given Fields
      *
-     *  @param        string    $FieldName              Field Identifier / Name
-     *  @param        mixed     $Data                   Field Data
+     * @param string $fieldName Field Identifier / Name
+     * @param mixed  $data      Field Data
      *
-     *  @return         none
+     * @return void
      */
-    private function setCoreFields($FieldName, $Data)
+    protected function setCoreFields(string $fieldName, $data)
     {
         //====================================================================//
         // WRITE Field
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // Direct Readings
             case 'increment_id':
-                if ($this->Object->getData($FieldName) != $Data) {
-                    $this->Object->setData($FieldName, $Data);
+                if ($this->object->getData($fieldName) != $data) {
+                    $this->object->setData($fieldName, $data);
                     $this->needUpdate();
                 }
+
                 break;
-            
             //====================================================================//
             // Order Official Date
             case 'created_at':
-                $CurrentDate = date(SPL_T_DATECAST, Mage::getModel("core/date")->timestamp($this->Object->getData($FieldName)));
-                if ($CurrentDate != $Data) {
-                    $this->Object->setData($FieldName, $Data);
+                /** @var Mage_Core_Model_Date $model */
+                $model = Mage::getModel('core/date');
+                $currentDate = date(
+                    SPL_T_DATECAST,
+                    $model->timestamp($this->object->getData($fieldName))
+                );
+                if ($currentDate != $data) {
+                    $this->object->setData($fieldName, $model->gmtDate(null, $data));
                     $this->needUpdate();
                 }
+
                 break;
-                    
             //====================================================================//
             // Parent Order Id
             case 'order_id':
-                $OrderId = self::objects()->id($Data);
-                if ($this->Object->getOrder()->getId() == $OrderId) {
+                $orderId = self::objects()->id($data);
+                if ($this->object->getOrder()->getId() == $orderId) {
                     break;
                 }
                 //====================================================================//
                 // Load Order Object
-                $NewOrder = Mage::getModel('sales/order')->load($OrderId);
-                if ($NewOrder->getEntityId() !== $OrderId) {
+                /** @var Mage_Sales_Model_Order $model */
+                $model = Mage::getModel('sales/order');
+                /** @var false|Mage_Sales_Model_Order $newOrder */
+                $newOrder = $model->load((int) $orderId);
+                if (!$newOrder || ($newOrder->getEntityId() !== $orderId)) {
                     break;
                 }
                 //====================================================================//
                 //Update Customer Id
-                $this->Object->setOrder($NewOrder);
+                $this->object->setOrder($newOrder);
                 $this->needUpdate();
+
                 break;
-                
             default:
                 return;
         }
-        unset($this->In[$FieldName]);
+        unset($this->in[$fieldName]);
     }
 }
