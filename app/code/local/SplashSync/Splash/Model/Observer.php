@@ -206,8 +206,11 @@ class SplashSync_Splash_Model_Observer
      *
      * @param string $objectType
      * @param string $action
-     * @param mixed $local
+     * @param mixed  $local
      * @param string $comment
+     *
+     * @throws Exception
+     *
      * @return bool
      */
     private function commitChanges(string $objectType, string $action, $local, string $comment): bool
