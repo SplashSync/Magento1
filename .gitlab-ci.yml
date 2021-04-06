@@ -49,6 +49,7 @@ stages:
     before_script:
         # Move Module
         - cp -Rf $CI_PROJECT_DIR /var/www/html/
+        - echo $CI_PROJECT_DIR
         - ls -l /var/www/html
         # Build Module (Composer)
         - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh | sh
