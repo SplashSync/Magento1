@@ -95,6 +95,7 @@ trait ImagesTrait
         if (!$fieldId) {
             return;
         }
+        unset($this->in[$key]);
         //====================================================================//
         // Load Object Images List
         $objectImagesList = $this->object->getMediaGallery();
@@ -113,7 +114,6 @@ trait ImagesTrait
             // Do Fill List with Data
             self::lists()->insert($this->out, "images", $fieldName, $index, $value);
         }
-        unset($this->in[$key]);
     }
 
     /**
