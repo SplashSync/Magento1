@@ -24,7 +24,7 @@ echo "- System Info       -"
 echo "---------------------"
 echo
 
-cd /var/ww/html
+cd /var/www/html
 ./n98-magerun.phar --version
 ./n98-magerun.phar sys:info
 ./n98-magerun.phar sys:store:list
