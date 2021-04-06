@@ -1,112 +1,106 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Address;
 
+use Mage;
+use Mage_Customer_Model_Customer;
 use Splash\Core\SplashCore      as Splash;
 
-// Magento Namespaces
-use Mage;
-
 /**
- * @abstract    Magento 1 Customers Address Core Fields Access
+ * Magento 1 Customers Address Core Fields Access
  */
 trait CoreTrait
 {
-    
     /**
-    *   @abstract     Build Address Core Fields using FieldFactory
-    */
-    private function buildCoreFields()
+     * Build Address Core Fields using FieldFactory
+     */
+    protected function buildCoreFields(): void
     {
         //====================================================================//
         // Customer
-        $this->fieldsFactory()->Create(self::objects()->Encode("ThirdParty", SPL_T_ID))
-                ->Identifier("parent_id")
-                ->Name("Customer")
-                ->MicroData("http://schema.org/Organization", "ID")
-                ->isRequired();
-        
+        $this->fieldsFactory()->Create((string) self::objects()->encode("ThirdParty", SPL_T_ID))
+            ->Identifier("parent_id")
+            ->Name("Customer")
+            ->MicroData("http://schema.org/Organization", "ID")
+            ->isRequired()
+        ;
         //====================================================================//
         // Company
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("company")
-                ->Name("Company")
-                ->MicroData("http://schema.org/Organization", "legalName")
-                ->isListed();
-        
+            ->Identifier("company")
+            ->Name("Company")
+            ->MicroData("http://schema.org/Organization", "legalName")
+            ->isListed()
+        ;
         //====================================================================//
         // Firstname
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("firstname")
-                ->Name("First name")
-                ->MicroData("http://schema.org/Person", "familyName")
-                ->Association("firstname", "lastname")
-                ->isRequired()
-                ->isListed();
-        
+            ->Identifier("firstname")
+            ->Name("First name")
+            ->MicroData("http://schema.org/Person", "familyName")
+            ->Association("firstname", "lastname")
+            ->isRequired()
+            ->isListed()
+        ;
         //====================================================================//
         // Lastname
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("lastname")
-                ->Name("Last name")
-                ->MicroData("http://schema.org/Person", "givenName")
-                ->Association("firstname", "lastname")
-                ->isRequired()
-                ->isListed();
-        
+            ->Identifier("lastname")
+            ->Name("Last name")
+            ->MicroData("http://schema.org/Person", "givenName")
+            ->Association("firstname", "lastname")
+            ->isRequired()
+            ->isListed()
+        ;
         //====================================================================//
         // Prefix
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("prefix")
-                ->Name("Prefix name")
-                ->MicroData("http://schema.org/Person", "honorificPrefix");
-        
+            ->Identifier("prefix")
+            ->Name("Prefix name")
+            ->MicroData("http://schema.org/Person", "honorificPrefix")
+        ;
         //====================================================================//
         // MiddleName
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("middlename")
-                ->Name("Middlename")
-                ->MicroData("http://schema.org/Person", "additionalName");
-        
+            ->Identifier("middlename")
+            ->Name("Middlename")
+            ->MicroData("http://schema.org/Person", "additionalName")
+        ;
         //====================================================================//
         // Suffix
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("suffix")
-                ->Name("Suffix name")
-                ->MicroData("http://schema.org/Person", "honorificSuffix");
+            ->Identifier("suffix")
+            ->Name("Suffix name")
+            ->MicroData("http://schema.org/Person", "honorificSuffix")
+        ;
     }
-    
-    
+
     /**
-     *  @abstract     Read requested Field
+     * Read requested Field
      *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
+     * @param string $key       Input List Key
+     * @param string $fieldName Field Identifier / Name
      *
-     *  @return         none
+     * @return void
      */
-    private function getCoreFields($Key, $FieldName)
+    protected function getCoreFields($key, $fieldName): void
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // Direct Readings
             case 'company':
@@ -115,83 +109,91 @@ trait CoreTrait
             case 'lastname':
             case 'prefix':
             case 'suffix':
-                $this->getData($FieldName);
-                break;
+                $this->getData($fieldName);
 
+                break;
             //====================================================================//
             // Customer Object Id Readings
             case 'parent_id':
-                $this->Out[$FieldName] = self::objects()->encode("ThirdParty", $this->Object->getParentId());
+                $this->out[$fieldName] = self::objects()->encode("ThirdParty", $this->object->getParentId());
+
                 break;
-            
             default:
                 return;
         }
-        unset($this->In[$Key]);
+        unset($this->in[$key]);
     }
-    
+
     /**
-     *  @abstract     Write Given Fields
+     * Write Given Fields
      *
-     *  @param        string    $FieldName              Field Identifier / Name
-     *  @param        mixed     $Data                   Field Data
+     * @param string $fieldName Field Identifier / Name
+     * @param mixed  $data      Field Data
      *
-     *  @return         none
+     * @return void
      */
-    private function setCoreFields($FieldName, $Data)
+    protected function setCoreFields(string $fieldName, $data)
     {
         //====================================================================//
         // WRITE Field
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
-            // Direct Writtings
+            // Direct Writings
             case 'company':
             case 'firstname':
             case 'middlename':
             case 'lastname':
             case 'prefix':
             case 'suffix':
-                $this->setData($FieldName, $Data);
-                break;
+                $this->setData($fieldName, $data);
 
+                break;
             //====================================================================//
-            // Customer Object Id Writtings
+            // Customer Object Id Writings
             case 'parent_id':
-                $this->setParentId($Data);
+                $this->setParentId($data);
+
                 break;
             default:
                 return;
         }
-        unset($this->In[$FieldName]);
+        unset($this->in[$fieldName]);
     }
-    
+
     /**
-     *  @abstract     Write Given Fields
+     * Write Given Fields
+     *
+     * @param mixed $data
+     *
+     * @return bool
      */
-    private function setParentId($Data)
+    private function setParentId($data): bool
     {
         //====================================================================//
         // Decode Customer Id
-        $Id = self::objects()->Id($Data);
+        $customerId = self::objects()->id($data);
         //====================================================================//
         // Check For Change
-        if ($Id == $this->Object->getParentId()) {
+        if ($customerId == $this->object->getParentId()) {
             return true;
         }
         //====================================================================//
         // Verify Object Type
-        if (self::objects()->Type($Data) !== "ThirdParty") {
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Wrong Object Type (" . self::objects()->Type($Data) . ").");
+        if ("ThirdParty" !== self::objects()->type($data)) {
+            return Splash::log()->errTrace("Wrong Object Type (".self::objects()->Type($data).").");
         }
         //====================================================================//
         // Verify Object Exists
-        $Customer = Mage::getModel('customer/customer')->load($Id);
-        if ($Customer->getEntityId() != $Id) {
-            return Splash::log()->err("ErrLocalTpl", __CLASS__, __FUNCTION__, " Unable to load Address Customer(" . $Id . ").");
+        /** @var Mage_Customer_Model_Customer $model */
+        $model = Mage::getModel('customer/customer');
+        $customer = $model->load((int) $customerId);
+        if ($customer->getEntityId() != $customerId) {
+            return Splash::log()->errTrace("Unable to load Address Customer(".$customerId.").");
         }
         //====================================================================//
         // Update Link
-        $this->Object->setParentId($Id);
+        $this->object->setParentId($customerId);
+
         return true;
     }
 }

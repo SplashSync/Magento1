@@ -1,119 +1,113 @@
 <?php
+
 /*
- * Copyright (C) 2017   Splash Sync       <contact@splashsync.com>
+ *  This file is part of SplashSync Project.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace Splash\Local\Objects\Address;
 
-// Magento Namespaces
 use Mage;
+use Mage_Directory_Model_Country;
+use Mage_Directory_Model_Region;
 
 /**
- * @abstract    Magento 1 Customers Address Main Fields Access
+ * Magento 1 Customers Address Main Fields Access
  */
 trait MainTrait
 {
-
     /**
-    *   @abstract     Build Address Main Fields using FieldFactory
-    */
-    private function buildMainFields()
+     * Build Address Main Fields using FieldFactory
+     */
+    protected function buildMainFields(): void
     {
-        
-        $AddressGroup = "Address";
-        
+        $addressGroup = "Address";
+
         //====================================================================//
-        // Addess
+        // Address
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("street")
-                ->Name("Address")
-                ->MicroData("http://schema.org/PostalAddress", "streetAddress")
-                ->Group($AddressGroup)
-                ->isRequired();
-        
+            ->Identifier("street")
+            ->Name("Address")
+            ->MicroData("http://schema.org/PostalAddress", "streetAddress")
+            ->Group($addressGroup)
+            ->isRequired()
+        ;
         //====================================================================//
         // Zip Code
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("postcode")
-                ->Name("Zip/Postal Code")
-                ->MicroData("http://schema.org/PostalAddress", "postalCode")
-                ->Group($AddressGroup)
-                ->isRequired();
-        
+            ->Identifier("postcode")
+            ->Name("Zip/Postal Code")
+            ->MicroData("http://schema.org/PostalAddress", "postalCode")
+            ->Group($addressGroup)
+            ->isRequired()
+        ;
         //====================================================================//
         // City Name
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("city")
-                ->Name("City")
-                ->MicroData("http://schema.org/PostalAddress", "addressLocality")
-                ->isRequired()
-                ->Group($AddressGroup)
-                ->isListed();
-        
+            ->Identifier("city")
+            ->Name("City")
+            ->MicroData("http://schema.org/PostalAddress", "addressLocality")
+            ->isRequired()
+            ->Group($addressGroup)
+            ->isListed()
+        ;
         //====================================================================//
         // State Name
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("region")
-                ->Name("State")
-                ->Group($AddressGroup)
-                ->isReadOnly();
-        
+            ->Identifier("region")
+            ->Name("State")
+            ->Group($addressGroup)
+            ->isReadOnly()
+        ;
         //====================================================================//
         // State code
         $this->fieldsFactory()->Create(SPL_T_STATE)
-                ->Identifier("region_id")
-                ->Name("StateCode")
-                ->MicroData("http://schema.org/PostalAddress", "addressRegion")
-                ->Group($AddressGroup)
-                ->isNotTested();
-        
+            ->Identifier("region_id")
+            ->Name("StateCode")
+            ->MicroData("http://schema.org/PostalAddress", "addressRegion")
+            ->Group($addressGroup)
+            ->isNotTested()
+        ;
         //====================================================================//
         // Country Name
         $this->fieldsFactory()->Create(SPL_T_VARCHAR)
-                ->Identifier("country")
-                ->Name("Country")
-                ->Group($AddressGroup)
-                ->isReadOnly();
-//                ->isListed();
-        
+            ->Identifier("country")
+            ->Name("Country")
+            ->Group($addressGroup)
+            ->isReadOnly()
+        ;
         //====================================================================//
         // Country ISO Code
         $this->fieldsFactory()->Create(SPL_T_COUNTRY)
-                ->Identifier("country_id")
-                ->Name("CountryCode")
-                ->MicroData("http://schema.org/PostalAddress", "addressCountry")
-                ->Group($AddressGroup)
-                ->isRequired();
+            ->Identifier("country_id")
+            ->Name("CountryCode")
+            ->MicroData("http://schema.org/PostalAddress", "addressCountry")
+            ->Group($addressGroup)
+            ->isRequired()
+        ;
     }
 
-
     /**
-     *  @abstract     Read requested Field
+     * Read requested Field
      *
-     *  @param        string    $Key                    Input List Key
-     *  @param        string    $FieldName              Field Identifier / Name
+     * @param string $key       Input List Key
+     * @param string $fieldName Field Identifier / Name
      *
-     *  @return         none
+     * @return void
      */
-    private function getMainFields($Key, $FieldName)
+    protected function getMainFields(string $key, string $fieldName): void
     {
         //====================================================================//
         // READ Fields
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // Direct Readings
             case 'street':
@@ -121,70 +115,97 @@ trait MainTrait
             case 'city':
             case 'country_id':
             case 'region':
-                $this->getData($FieldName);
+                $this->getData($fieldName);
+
                 break;
-            //====================================================================//
-            // State ISO Id - READ With Convertion
-            case 'region_id':
-                //====================================================================//
-                // READ With Convertion
-                $this->Out[$FieldName] = Mage::getModel('directory/region')
-                        ->load($this->Object->getData($FieldName))
-                        ->getCode();
-                break;
-            //====================================================================//
-            // Country Name - READ With Convertion
-            case 'country':
-                $this->Out[$FieldName] = Mage::getModel('directory/country')
-                    ->load($this->Object->getData("country_id"))
-                    ->getName();
-                break;
-                
             default:
                 return;
         }
-        unset($this->In[$Key]);
+        unset($this->in[$key]);
     }
 
     /**
-     *  @abstract     Write Given Fields
+     * Read requested Field
      *
-     *  @param        string    $FieldName              Field Identifier / Name
-     *  @param        mixed     $Data                   Field Data
+     * @param string $key       Input List Key
+     * @param string $fieldName Field Identifier / Name
      *
-     *  @return         none
+     * @return void
      */
-    private function setMainFields($FieldName, $Data)
+    protected function getMainIntlFields(string $key, string $fieldName): void
     {
-        
+        //====================================================================//
+        // READ Fields
+        switch ($fieldName) {
+            //====================================================================//
+            // State ISO Id - READ With Conversion
+            case 'region_id':
+                /** @var Mage_Directory_Model_Region $model */
+                $model = Mage::getModel('directory/region');
+                /** @var false|Mage_Directory_Model_Region $region */
+                $region = $model->load($this->object->getData($fieldName));
+                $this->out[$fieldName] = $region ? $region->getCode() : "";
+
+                break;
+            //====================================================================//
+            // Country Name - READ With Conversion
+            case 'country':
+                /** @var Mage_Directory_Model_Country $model */
+                $model = Mage::getModel('directory/country');
+                /** @var false|Mage_Directory_Model_Country $country */
+                $country = $model->load($this->object->getData("country_id"));
+                $this->out[$fieldName] = $country ? $country->getName() : "";
+
+                break;
+            default:
+                return;
+        }
+        unset($this->in[$key]);
+    }
+
+    /**
+     * Write Given Fields
+     *
+     * @param string $fieldName Field Identifier / Name
+     * @param mixed  $data      Field Data
+     *
+     * @return void
+     */
+    protected function setMainFields(string $fieldName, $data): void
+    {
         //====================================================================//
         // WRITE Field
-        switch ($FieldName) {
+        switch ($fieldName) {
             //====================================================================//
             // Direct Readings
             case 'street':
             case 'postcode':
             case 'city':
             case 'country_id':
-                $this->setData($FieldName, $Data);
-                break;
+                $this->setData($fieldName, $data);
 
+                break;
             //====================================================================//
-            // State ISO Id - READ With Convertion
+            // State ISO Id - READ With Conversion
             case 'region_id':
                 //====================================================================//
                 // Get Country ISO Id - From Inputs or From Current Objects
-                $CountryId  =   isset($this->In["country_id"])?$this->In["country_id"]:$this->Object->getData("country_id");
-                $RegionId   =   Mage::getModel('directory/region')
-                        ->loadByCode($Data, $CountryId)->getRegionId();
-                if (( $RegionId ) && $this->Object->getData($FieldName)  != $RegionId) {
-                    $this->Object->setData($FieldName, $RegionId);
+                $countryId = isset($this->in["country_id"])
+                    ? $this->in["country_id"]
+                    : $this->object->getData("country_id")
+                ;
+                /** @var Mage_Directory_Model_Region $model */
+                $model = Mage::getModel('directory/region');
+                $regionId = $model->loadByCode($data, $countryId)->getRegionId();
+                if (($regionId) && $this->object->getData($fieldName) != $regionId) {
+                    $this->object->setData($fieldName, $regionId);
                     $this->needUpdate();
                 }
+
                 break;
             default:
                 return;
         }
-        unset($this->In[$FieldName]);
+        unset($this->in[$fieldName]);
     }
 }
