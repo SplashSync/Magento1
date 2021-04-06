@@ -1,38 +1,44 @@
 <?php
-/**
- * Magento
+
+/*
+ *  This file is part of SplashSync Project.
  *
- * NOTICE OF LICENSE
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * @category    SplashSync
- * @package     SplashSync_Splash
- * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- * @generator   http://www.mgt-commerce.com/kickstarter/ Mgt Kickstarter
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
  */
 
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+// phpcs:disable Squiz.Classes.ValidClassName
+
+/**
+ * Class SplashSync_Splash_IndexController
+ *
+ * @SuppressWarnings(PHPMD.CamelCaseClassName)
+ */
 class SplashSync_Splash_IndexController extends Mage_Adminhtml_Controller_Action
 {
-    
     /**
-    *  @abstract    Splash Module Class Constructor
-    *  @return      None
-    */
-    public function __construct(Zend_Controller_Request_Abstract $Controller, Zend_Controller_Response_Abstract $Response)
-    {
+     *  Splash Module Class Constructor
+     */
+    public function __construct(
+        Zend_Controller_Request_Abstract $controller,
+        Zend_Controller_Response_Abstract $response
+    ) {
         //====================================================================//
         // Load Splash Module
-        require_once(dirname(dirname(__FILE__)) . '/vendor/autoload.php');
-        parent::__construct($Controller, $Response);
+        require_once(dirname(dirname(__FILE__)).'/vendor/autoload.php');
+        parent::__construct($controller, $response);
     }
-    
+
+    /**
+     * @return void
+     */
     public function indexAction()
     {
         //====================================================================//
@@ -41,13 +47,20 @@ class SplashSync_Splash_IndexController extends Mage_Adminhtml_Controller_Action
         //====================================================================//
         // Create SelfTests Block
         $this->_addContent($this->getLayout()->createBlock('Splash/Adminhtml_SelfTest'));
+
         //====================================================================//
         // Create Languages Setup Block
-        $this->_addContent($this->getLayout()->createBlock('adminhtml/template')->setTemplate('Splash/languages.phtml'));
+        /** @var Mage_Adminhtml_Block_Template $languages */
+        $languages = $this->getLayout()->createBlock('adminhtml/template');
+        $languages->setTemplate('Splash/languages.phtml');
+        $this->_addContent($languages);
         //====================================================================//
         // Create Origins Setup Block
-        $this->_addContent($this->getLayout()->createBlock('adminhtml/template')->setTemplate('Splash/origins.phtml'));
-        
+        /** @var Mage_Adminhtml_Block_Template $origins */
+        $origins = $this->getLayout()->createBlock('adminhtml/template');
+        $origins->setTemplate('Splash/origins.phtml');
+        $this->_addContent($origins);
+
         $this->renderLayout();
     }
 }

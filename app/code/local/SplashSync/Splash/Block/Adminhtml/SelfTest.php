@@ -1,123 +1,148 @@
 <?php
 
 /*
- * This file is part of SplashSync Project.
+ *  This file is part of SplashSync Project.
  *
- * Copyright (C) Splash Sync <www.splashsync.com>
+ *  Copyright (C) 2015-2021 Splash Sync  <www.splashsync.com>
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
  */
+
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+// phpcs:disable PSR2.Methods.MethodDeclaration
+// phpcs:disable Squiz.Classes.ValidClassName
+
+use Mage_Core_Block_Abstract;
+use Splash\Client\Splash;
+use Splash\Components\Logger;
 
 /**
- * @abstract    Splash PHP Module For Magento 1
- * @author      B. Paquier <contact@splashsync.com>
+ * Class SplashSync_Splash_Block_Adminhtml_SelfTest
+ *
+ * @SuppressWarnings(PHPMD.CamelCaseClassName)
+ * @SuppressWarnings(PHPMD.LongClassName)
  */
-
-use Splash\Client\Splash;
-
 class SplashSync_Splash_Block_Adminhtml_SelfTest extends Mage_Core_Block_Template
 {
-    public $Results     =   array();
-    public $Messages    =   null;
-    
+    /**
+     * @var array
+     */
+    public $results = array();
+
+    /**
+     * @var Logger
+     */
+    public $messages;
+
+    /**
+     * SplashSync_Splash_Block_Adminhtml_SelfTest constructor.
+     */
     public function __construct()
     {
         parent::__construct();
+
         $this->setTemplate('Splash/selftest.phtml');
     }
-  
-    protected function _beforeToHtml()
-    {
-        //====================================================================//
-        // Init Result Array
-        $this->Results = array();
-        $this->Messages = array();
-        
-        //====================================================================//
-        // Execute Server Tests
-        $this->TST_SelfTests();
-        $this->TST_ListObjects();
-        $this->TST_ServerPing();
-        $this->TST_ServerConnect();
-        
-        //====================================================================//
-        // Post Splash Messages
-        $this->Messages = Splash::log();
 
-        $this->setData(array(
-                'results'   => $this->Results,
-                'messages'  => $this->Messages->getRawLog()
-                ));
-        
-        return parent::_beforeToHtml();
+    /**
+     * SelfTests Results
+     */
+    public function selfTests(): void
+    {
+        $this->results[] = array(
+            "id" => count($this->results) + 1,
+            "name" => 'Server SelfTest',
+            "desc" => 'Verify configuration & functionality of this server.',
+            "result" => Splash::selfTest()?"Pass":"Fail",
+        );
     }
-    
-    public function TST_SelfTests()
+
+    /**
+     * List available Objects
+     */
+    public function listObjects(): void
     {
         //====================================================================//
         // List Objects
         //====================================================================//
-        $ObjectsList    = count(Splash::objects()) . ' (';
+        $objectsList = count(Splash::objects()).' (';
         foreach (Splash::objects() as $value) {
-            $ObjectsList    .= $value . ", ";
+            $objectsList .= $value.", ";
         }
-        $ObjectsList    .= ")";
-        
-        $this->Results[] = array(
-            "id"    =>  count($this->Results) + 1,
-            "name"  =>  'Server SelfTest',
-            "desc"  =>  'Verify configuration & functionnality of this server.',
-            "result"=>  Splash::selfTest()?"Pass":"Fail",
+        $objectsList .= ")";
+
+        $this->results[] = array(
+            "id" => count($this->results) + 1,
+            "name" => 'Available Objects',
+            "desc" => 'List of all Available objects on this server.',
+            "result" => $objectsList,
         );
     }
-    
-    public function TST_ListObjects()
-    {
-        //====================================================================//
-        // List Objects
-        //====================================================================//
-        $ObjectsList    = count(Splash::objects()) . ' (';
-        foreach (Splash::objects() as $value) {
-            $ObjectsList    .= $value . ", ";
-        }
-        $ObjectsList    .= ")";
-        
-        $this->Results[] = array(
-            "id"    =>  count($this->Results) + 1,
-            "name"  =>  'Available Objects',
-            "desc"  =>  'List of all Available objects on this server.',
-            "result"=>  $ObjectsList,
-        );
-    }
-    
-    public function TST_ServerPing()
+
+    /**
+     * Server Ping Tests
+     */
+    public function serverPing(): void
     {
         //====================================================================//
         // Splash Server Ping
         //====================================================================//
-        $this->Results[] = array(
-            "id"    =>  count($this->Results) + 1,
-            "name"  =>  'Ping Test',
-            "desc"  =>  'Test to Ping Splash Server.',
-            "result"=>  Splash::ping(false)?"Pass":"Fail",
+        $this->results[] = array(
+            "id" => count($this->results) + 1,
+            "name" => 'Ping Test',
+            "desc" => 'Test to Ping Splash Server.',
+            "result" => Splash::ping(false)?"Pass":"Fail",
         );
     }
 
-    public function TST_ServerConnect()
+    /**
+     * Server Connect Test
+     */
+    public function serverConnect(): void
     {
         //====================================================================//
         // Splash Server Connect
         //====================================================================//
-        $this->Results[] = array(
-            "id"    =>  count($this->Results) + 1,
-            "name"  =>  'Connect Test',
-            "desc"  =>  'Test to Connect to Splash Server.',
-            "result"=>  Splash::connect(false)?"Pass":"Fail",
+        $this->results[] = array(
+            "id" => count($this->results) + 1,
+            "name" => 'Connect Test',
+            "desc" => 'Test to Connect to Splash Server.',
+            "result" => Splash::connect(false)?"Pass":"Fail",
         );
+    }
+
+    /**
+     * @return Mage_Core_Block_Abstract.
+     *
+     * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+     */
+    protected function _beforeToHtml()
+    {
+        //====================================================================//
+        // Init Result Array
+        $this->results = array();
+
+        //====================================================================//
+        // Execute Server Tests
+        $this->selfTests();
+        $this->listObjects();
+        $this->serverPing();
+        $this->serverConnect();
+
+        //====================================================================//
+        // Post Splash Messages
+        $this->messages = Splash::log();
+
+        $this->setData(array(
+            'results' => $this->results,
+            'messages' => $this->messages->getRawLog()
+        ));
+
+        return parent::_beforeToHtml();
     }
 }
