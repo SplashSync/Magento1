@@ -43,6 +43,7 @@ trait ExtrasTrait
             ->description("[OPTION] Truncated Short Description")
             ->group("Description")
             ->setMultilang(self::getDefaultLanguage())
+            ->isReadOnly()
         ;
         //====================================================================//
         // Product Cost Price
@@ -50,6 +51,7 @@ trait ExtrasTrait
             ->identifier("cost")
             ->name("[OPT]  Cost HT"." (".Mage::app()->getStore()->getCurrentCurrencyCode().")")
             ->microData("http://schema.org/Product", "wholesalePrice")
+            ->isReadOnly()
         ;
     }
 
