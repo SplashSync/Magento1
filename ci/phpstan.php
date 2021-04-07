@@ -14,6 +14,8 @@
  */
 
 // phpcs:disable PSR1.Files.SideEffects
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+// phpcs:disable Squiz.Classes.ValidClassName
 
 require_once dirname(__DIR__)."/app/Mage.php";
 require_once dirname(__DIR__)."/app/code/local/SplashSync/Splash/vendor/autoload.php";
