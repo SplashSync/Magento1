@@ -95,6 +95,12 @@ Mage-1.9.4-Php-7.2:
       MAGENTO_VERSION:      magento-mirror-1.9.4.1
   <<: *functionnal
 
+Mage-1.9.1-Php-7.2:
+  image:      registry.gitlab.com/badpixxel-projects/php-sdk:php-7.2
+  variables:
+    MAGENTO_VERSION:      magento-mirror-1.9.1.0
+  <<: *functionnal
+
 #Ps-1.7-Php-7.2:
 #  image:      prestashop/prestashop:1.7-7.2-apache
 #  <<: *functionnal
