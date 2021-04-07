@@ -23,7 +23,7 @@ use Mage;
 trait MainTrait
 {
     /**
-     * Build Address Fields using FieldFactory
+     * Build Fields using FieldFactory
      */
     protected function buildMainFields(): void
     {

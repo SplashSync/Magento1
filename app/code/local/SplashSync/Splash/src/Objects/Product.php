@@ -51,6 +51,7 @@ class Product extends AbstractObject
     use Product\ImagesTrait;
     use Product\StocksTrait;
     use Product\MetaTrait;
+    use Product\ExtrasTrait;
 
     //====================================================================//
     // Magento Definition

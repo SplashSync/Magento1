@@ -32,17 +32,6 @@ trait PricesTrait
     protected function getProductPrice()
     {
         //====================================================================//
-        // Load Product Tax Rate
-        $store = Mage::app()->getStore($this->object->getStore());
-        /** @var Mage_Tax_Model_Calculation $taxCalculation */
-        $taxCalculation = Mage::getModel('tax/calculation');
-        $taxRequest = $taxCalculation->getRateRequest(null, null, null, $store);
-        $tax = (float)  $taxCalculation->getRate(
-            /** @phpstan-ignore-next-line */
-            $taxRequest->setProductClassId($this->object->getTaxClassId())
-        );
-
-        //====================================================================//
         // Read Current Currency Code
         $currencyCode = Mage::app()->getStore()->getCurrentCurrencyCode();
         //====================================================================//
@@ -54,12 +43,11 @@ trait PricesTrait
             $priceTTC = null;
             $priceHT = (float)  $this->object->getPrice();
         }
-
         //====================================================================//
         // Build Price Array
         return self::prices()->encode(
             $priceHT,
-            $tax,
+            $this->getProductTaxRate(),
             $priceTTC,
             $currencyCode,
             Mage::app()->getLocale()->currency($currencyCode)->getSymbol(),
@@ -109,6 +97,26 @@ trait PricesTrait
             $this->object->setTaxClassId($newTaxId);
             $this->needUpdate();
         }
+    }
+
+    /**
+     * Get Magento Product TYax Rate
+     *
+     * @return float
+     */
+    protected function getProductTaxRate(): float
+    {
+        //====================================================================//
+        // Load Product Tax Rate
+        $store = Mage::app()->getStore($this->object->getStore());
+        /** @var Mage_Tax_Model_Calculation $taxCalculation */
+        $taxCalculation = Mage::getModel('tax/calculation');
+        $taxRequest = $taxCalculation->getRateRequest(null, null, null, $store);
+
+        return (float)  $taxCalculation->getRate(
+        /** @phpstan-ignore-next-line */
+            $taxRequest->setProductClassId($this->object->getTaxClassId())
+        );
     }
 
     /**
