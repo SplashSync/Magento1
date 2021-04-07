@@ -87,13 +87,13 @@ class L02OrderTrackingTest extends ObjectsCase
         //   Basic verifications
         $this->assertNotEmpty($order);
         $this->assertInstanceOf(Mage_Sales_Model_Order::class, $order);
-        //$this->assertNotEmpty($order->getTracksCollection());
 
         //====================================================================//
         //   Verify Quantities
         $totalFound = 0;
         /** @var Mage_Sales_Model_Order_Shipment_Track[] $orderTracks */
-        $orderTracks = $order->getTracksCollection();
+        $orderTracks = call_user_func(array($order, "getTracksCollection"));
+        $this->assertNotEmpty($orderTracks);
         foreach ($orderTracks as $key => $orderTracking) {
             $this->assertEquals(
                 $orderTracking->getTitle(),

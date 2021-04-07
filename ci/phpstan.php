@@ -23,3 +23,9 @@ define("COMPILER_INCLUDE_PATH", dirname(__DIR__));
 //====================================================================//
 // Init Splash for Local Includes
 Splash\Client\Splash::core();
+
+//====================================================================//
+// FIX - Store Config Class doesn't Exists
+class Mage_Core_Store_Config extends Mage_Core_Model_Config
+{
+}
