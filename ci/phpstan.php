@@ -28,6 +28,12 @@ Splash\Client\Splash::core();
 
 //====================================================================//
 // FIX - Store Config Class doesn't Exists
+
+/**
+ * Class Mage_Core_Store_Config
+ *
+ * @SuppressWarnings(PHPMD.CamelCaseClassName)
+ */
 class Mage_Core_Store_Config extends Mage_Core_Model_Config
 {
 }
