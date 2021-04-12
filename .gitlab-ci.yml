@@ -35,9 +35,10 @@ stages:
 ################################################################
 
 .functionnal:   &functionnal
-    when:       manual
+#    when:       manual
     stage:      tests
     tags:       ['Dedicated']
+    retry:      2
 #    artifacts:
 #      paths:
 #        - $CI_PROJECT_DIR/splash.json
@@ -117,23 +118,23 @@ pages:
       paths:
           - public
 
-##################################################################
-### Build Documentation
-##################################################################
-#module:
-#  image:      registry.gitlab.com/splashsync/php-console:pages
-#  stage:      deploy
-#  tags:       ['Dedicated']
-#  retry:      2
-#  services:
-#    - docker:dind
-#  ################################################################################
-#  # Run Test Script
-#  script:
-#    # Run Composer to Build deps
-#    - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
-#    # Build Documentation
-#    - php modules/splashsync/vendor/bin/grumphp run --tasks=build-module
-#  artifacts:
-#    paths:
-#      - build
+#################################################################
+## Build Module
+#################################################################
+module:
+  image:      registry.gitlab.com/badpixxel-projects/php-sdk:jekyll
+  stage:      deploy
+  tags:       ['Dedicated']
+  retry:      2
+  services:
+      - docker:dind
+  ################################################################################
+  # Run Test Script
+  script:
+      # Run Composer to Build deps
+      - curl -s https://raw.githubusercontent.com/BadPixxel/Php-Sdk/main/ci/composer.sh  | bash
+      # Build Documentation
+      - php app/code/local/SplashSync/Splash/vendor/bin/grumphp run --tasks=build-module
+  artifacts:
+      paths:
+          - build
