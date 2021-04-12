@@ -111,3 +111,5 @@ var/
 /.php_cs.cache
 /reboot.sh
 /.gh-pages/
+/public/
+/build/

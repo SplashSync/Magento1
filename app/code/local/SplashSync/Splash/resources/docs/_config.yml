@@ -1,0 +1,36 @@
+################################################################################
+#
+# * This file is part of SplashSync Project.
+# *
+# * Copyright (C) Splash Sync <www.splashsync.com>
+# *
+# * This program is distributed in the hope that it will be useful,
+# * but WITHOUT ANY WARRANTY; without even the implied warranty of
+# * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# *
+# * For the full copyright and license information, please view the LICENSE
+# * file that was distributed with this source code.
+# *
+# * @author Bernard Paquier <contact@splashsync.com>
+#
+################################################################################
+
+################################################################################
+# LOCAL DOC CONFIGURATION
+################################################################################
+
+# Title of the Bundle / Module
+title:          Magento 1 Module
+repository:     SplashSync/Magento1
+# Subtitle of the Site (Generally DOC)
+subtitle:       DOC
+# the subpath of your site, e.g. /blog
+baseurl:        "/Magento1"
+# Description of the Bundle/Module
+description:    "Welcome to the Magento 1 Module Documentation
+
+                This module implement Splash Sync connector for magento 1 E-Commerce.
+                It provide access to multiples Objects for automated synchronization though Splash Sync dedicated protocol."
+# Package Code on Packagist
+package:        "splash/magento1"
+

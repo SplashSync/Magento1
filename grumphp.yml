@@ -27,12 +27,16 @@ parameters:
     stan-config:        "./ci/phpstan.neon"
 
     # For Building Splash Documentation
-    doc-enable:     false
+    doc-enable:     true
+    doc-src:        '/app/code/local/SplashSync/Splash/resources/docs'
     doc-target:     '/public'
-    doc-contents:   ["php-composer", "php-docker", "splash-faq"]
+    doc-contents:   ["php-docker", "splash-faq"]
 
     # For Building Splash Module
-    mod-enable:     false
+    mod-enable:     true
+    mod-src:        '/app'
+    mod-target:     '/app/'
+    mod-file:       "magento_splashsync-1.2.0"
 
     # For Building Splash Manifest
     yml-enable:     false
@@ -41,6 +45,8 @@ parameters:
 # Import Config. from Generic Bundle
 imports:
     - { resource: "./app/code/local/SplashSync/Splash/vendor/badpixxel/php-sdk/grumphp/generic.yml" }
+    - { resource: "./app/code/local/SplashSync/Splash/vendor/badpixxel/php-sdk/grumphp/extras.yml" }
+#    - { resource: "./app/code/local/SplashSync/Splash/vendor/splash/console/src/Resources/grumphp/*.yml" }
 
 #
 #parameters:

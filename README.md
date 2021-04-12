@@ -5,7 +5,7 @@
 
 Splash Php Module for Magento 1 E-Commerce Platforms.
 
-This module implement Splash Sync connector for Magento 1. It provide access to multiples Objects for automated synchonization though Splash Sync dedicated protocol.
+This module implement Splash Sync connector for Magento 1. It provide access to multiples Objects for automated synchronization though Splash Sync dedicated protocol.
 
 ## Installation
 
@@ -15,8 +15,8 @@ This module implement Splash Sync connector for Magento 1. It provide access to 
 
 ## Requirements
 
-* PHP 5.6+ | PHP 7.0+
-* Magento 1.7 | 1.8 | 1.9
+* PHP PHP 7.2+
+* Magento 1.9.x
 * An active Splash Sync User Account
 
 ## Documentation
