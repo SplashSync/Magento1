@@ -28,14 +28,14 @@ variables:
 # Defined Pipeline Stages
 stages:
   - tests
-#  - deploy
+  - deploy
 
 ################################################################
 # Functional Tests
 ################################################################
 
 .functionnal:   &functionnal
-#    when:       manual
+    when:       manual
     stage:      tests
     tags:       ['Dedicated']
 #    artifacts:
@@ -99,6 +99,7 @@ Mage-1.9.4-Php-7.2:
 ## Build Documentation
 #################################################################
 pages:
+#  when:       manual
   image:      registry.gitlab.com/badpixxel-projects/php-sdk:jekyll
   stage:      deploy
   tags:       ['Dedicated']
