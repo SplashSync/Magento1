@@ -39,10 +39,6 @@ stages:
     stage:      tests
     tags:       ['Dedicated']
     retry:      2
-#    artifacts:
-#      paths:
-#        - $CI_PROJECT_DIR/splash.json
-#        - $CI_PROJECT_DIR/splash.yml
     services:
       - name: mysql:5.7
     ################################################################
