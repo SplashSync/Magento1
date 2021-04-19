@@ -199,7 +199,6 @@ trait MainTrait
         unset($this->in[$key]);
     }
 
-
     /**
      * Read Invoice Payment Status
      *
