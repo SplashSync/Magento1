@@ -17,6 +17,8 @@ namespace Splash\Local\Objects\Order;
 
 use Mage;
 use Mage_Core_Model_Date;
+use Mage_Sales_Model_Order_Creditmemo               as MageCreditNote;
+use Mage_Sales_Model_Order_Invoice                  as MageInvoice;
 use Mage_Sales_Model_Order_Payment;
 use Mage_Sales_Model_Order_Payment_Transaction      as Transaction;
 use Splash\Core\SplashCore      as Splash;
@@ -146,7 +148,7 @@ trait PaymentsTrait
         }
         //====================================================================//
         // Fill List with Paid Amount Data
-        if ($this->payment->getAmountPaid() > 0) {
+        if (($this->payment->getAmountPaid() > 0) && !($this->object instanceof MageCreditNote)) {
             //====================================================================//
             // READ Fields
             $value = $this->getPaymentData($listFieldName);
@@ -156,7 +158,7 @@ trait PaymentsTrait
         }
         //====================================================================//
         // Fill List with Refund Amount Data
-        if ($this->payment->getAmountRefunded() > 0) {
+        if (($this->payment->getAmountRefunded() > 0) && !($this->object instanceof MageInvoice)) {
             //====================================================================//
             // READ Fields
             if ("amount" == $listFieldName) {

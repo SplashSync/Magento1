@@ -15,9 +15,6 @@
 
 namespace Splash\Local\Objects\Core;
 
-use Mage;
-use Mage_Core_Model_Date;
-
 /**
  * Magento 1 Object Dates Access
  */
@@ -61,12 +58,7 @@ trait DatesTrait
         switch ($fieldName) {
             case 'created_at':
             case 'updated_at':
-                /** @var Mage_Core_Model_Date $model */
-                $model = Mage::getModel('core/date');
-                $this->out[$fieldName] = date(
-                    SPL_T_DATETIMECAST,
-                    $model->gmtTimestamp($this->object->getData($fieldName))
-                );
+                $this->getDateTime($fieldName);
 
                 break;
             default:

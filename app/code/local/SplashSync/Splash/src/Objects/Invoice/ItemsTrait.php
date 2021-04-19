@@ -16,7 +16,8 @@
 namespace Splash\Local\Objects\Invoice;
 
 use Mage;
-use Mage_Sales_Model_Order_Invoice_Item;
+use Mage_Sales_Model_Order_Creditmemo_Item as CreditItem;
+use Mage_Sales_Model_Order_Invoice_Item as InvoiceItem;
 use Splash\Core\SplashCore as Splash;
 use Splash\Local\Local;
 use Splash\Local\Objects\Order;
@@ -286,12 +287,12 @@ trait ItemsTrait
     /**
      * Extract Product Line item Value
      *
-     * @param Mage_Sales_Model_Order_Invoice_Item $product
-     * @param string                              $fieldId
+     * @param CreditItem|InvoiceItem $product
+     * @param string                 $fieldId
      *
      * @return null|mixed
      */
-    private function getProductsLineValue(Mage_Sales_Model_Order_Invoice_Item $product, string $fieldId)
+    private function getProductsLineValue(object $product, string $fieldId)
     {
         //====================================================================//
         // READ Fields

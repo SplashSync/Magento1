@@ -82,7 +82,7 @@ class Invoice extends AbstractObject
     /**
      *  Object Description (Translated by Module)
      */
-    protected static $DESCRIPTION = "Magento 1 Customers Incoice Object";
+    protected static $DESCRIPTION = "Magento 1 Customers Invoice Object";
 
     /**
      *  Object Icon (FontAwesome or Glyph ico tag)
@@ -126,14 +126,14 @@ class Invoice extends AbstractObject
     protected static $ENABLE_PUSH_CREATED = false;
 
     /**
-     * Enable Update Of Existing Local Objects when Modified Remotly
+     * Enable Update Of Existing Local Objects when Modified Remotely
      *
      * @var bool
      */
     protected static $ENABLE_PUSH_UPDATED = false;
 
     /**
-     * Enable Delete Of Existing Local Objects when Deleted Remotly
+     * Enable Delete Of Existing Local Objects when Deleted Remotely
      *
      * @var bool
      */

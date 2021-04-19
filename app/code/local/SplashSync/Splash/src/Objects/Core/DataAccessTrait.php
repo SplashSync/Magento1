@@ -45,7 +45,7 @@ trait DataAccessTrait
     protected function getDate($fieldName)
     {
         $this->out[$fieldName] = date(
-            SPL_T_DATETIMECAST,
+            SPL_T_DATECAST,
             $this->getMageDate()->gmtTimestamp($this->object->getData($fieldName))
         );
     }
@@ -60,7 +60,7 @@ trait DataAccessTrait
     protected function getDateTime($fieldName)
     {
         $this->out[$fieldName] = date(
-            SPL_T_DATECAST,
+            SPL_T_DATETIMECAST,
             $this->getMageDate()->gmtTimestamp($this->object->getData($fieldName))
         );
     }

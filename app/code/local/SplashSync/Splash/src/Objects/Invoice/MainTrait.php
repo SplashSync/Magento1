@@ -16,6 +16,7 @@
 namespace Splash\Local\Objects\Invoice;
 
 use Mage;
+use Mage_Sales_Model_Order_Creditmemo               as MageCreditNote;
 use Mage_Sales_Model_Order_Invoice                  as MageInvoice;
 
 /**
@@ -147,19 +148,48 @@ trait MainTrait
                 $this->out[$fieldName] = $this->object->getStateName();
 
                 break;
+            default:
+                return;
+        }
+
+        unset($this->in[$key]);
+    }
+
+    /**
+     * Read requested Field
+     *
+     * @param string $key       Input List Key
+     * @param string $fieldName Field Identifier / Name
+     *
+     * @return void
+     */
+    protected function getStateFlagsFields(string $key, string $fieldName): void
+    {
+        //====================================================================//
+        // READ Fields
+        switch ($fieldName) {
             //====================================================================//
             // INVOICE PAYMENT STATUS
             //====================================================================//
             case 'isCanceled':
-                $this->out[$fieldName] = (bool) $this->object->isCanceled();
+                $this->out[$fieldName] = ($this->object instanceof MageCreditNote)
+                    ? (MageCreditNote::STATE_CANCELED == $this->object->getState())
+                    : (bool) $this->object->isCanceled()
+                ;
 
                 break;
             case 'isValidated':
-                $this->out[$fieldName] = !$this->object->isCanceled();
+                $this->out[$fieldName] = ($this->object instanceof MageCreditNote)
+                    ? (MageCreditNote::STATE_CANCELED != $this->object->getState())
+                    : !$this->object->isCanceled()
+                ;
 
                 break;
             case 'isPaid':
-                $this->out[$fieldName] = (MageInvoice::STATE_PAID == $this->object->getState()) ? true : false;
+                $this->out[$fieldName] = ($this->object instanceof MageCreditNote)
+                    ? (MageCreditNote::STATE_REFUNDED == $this->object->getState())
+                    : (MageInvoice::STATE_PAID == $this->object->getState())
+                ;
 
                 break;
             default:
@@ -169,6 +199,7 @@ trait MainTrait
         unset($this->in[$key]);
     }
 
+
     /**
      * Read Invoice Payment Status
      *
@@ -176,11 +207,25 @@ trait MainTrait
      */
     private function getPaymentState(): string
     {
-        if ($this->object->isCanceled()) {
-            return "PaymentCanceled";
+        //====================================================================//
+        // CREDIT NOTE CONTEXT
+        if (($this->object instanceof MageCreditNote)) {
+            if (MageCreditNote::STATE_CANCELED == $this->object->getState()) {
+                return "PaymentCanceled";
+            }
+            if (MageCreditNote::STATE_REFUNDED == $this->object->getState()) {
+                return "PaymentComplete";
+            }
         }
-        if (MageInvoice::STATE_PAID == $this->object->getState()) {
-            return "PaymentComplete";
+        //====================================================================//
+        // INVOICE CONTEXT
+        if (($this->object instanceof MageInvoice)) {
+            if ($this->object->isCanceled()) {
+                return "PaymentCanceled";
+            }
+            if (MageInvoice::STATE_PAID == $this->object->getState()) {
+                return "PaymentComplete";
+            }
         }
 
         return "PaymentDue";
