@@ -60,7 +60,6 @@ trait ObjectListTrait
         return array(
             "id" => $listObject->getEntityId(),
             "increment_id" => $listObject->getIncrementId(),
-            "reference" => $listObject->getOrderIncrementId(),
             "customer_name" => $listObject->getOrder()->getCustomerName(),
             "created_at" => $listObject->getCreatedAt(),
             "grand_total" => round($listObject->getGrandTotal(), 2).$currencySymbol,
