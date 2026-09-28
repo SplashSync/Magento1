@@ -11,11 +11,11 @@ Le module Splash est automatiquement activé lorsque vous copiez des fichiers su
 Si ce n'est pas le cas, suivez ces deux étapes:
 * Effacez le cache de Magento dans **System >> Gestion du cache >> Configuration**
 
-![]({{ "/assets/img/screenshot_10.png"|relative_url}})
+![Vidage du cache de configuration Magento](../assets/img/screenshot_10.png)
 
 * Vérifiez que le fichier de déclaration du module est présent sur votre serveur
 
-![]({{ "/assets/img/screenshot_1.png"|relative_url}})
+![Fichier de déclaration du module Splash](../assets/img/screenshot_1.png)
 
 Si le message "404 Error" s'affiche lorsque vous accédez à la page de configuration du module, vous devez vous **Déconnecter & Reconnecter** afin de mettre à jour la configuration vos droits (ACL).
 
@@ -27,11 +27,11 @@ La configuration du module est accéssible dans **System >> Configuration** then
 
 D'abord, vous devez créer des clés d'accès pour votre module sur notre site. Pour ce faire, sur votre compte Splash, allez sur ** Serveurs ** >> ** Ajoutez un serveur ** et notez vos clés d'identification et de cryptage qui vous seront données.
 
-![]({{ "/assets/img/screenshot_2.png"|relative_url}})
+![Ajout d'un serveur sur l'espace Splash](../assets/img/splash-new-server.png)
 
 Ensuite, entrez les clés de la configuration du module (attention à ne pas oublier de caractère).
 
-![]({{ "/assets/img/screenshot_3.png"|relative_url}})
+![Clés Splash dans la configuration du module](../assets/img/screenshot_3.png)
 
 ##### Langue par défaut
 
@@ -45,7 +45,7 @@ Pour fonctionner correctement, le module a besoin de quelques paramètres.
 
 Entrez le Login et Mot de passe de l'utilisateur qui sera utilisé pour toutes les actions exécutées par le Module Splash.
 
-![]({{ "/assets/img/screenshot_4.png"|relative_url}})
+![Utilisateur dédié à Splash](../assets/img/screenshot_4.png)
 
 Nous recommandons fortement la création d'un utilisateur **dédié** pour Splash.
 
@@ -57,17 +57,17 @@ Avec Splash, il est possible de synchroniser des champs multilingues. Cette fonc
 
 Si votre site n'utilise qu'une seule langue, laissez ce paramètre sur **Non** et sélectionnez votre langue.
 
-![]({{ "/assets/img/screenshot_5.png"|relative_url}})
+![Configuration d'une boutique monolingue](../assets/img/screenshot_5.png)
 
 Si vous disposez d'un site multilingue, sélectionnez **Oui** et une option sera affichée sur chaque vue pour sélectionner la langue associée.
 
-![]({{ "/assets/img/screenshot_6.png"|relative_url}})
+![Langue associée à une vue magasin](../assets/img/screenshot_6.png)
 
 ##### Synchronisation des Clients
 
 Si vous décidez d'importer des clients d'un autre site, vous devez définir ici le Website que Splash devra utiliser sur Magento pour créer les nouveaux clients.
 
-![]({{ "/assets/img/screenshot_7.png"|relative_url}})
+![Site web par défaut pour les nouveaux clients](../assets/img/screenshot_7.png)
 
 Si vous avez plusieurs sites, il est également possible de rediriger les nouveaux clients vers plusieurs WebSites, ce choix se fait sur la configuration de chaque site.
 
@@ -80,7 +80,7 @@ Si vous décidez d'importer des produits depuis d'autres sites, vous devez séle
 * Default Attribute set
 * Default Warehouse
 
-![]({{ "/assets/img/screenshot_8.png"|relative_url}})
+![Paramètres par défaut des nouveaux produits](../assets/img/screenshot_8.png)
 
 ### Vérifiez les résultats des Self-Tests
 
@@ -94,4 +94,4 @@ Assurez-vous que tous les tests sont passés... c'est critique! Vérifiez égale
 
 **Note** Si votre serveur n'était pas encore connecté, cela se fera lors du chargement de cette page.
 
-![]({{ "/assets/img/screenshot_9.png"|relative_url}})
+![Résultats des self-tests du module](../assets/img/screenshot_9.png)
